@@ -86,13 +86,13 @@ export async function POST(req: Request) {
 					bio: parsed.data.bio ?? "",
 					...(parsed.data.abilities
 						? {
-							strMod: parsed.data.abilities.str,
-							dexMod: parsed.data.abilities.dex,
-							conMod: parsed.data.abilities.con,
-							intMod: parsed.data.abilities.int,
-							wisMod: parsed.data.abilities.wis,
-							chaMod: parsed.data.abilities.cha,
-						}
+								strMod: parsed.data.abilities.str,
+								dexMod: parsed.data.abilities.dex,
+								conMod: parsed.data.abilities.con,
+								intMod: parsed.data.abilities.int,
+								wisMod: parsed.data.abilities.wis,
+								chaMod: parsed.data.abilities.cha,
+							}
 						: {}),
 					...(parsed.data.skills ? { skills: parsed.data.skills } : {}),
 				})

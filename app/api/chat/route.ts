@@ -8,6 +8,7 @@ import { streamNarrative } from "@/lib/agents/narrative-llm";
 import type { DecideContext, PlayerInput } from "@/lib/agents/protocol";
 import { decideCheck } from "@/lib/agents/rules";
 import { type DiceResult, applyModifiers, rollD20 } from "@/lib/mechanics/dice";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { and, desc, eq, inArray } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { z } from "zod";
@@ -29,13 +30,30 @@ function sseChunk(obj: unknown) {
 }
 
 export async function POST(req: Request) {
+	// Rate limiting: 20 requests per minute per session
+	const cookieSession = cookies().get("rpg_session")?.value || "anon";
+	const rateLimitResult = checkRateLimit(cookieSession, {
+		id: "chat",
+		limit: 20,
+		window: 60 * 1000,
+	});
+	if (!rateLimitResult.success) {
+		return new Response("Too many requests", {
+			status: 429,
+			headers: {
+				"X-RateLimit-Limit": String(rateLimitResult.limit),
+				"X-RateLimit-Remaining": String(rateLimitResult.remaining),
+				"X-RateLimit-Reset": String(rateLimitResult.reset),
+			},
+		});
+	}
+
 	const body = await req.json().catch(() => null);
 	const parsed = inputSchema.safeParse(body);
 	if (!parsed.success) {
 		return new Response("Invalid input", { status: 400 });
 	}
 	const input = parsed.data as PlayerInput;
-	const cookieSession = cookies().get("rpg_session")?.value;
 	const externalId = input.sessionId || cookieSession || "anon";
 
 	// Ensure session exists (map external sessionId to numeric id)

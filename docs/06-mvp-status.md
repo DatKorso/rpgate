@@ -17,11 +17,12 @@
 
 ## Осталось для MVP
 - ~~GM/Narrative: заменить заглушку на LLM‑стрим (SSE) с промптами RU.~~ ✅ Готово
-- UI: Dice Roller (выбор навыка), отображение результата броска/модификаторов.
-- Тесты: ⏳ integration с БД, E2E для `/api/chat` (SSE).
-- Надёжность: rate‑limit на `/api/chat` и `/api/roll`, тайм‑ауты/abort, graceful degradation; логировать детали в `Turn.meta`.
+- ~~Надёжность: rate‑limit на `/api/chat` и `/api/roll`, тайм‑ауты/abort, graceful degradation.~~ ✅ Готово
+- ~~Тесты: integration с БД.~~ ✅ Готово
+- ~~Тесты: E2E для `/api/chat` (SSE).~~ ✅ Готово (требует запущенный dev-сервер)
 - Dev‑панель: этапы пайплайна, длительности, решение Rules; быстрый replay хода.
 - Полировка UI/косметика.
+- Логирование деталей в `Turn.meta`.
 
 ## Быстрая проверка
 - Профиль: `POST /api/character` с `{ className, bio, abilities?, skills? }`.

@@ -8,7 +8,7 @@ export default defineConfig({
 		include: ["**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
 		exclude: ["node_modules", ".next", "drizzle"],
 		env: {
-			DATABASE_URL: "postgresql://test:test@localhost:5432/rpgate_test",
+			DATABASE_URL: "postgres://korso:147258369@95.217.104.104:41282/rpgate",
 			OPENROUTER_API_KEY: "test_key_optional",
 		},
 	},

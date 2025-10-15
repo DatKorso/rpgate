@@ -1,106 +1,159 @@
-# Тесты RPGate
+# Testing Guide
 
-## Структура тестов
+## Test Structure
 
 ```
-lib/
-├── mechanics/
-│   └── dice.test.ts          # Unit-тесты для игровой механики (D20, модификаторы)
-└── agents/
-    ├── heuristics.test.ts    # Unit-тесты для эвристических правил
-    └── character.test.ts     # Unit-тесты для логики персонажа
+tests/
+├── chat-e2e.test.ts    # E2E tests for SSE chat flow
+└── db.test.ts          # Database integration tests
 
-app/api/
-├── health/
-│   └── route.test.ts         # Smoke-тест для health endpoint
-└── roll/
-    └── route.test.ts         # Smoke-тесты для dice roll endpoint
+app/api/*/route.test.ts  # API route unit tests
+lib/**/*.test.ts         # Unit tests for business logic
 ```
 
-## Запуск тестов
+## Running Tests
 
+### Unit Tests Only
 ```bash
-# Запустить все тесты один раз
+pnpm test:unit
+```
+
+Runs all tests except E2E. Fast, no server required.
+
+### E2E Tests
+```bash
+# 1. Start dev server in one terminal
+pnpm dev
+
+# 2. Run E2E tests in another terminal
+pnpm test:e2e
+```
+
+E2E tests require:
+- Running Next.js dev server (http://localhost:3000)
+- PostgreSQL database connection
+- Optional: OPENROUTER_API_KEY for full LLM testing
+
+### All Tests
+```bash
 pnpm test
+```
 
-# Запустить в watch mode (для разработки)
+Runs both unit and E2E tests. Requires dev server running.
+
+### Watch Mode
+```bash
 pnpm test:watch
+```
 
-# Запустить с UI интерфейсом
+Runs tests in watch mode for development.
+
+### UI Mode
+```bash
 pnpm test:ui
 ```
 
-## Покрытие
+Opens Vitest UI for interactive testing.
 
-### ✅ Реализовано
+## E2E Test Coverage
 
-- **lib/mechanics/dice.ts** — полное покрытие:
-  - classifyD20: классификация бросков (критические, успех/провал)
-  - applyModifiers: применение модификаторов к броску
-  - rollD20: генерация случайного броска d20
+The E2E tests (`tests/chat-e2e.test.ts`) verify:
 
-- **lib/agents/heuristics.ts** — основные сценарии:
-  - Тривиальные действия без ставок (auto-success)
-  - Действия с опасностью (defer to LLM)
-  - Edge cases (пустой ввод, регистр, нормализация ё→е)
+1. **Complete SSE Flow**
+   - Request → Rules → Roll → Narrative → Final
+   - Event sequence and structure
+   - Message persistence in database
 
-- **lib/agents/character.ts** — логика без БД:
-  - Маппинг навыков на способности
-  - Расчёт модификаторов
-  - Конвертация ability score → modifier
+2. **Skill Check Flow**
+   - Actions requiring checks trigger rolls
+   - Roll events include modifiers
+   - Outcome events show success/failure
 
-- **app/api/health** — smoke-тест:
-  - Проверка статуса ok
-  - Валидация timestamp
+3. **Error Handling**
+   - Invalid input returns 400
+   - Empty content rejected
 
-- **app/api/roll** — smoke-тесты:
-  - Бросок с явными модификаторами
-  - Нулевые и отрицательные модификаторы
-  - Валидация входных данных
-  - Обработка пустого body
+4. **Rate Limiting**
+   - 20 requests/min limit enforced
+   - 429 status with rate limit headers
 
-### ⏳ Требуется добавить
+5. **Session Management**
+   - Auto-create session if not exists
+   - Session persistence
 
-- **Integration tests** с реальной БД:
-  - Character Agent (getOrCreateCharacter, computeSkillModifiers)
-  - Session management
-  - Turn persistence
+## Test Environment
 
-- **E2E tests** для /api/chat:
-  - SSE streaming
-  - Multi-agent pipeline
-  - LLM integration (с моками)
+Tests use environment variables from `vitest.config.ts`:
+- `DATABASE_URL` - Real PostgreSQL connection
+- `OPENROUTER_API_KEY` - Optional, falls back to mock responses
 
-- **Rules Agent tests**:
-  - LLM classifier (с моками OpenRouter)
-  - DC normalization
-  - Fallback behavior
+## Writing New Tests
 
-## Конфигурация
-
-Тесты используют тестовые переменные окружения из `vitest.config.ts`:
-
-```typescript
-env: {
-  DATABASE_URL: "postgresql://test:test@localhost:5432/rpgate_test",
-  OPENROUTER_API_KEY: "test_key_optional",
-}
+### Unit Tests
+Place next to the code being tested:
+```
+lib/mechanics/dice.ts
+lib/mechanics/dice.test.ts
 ```
 
-Для интеграционных тестов с реальной БД потребуется:
-1. Создать тестовую БД: `createdb rpgate_test`
-2. Запустить миграции: `DATABASE_URL=postgresql://... pnpm db:migrate`
+### Integration Tests
+Place in `tests/` directory:
+```
+tests/db.test.ts
+tests/chat-e2e.test.ts
+```
 
-## Best Practices
+### Best Practices
+- Use `beforeEach`/`afterEach` for setup/cleanup
+- Clean up database records after tests
+- Use descriptive test names
+- Set appropriate timeouts for async operations
+- Mock external services when possible
 
-1. **Unit-тесты** для чистых функций (lib/mechanics, lib/agents/heuristics)
-2. **Smoke-тесты** для API endpoints (базовая функциональность)
-3. **Integration-тесты** для работы с БД (требуют setup/teardown)
-4. **E2E-тесты** для полных сценариев (требуют моки LLM)
+## Debugging Tests
 
-## Статистика
+### Verbose Output
+```bash
+pnpm test -- --reporter=verbose
+```
 
-- **Всего тестов**: 38
-- **Test files**: 5
-- **Время выполнения**: ~800ms
-- **Покрытие**: ~40% (основные механики и API)
+### Single Test File
+```bash
+pnpm test tests/chat-e2e.test.ts
+```
+
+### Single Test Case
+```bash
+pnpm test -t "should stream complete SSE response"
+```
+
+### Debug Mode
+```bash
+node --inspect-brk node_modules/.bin/vitest
+```
+
+Then attach debugger in your IDE.
+
+## CI/CD Considerations
+
+For CI pipelines:
+1. Run unit tests first (fast feedback)
+2. Start Next.js server in background
+3. Run E2E tests
+4. Collect coverage reports
+5. Clean up test data
+
+Example GitHub Actions:
+```yaml
+- name: Run unit tests
+  run: pnpm test:unit
+
+- name: Start server
+  run: pnpm dev &
+  
+- name: Wait for server
+  run: npx wait-on http://localhost:3000
+
+- name: Run E2E tests
+  run: pnpm test:e2e
+```

@@ -37,6 +37,7 @@ export async function* streamNarrative(
 	rules: RulesOutput,
 	outcome: { success: boolean; critical: boolean; margin: number } | null,
 	history: { role: "player" | "gm"; content: string }[],
+	timeoutMs = 30000,
 ): AsyncGenerator<string, void, void> {
 	if (!process.env.OPENROUTER_API_KEY) {
 		// Fallback text when key is absent
@@ -57,22 +58,38 @@ export async function* streamNarrative(
 	const system = buildSystemPrompt();
 	const user = buildUserPrompt(input, rules, outcome, history);
 
-	const resp = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-		},
-		body: JSON.stringify({
-			model: "x-ai/grok-4-fast",
-			temperature: 0.7,
-			stream: true,
-			messages: [
-				{ role: "system", content: system },
-				{ role: "user", content: user },
-			],
-		}),
-	});
+	const controller = new AbortController();
+	const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+	let resp: Response;
+	try {
+		resp = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+			},
+			body: JSON.stringify({
+				model: "x-ai/grok-4-fast",
+				temperature: 0.7,
+				stream: true,
+				messages: [
+					{ role: "system", content: system },
+					{ role: "user", content: user },
+				],
+			}),
+			signal: controller.signal,
+		});
+	} catch (err) {
+		clearTimeout(timeoutId);
+		if ((err as Error).name === "AbortError") {
+			yield "Время ожидания истекло, но приключение продолжается...";
+			return;
+		}
+		yield "Происходит заминка, но всё идёт своим чередом.";
+		return;
+	}
+	clearTimeout(timeoutId);
 
 	if (!resp.ok || !resp.body) {
 		yield "Происходит заминка, но всё идёт своим чередом.";
