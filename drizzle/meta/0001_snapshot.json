@@ -1,0 +1,285 @@
+{
+	"id": "73be669c-90da-47c3-a5a4-321af19651cb",
+	"prevId": "26b4fdca-198f-466c-98b0-cd373b5ae8ca",
+	"version": "7",
+	"dialect": "postgresql",
+	"tables": {
+		"public.Message": {
+			"name": "Message",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "serial",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"session_id": {
+					"name": "session_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"role": {
+					"name": "role",
+					"type": "varchar(16)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"content": {
+					"name": "content",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"Message_session_id_Session_id_fk": {
+					"name": "Message_session_id_Session_id_fk",
+					"tableFrom": "Message",
+					"tableTo": "Session",
+					"columnsFrom": ["session_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.Roll": {
+			"name": "Roll",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "serial",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"session_id": {
+					"name": "session_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"value": {
+					"name": "value",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"modified": {
+					"name": "modified",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"category": {
+					"name": "category",
+					"type": "varchar(16)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"modifiers_json": {
+					"name": "modifiers_json",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"Roll_session_id_Session_id_fk": {
+					"name": "Roll_session_id_Session_id_fk",
+					"tableFrom": "Roll",
+					"tableTo": "Session",
+					"columnsFrom": ["session_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.Session": {
+			"name": "Session",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "serial",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"title": {
+					"name": "title",
+					"type": "varchar(200)",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "''"
+				},
+				"locale": {
+					"name": "locale",
+					"type": "varchar(10)",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "'ru'"
+				},
+				"setting": {
+					"name": "setting",
+					"type": "varchar(50)",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "'medieval_fantasy'"
+				},
+				"external_id": {
+					"name": "external_id",
+					"type": "varchar(64)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"player_class": {
+					"name": "player_class",
+					"type": "varchar(100)",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "''"
+				},
+				"player_bio": {
+					"name": "player_bio",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "''"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.Turn": {
+			"name": "Turn",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "serial",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"session_id": {
+					"name": "session_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"player_message_id": {
+					"name": "player_message_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"gm_message_id": {
+					"name": "gm_message_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"meta": {
+					"name": "meta",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "''"
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"Turn_session_id_Session_id_fk": {
+					"name": "Turn_session_id_Session_id_fk",
+					"tableFrom": "Turn",
+					"tableTo": "Session",
+					"columnsFrom": ["session_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				},
+				"Turn_player_message_id_Message_id_fk": {
+					"name": "Turn_player_message_id_Message_id_fk",
+					"tableFrom": "Turn",
+					"tableTo": "Message",
+					"columnsFrom": ["player_message_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				},
+				"Turn_gm_message_id_Message_id_fk": {
+					"name": "Turn_gm_message_id_Message_id_fk",
+					"tableFrom": "Turn",
+					"tableTo": "Message",
+					"columnsFrom": ["gm_message_id"],
+					"columnsTo": ["id"],
+					"onDelete": "set null",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		}
+	},
+	"enums": {},
+	"schemas": {},
+	"sequences": {},
+	"roles": {},
+	"policies": {},
+	"views": {},
+	"_meta": {
+		"columns": {},
+		"schemas": {},
+		"tables": {}
+	}
+}

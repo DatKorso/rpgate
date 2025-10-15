@@ -1,0 +1,27 @@
+{
+	"version": "7",
+	"dialect": "postgresql",
+	"entries": [
+		{
+			"idx": 0,
+			"version": "7",
+			"when": 1760484334533,
+			"tag": "0000_talented_roughhouse",
+			"breakpoints": true
+		},
+		{
+			"idx": 1,
+			"version": "7",
+			"when": 1760485267822,
+			"tag": "0001_fast_legion",
+			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "7",
+			"when": 1760485487018,
+			"tag": "0002_concerned_virginia_dare",
+			"breakpoints": true
+		}
+	]
+}
