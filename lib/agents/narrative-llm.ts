@@ -15,6 +15,18 @@ function buildUserPrompt(
 	rules: RulesOutput,
 	outcome: { success: boolean; critical: boolean; margin: number } | null,
 	history: { role: "player" | "gm"; content: string }[],
+	characterProfile?: {
+		className: string;
+		bio: string;
+		abilities: {
+			str: number;
+			dex: number;
+			con: number;
+			int: number;
+			wis: number;
+			cha: number;
+		};
+	} | null,
 ) {
 	const hist = history
 		.map((m) => `${m.role === "player" ? "Игрок" : "GM"}: ${m.content}`)
@@ -25,11 +37,15 @@ function buildUserPrompt(
 	const ruleText = rules.requiresCheck
 		? `Решение Rules: ${rules.type}${rules.skill ? `, навык=${rules.skill}` : ""}${rules.dc ? `, DC=${rules.dc}` : ""}.`
 		: "Решение Rules: проверка не требуется.";
-	const profile = input.profile
-		? `Класс: ${input.profile.className ?? ""}. Био: ${input.profile.bio ?? ""}.`
-		: "";
 
-	return `История (последние реплики):\n${hist}\n\nДействие игрока: ${input.content}\n${profile}\n${ruleText} ${outcomeText}\nЗадача: опишите результат в каноне мира. Кратко (2-5 предложений).`;
+	let profile = "";
+	if (characterProfile) {
+		const { className, bio, abilities } = characterProfile;
+		const abilityStr = `СИЛ ${abilities.str >= 0 ? "+" : ""}${abilities.str}, ЛОВ ${abilities.dex >= 0 ? "+" : ""}${abilities.dex}, ТЕЛ ${abilities.con >= 0 ? "+" : ""}${abilities.con}, ИНТ ${abilities.int >= 0 ? "+" : ""}${abilities.int}, МДР ${abilities.wis >= 0 ? "+" : ""}${abilities.wis}, ХАР ${abilities.cha >= 0 ? "+" : ""}${abilities.cha}`;
+		profile = `Персонаж: ${className || "Искатель приключений"}. ${bio ? `${bio}. ` : ""}Характеристики: ${abilityStr}.`;
+	}
+
+	return `История (последние реплики):\n${hist}\n\nДействие игрока: ${input.content}\n${profile ? `${profile}\n` : ""}${ruleText} ${outcomeText}\nЗадача: опишите результат в каноне мира. Кратко (2-5 предложений).`;
 }
 
 export async function* streamNarrative(
@@ -37,6 +53,18 @@ export async function* streamNarrative(
 	rules: RulesOutput,
 	outcome: { success: boolean; critical: boolean; margin: number } | null,
 	history: { role: "player" | "gm"; content: string }[],
+	characterProfile?: {
+		className: string;
+		bio: string;
+		abilities: {
+			str: number;
+			dex: number;
+			con: number;
+			int: number;
+			wis: number;
+			cha: number;
+		};
+	} | null,
 	timeoutMs = 30000,
 ): AsyncGenerator<string, void, void> {
 	if (!process.env.OPENROUTER_API_KEY) {
@@ -56,7 +84,7 @@ export async function* streamNarrative(
 	}
 
 	const system = buildSystemPrompt();
-	const user = buildUserPrompt(input, rules, outcome, history);
+	const user = buildUserPrompt(input, rules, outcome, history, characterProfile);
 
 	const controller = new AbortController();
 	const timeoutId = setTimeout(() => controller.abort(), timeoutMs);

@@ -1,5 +1,6 @@
 import { db } from "@/db";
 import { characters, sessions } from "@/db/schema";
+import { generateAbilityScoresForClass } from "@/lib/mechanics/ability-scores";
 import { eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
@@ -77,6 +78,18 @@ export async function POST(req: Request) {
 		.where(eq(characters.sessionId, sess[0].id))
 		.limit(1);
 	if (!existing) {
+		// Generate random ability scores if not provided
+		const abilityMods = parsed.data.abilities
+			? {
+					str: parsed.data.abilities.str,
+					dex: parsed.data.abilities.dex,
+					con: parsed.data.abilities.con,
+					int: parsed.data.abilities.int,
+					wis: parsed.data.abilities.wis,
+					cha: parsed.data.abilities.cha,
+				}
+			: generateAbilityScoresForClass(parsed.data.className ?? "").modifiers;
+
 		const created = (
 			await db
 				.insert(characters)
@@ -84,16 +97,12 @@ export async function POST(req: Request) {
 					sessionId: sess[0].id,
 					className: parsed.data.className ?? "",
 					bio: parsed.data.bio ?? "",
-					...(parsed.data.abilities
-						? {
-								strMod: parsed.data.abilities.str,
-								dexMod: parsed.data.abilities.dex,
-								conMod: parsed.data.abilities.con,
-								intMod: parsed.data.abilities.int,
-								wisMod: parsed.data.abilities.wis,
-								chaMod: parsed.data.abilities.cha,
-							}
-						: {}),
+					strMod: abilityMods.str,
+					dexMod: abilityMods.dex,
+					conMod: abilityMods.con,
+					intMod: abilityMods.int,
+					wisMod: abilityMods.wis,
+					chaMod: abilityMods.cha,
 					...(parsed.data.skills ? { skills: parsed.data.skills } : {}),
 				})
 				.returning()

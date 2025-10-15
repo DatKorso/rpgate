@@ -49,7 +49,6 @@ describe("E2E: /api/chat SSE Flow", () => {
 			body: JSON.stringify({
 				sessionId: testExternalId,
 				content: "Я осматриваюсь вокруг",
-				profile: { className: "Воин", bio: "Храбрый воин" },
 			}),
 		});
 
@@ -121,7 +120,6 @@ describe("E2E: /api/chat SSE Flow", () => {
 			body: JSON.stringify({
 				sessionId: testExternalId,
 				content: "Я пытаюсь взобраться на высокую стену",
-				profile: { className: "Воин", bio: "Храбрый воин" },
 			}),
 		});
 

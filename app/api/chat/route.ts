@@ -2,6 +2,7 @@ import { db } from "@/db";
 import { messages, rolls, sessions, turns } from "@/db/schema";
 import {
 	computeSkillModifiers,
+	getCharacterProfile,
 	getOrCreateCharacter,
 } from "@/lib/agents/character";
 import { streamNarrative } from "@/lib/agents/narrative-llm";
@@ -152,7 +153,10 @@ export async function POST(req: Request) {
 				});
 			}
 
-			// Step 4: Narrative via LLM streaming
+			// Step 4: Get character profile from DB
+			const characterProfile = await getCharacterProfile(session.id);
+
+			// Step 5: Narrative via LLM streaming
 			let fullText = "";
 			try {
 				for await (const delta of streamNarrative(
@@ -160,6 +164,7 @@ export async function POST(req: Request) {
 					rules,
 					outcome,
 					history,
+					characterProfile,
 				)) {
 					fullText += delta;
 					send({ type: "narrative", payload: { textDelta: delta } });
@@ -168,7 +173,7 @@ export async function POST(req: Request) {
 				// on any error, keep whatever accumulated
 			}
 
-			// Step 5: GM finalization
+			// Step 6: GM finalization
 			const final = {
 				text: fullText || "Ход завершён.",
 				summary: "Итог хода сформирован GM",

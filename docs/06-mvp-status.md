@@ -10,8 +10,9 @@
 - Сессии: httpOnly cookie `rpg_session` (90 дней) для сохранения сессии между перезагрузками.
 - Клиент: минимальный Chat UI (страница `/`) — профиль, история, ввод, SSE‑стрим.
 - Тестирование: Vitest настроен (globals, path alias `@/*`, Node.js окружение, тестовые env vars).
-- Тесты (38 passed): 
-  - Unit: `lib/mechanics/dice.test.ts` (11), `lib/agents/heuristics.test.ts` (11), `lib/agents/character.test.ts` (9)
+- Генерация характеристик: автоматический бросок 4d6 drop lowest при создании персонажа; оптимизация под класс.
+- Тесты (61 passed): 
+  - Unit: `lib/mechanics/dice.test.ts` (11), `lib/mechanics/ability-scores.test.ts` (19), `lib/agents/heuristics.test.ts` (11), `lib/agents/character.test.ts` (9)
   - Smoke: `app/api/health/route.test.ts` (2), `app/api/roll/route.test.ts` (5)
 - Команды: `pnpm test` (run once), `pnpm test:watch` (dev mode), `pnpm test:ui` (UI)
 

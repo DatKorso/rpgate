@@ -16,6 +16,7 @@ export default function HomePage() {
 	const [bio, setBio] = useState("");
 	const [busy, setBusy] = useState(false);
 	const [loadingStage, setLoadingStage] = useState<LoadingStage>(null);
+	const [characterKey, setCharacterKey] = useState(0);
 
 	useEffect(() => {
 		fetch("/api/history").then(async (r) => {
@@ -60,6 +61,8 @@ export default function HomePage() {
 			});
 			if (!r.ok) throw new Error(await r.text());
 			setMessages([{ role: "system", content: "✓ Сессия и история очищены" }]);
+			// Force character panel to reload
+			setCharacterKey((prev) => prev + 1);
 		} catch (e) {
 			setMessages((prev) => [
 				...prev,
@@ -210,6 +213,7 @@ export default function HomePage() {
 
 					<div className="space-y-4">
 						<CharacterPanel
+							key={characterKey}
 							onSave={saveProfile}
 							onReset={resetSession}
 							disabled={busy}

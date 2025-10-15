@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Save, Trash2, User } from "lucide-react";
+import { Dices, Save, Trash2, User } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface CharacterPanelProps {
@@ -32,6 +32,7 @@ export function CharacterPanel({
 	const [className, setClassName] = useState("");
 	const [bio, setBio] = useState("");
 	const [saving, setSaving] = useState(false);
+	const [regenerating, setRegenerating] = useState(false);
 	const [character, setCharacter] = useState<Character | null>(null);
 	const [loading, setLoading] = useState(true);
 
@@ -60,6 +61,23 @@ export function CharacterPanel({
 			}
 		} finally {
 			setSaving(false);
+		}
+	};
+
+	const handleRegenerate = async () => {
+		setRegenerating(true);
+		try {
+			const r = await fetch("/api/character/regenerate", {
+				method: "POST",
+			});
+			if (r.ok) {
+				const data = await r.json();
+				if (data.character) {
+					setCharacter(data.character);
+				}
+			}
+		} finally {
+			setRegenerating(false);
 		}
 	};
 
@@ -177,6 +195,16 @@ export function CharacterPanel({
 								>
 									<Save className="h-3.5 w-3.5" />
 									Обновить
+								</Button>
+								<Button
+									onClick={handleRegenerate}
+									disabled={disabled || regenerating}
+									variant="outline"
+									className="w-full"
+									size="sm"
+								>
+									<Dices className="h-3.5 w-3.5" />
+									{regenerating ? "Бросаем кубики..." : "Перебросить характеристики"}
 								</Button>
 							</div>
 						</details>
