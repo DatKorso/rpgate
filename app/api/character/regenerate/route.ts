@@ -12,10 +12,7 @@ import { NextResponse } from "next/server";
 export async function POST() {
 	const externalId = cookies().get("rpg_session")?.value;
 	if (!externalId) {
-		return NextResponse.json(
-			{ error: "No session found" },
-			{ status: 400 },
-		);
+		return NextResponse.json({ error: "No session found" }, { status: 400 });
 	}
 
 	const sess = await db
@@ -25,10 +22,7 @@ export async function POST() {
 		.limit(1);
 
 	if (!sess[0]) {
-		return NextResponse.json(
-			{ error: "Session not found" },
-			{ status: 404 },
-		);
+		return NextResponse.json({ error: "Session not found" }, { status: 404 });
 	}
 
 	const [character] = await db
@@ -38,10 +32,7 @@ export async function POST() {
 		.limit(1);
 
 	if (!character) {
-		return NextResponse.json(
-			{ error: "Character not found" },
-			{ status: 404 },
-		);
+		return NextResponse.json({ error: "Character not found" }, { status: 404 });
 	}
 
 	// Generate new ability scores based on current class

@@ -7,7 +7,7 @@
 - БД: PostgreSQL (self-hosted на VPS) + расширение `pgvector` (позже)
 - ORM/миграции: Drizzle ORM + drizzle-kit
 - Реалтайм: SSE (Server-Sent Events); WebSocket — по необходимости
-- LLM: OpenRouter API (модель `x-ai/grok-4-fast`)
+- LLM: OpenRouter API (модель `meta-llama/llama-4-maverick:free`)
 
 ## Слои
 - UI (`app/`, `components/`): чат, стейт персонажа, броски кубов

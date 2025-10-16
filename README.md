@@ -18,7 +18,7 @@
 - Biome (линт/формат)
 - PostgreSQL (self-hosted) + Drizzle ORM + drizzle-kit
 - Реалтайм: SSE; WebSocket — по необходимости
-- LLM: OpenRouter API (модель `x-ai/grok-4-fast`)
+- LLM: OpenRouter API (модель `meta-llama/llama-4-maverick:free`)
 
 ## Локализация и сеттинг
 - Основная локализация: RU (русский язык)

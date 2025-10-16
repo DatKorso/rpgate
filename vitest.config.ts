@@ -1,20 +1,25 @@
 import path from "node:path";
 import { defineConfig } from "vitest/config";
+import { loadEnv } from "vite";
 
-export default defineConfig({
-	test: {
-		globals: true,
-		environment: "node",
-		include: ["**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
-		exclude: ["node_modules", ".next", "drizzle"],
-		env: {
-			DATABASE_URL: "postgres://korso:147258369@95.217.104.104:41282/rpgate",
-			OPENROUTER_API_KEY: "test_key_optional",
+export default defineConfig(({ mode }) => {
+	const env = loadEnv(mode, process.cwd(), "");
+
+	return {
+		test: {
+			globals: true,
+			environment: "node",
+			include: ["**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+			exclude: ["node_modules", ".next", "drizzle"],
+			env: {
+				DATABASE_URL: env.DATABASE_URL || "",
+				OPENROUTER_API_KEY: env.OPENROUTER_API_KEY || "",
+			},
 		},
-	},
-	resolve: {
-		alias: {
-			"@": path.resolve(__dirname, "."),
+		resolve: {
+			alias: {
+				"@": path.resolve(__dirname, "."),
+			},
 		},
-	},
+	};
 });

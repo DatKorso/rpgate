@@ -204,7 +204,9 @@ export function CharacterPanel({
 									size="sm"
 								>
 									<Dices className="h-3.5 w-3.5" />
-									{regenerating ? "Бросаем кубики..." : "Перебросить характеристики"}
+									{regenerating
+										? "Бросаем кубики..."
+										: "Перебросить характеристики"}
 								</Button>
 							</div>
 						</details>
