@@ -50,7 +50,7 @@ export function ChatMessages({ messages }: ChatMessagesProps) {
 		if (!isUserScrollingRef.current && messagesEndRef.current) {
 			messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
 		}
-	}, [messages]);
+	});
 
 	return (
 		<ScrollArea ref={scrollAreaRef} className="h-[calc(100vh-20rem)] pr-4">
