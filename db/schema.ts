@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import {
+	customType,
 	integer,
 	jsonb,
 	pgTable,
@@ -8,6 +9,23 @@ import {
 	timestamp,
 	varchar,
 } from "drizzle-orm/pg-core";
+
+// Custom type for pgvector
+const vector = customType<{
+	data: number[];
+	driverData: string;
+	config: { dimensions: number };
+}>({
+	dataType(config) {
+		return `vector(${config?.dimensions ?? 1024})`;
+	},
+	toDriver(value: number[]): string {
+		return JSON.stringify(value);
+	},
+	fromDriver(value: string): number[] {
+		return JSON.parse(value);
+	},
+});
 
 export const sessions = pgTable("Session", {
 	id: serial("id").primaryKey(),
@@ -86,3 +104,54 @@ export const characters = pgTable("Character", {
 	createdAt: timestamp("created_at").defaultNow().notNull(),
 	updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+
+export const memoryEntries = pgTable("MemoryEntry", {
+	id: serial("id").primaryKey(),
+	sessionId: integer("session_id")
+		.notNull()
+		.references(() => sessions.id, { onDelete: "cascade" }),
+
+	// Content
+	summary: text("summary").notNull(),
+	fullText: text("full_text").notNull(),
+
+	// Vector (pgvector extension required)
+	embedding: vector("embedding", { dimensions: 1024 }),
+
+	// Metadata
+	type: varchar("type", { length: 20 }).notNull(),
+
+	entities: jsonb("entities")
+		.$type<{
+			locations?: string[];
+			npcs?: string[];
+			items?: string[];
+		}>()
+		.default(sql`'{}'::jsonb`)
+		.notNull(),
+
+	// References
+	turnId: integer("turn_id").references(() => turns.id, {
+		onDelete: "set null",
+	}),
+	turnNumber: integer("turn_number").notNull(),
+
+	createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// TypeScript types for MemoryEntry
+export type MemoryType = "location" | "npc" | "event" | "decision" | "item";
+
+export interface MemoryEntryData {
+	id: number;
+	summary: string;
+	fullText: string;
+	type: MemoryType;
+	entities: {
+		locations?: string[];
+		npcs?: string[];
+		items?: string[];
+	};
+	turnNumber: number;
+	similarity?: number; // cosine similarity (0-1)
+}

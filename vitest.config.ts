@@ -14,6 +14,7 @@ export default defineConfig(({ mode }) => {
 			env: {
 				DATABASE_URL: env.DATABASE_URL || "",
 				OPENROUTER_API_KEY: env.OPENROUTER_API_KEY || "",
+				AITUNNEL_API_KEY: env.AITUNNEL_API_KEY || "test_aitunnel_key",
 			},
 		},
 		resolve: {

@@ -3,11 +3,17 @@ import { CharacterPanel } from "@/components/chat/character-panel";
 import { ChatInput } from "@/components/chat/chat-input";
 import { ChatMessages } from "@/components/chat/chat-messages";
 import { LoadingIndicator } from "@/components/chat/loading-indicator";
+import { MemoryIndicator } from "@/components/chat/memory-indicator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Scroll } from "lucide-react";
 import { useEffect, useState } from "react";
 
-type Msg = { role: "player" | "gm" | "system"; content: string };
+type Msg = {
+	role: "player" | "gm" | "system";
+	content: string;
+	memoryStatus?: "searching" | "found" | "stored";
+	memoryCount?: number;
+};
 type LoadingStage = "rules" | "roll" | "narrative" | "done" | null;
 
 export default function HomePage() {
@@ -111,7 +117,54 @@ export default function HomePage() {
 					if (!line) continue;
 					try {
 						const evt = JSON.parse(line.slice(6));
-						if (evt?.type === "rules") {
+						if (evt?.type === "memory_status") {
+							// Memory heuristic triggered
+							console.log("[UI] Received memory_status:", evt.payload);
+							if (evt.payload.triggered) {
+								console.log("[UI] Adding 'searching' indicator");
+								setMessages((prev) => [
+									...prev,
+									{
+										role: "system",
+										content: "",
+										memoryStatus: "searching",
+									},
+								]);
+							}
+						} else if (evt?.type === "memory_retrieved") {
+							// Memories found
+							const count = evt.payload.count || 0;
+							if (count > 0) {
+								setMessages((prev) => {
+									const copy = [...prev];
+									// Update last memory status message
+									for (let i = copy.length - 1; i >= 0; i--) {
+										if (copy[i].memoryStatus === "searching") {
+											copy[i] = {
+												...copy[i],
+												memoryStatus: "found",
+												memoryCount: count,
+											};
+											break;
+										}
+									}
+									return copy;
+								});
+
+								// Show "stored" indicator after a delay
+								// (memory storage happens async in background)
+								setTimeout(() => {
+									setMessages((prev) => [
+										...prev,
+										{
+											role: "system",
+											content: "",
+											memoryStatus: "stored",
+										},
+									]);
+								}, 2000);
+							}
+						} else if (evt?.type === "rules") {
 							setLoadingStage("roll");
 							const requiresCheck = evt.payload.requiresCheck;
 							if (requiresCheck) {
@@ -163,6 +216,27 @@ export default function HomePage() {
 							});
 						} else if (evt?.type === "final") {
 							setLoadingStage("done");
+							// Show "stored" indicator after response completes
+							// Memory storage happens async in background
+							setTimeout(() => {
+								setMessages((prev) => {
+									// Only show if we haven't already shown it (from memory_retrieved)
+									const alreadyShown = prev
+										.slice(-5)
+										.some((m) => m.memoryStatus === "stored");
+									if (!alreadyShown) {
+										return [
+											...prev,
+											{
+												role: "system",
+												content: "",
+												memoryStatus: "stored",
+											},
+										];
+									}
+									return prev;
+								});
+							}, 1500);
 						}
 					} catch {
 						// ignore parse errors

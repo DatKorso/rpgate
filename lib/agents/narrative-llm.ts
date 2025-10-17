@@ -3,7 +3,7 @@ import {
 	type Message,
 	streamOpenRouter,
 } from "@/lib/llm/openrouter";
-import type { DecideContext, PlayerInput, RulesOutput } from "./protocol";
+import type { MemoryEntryData, PlayerInput, RulesOutput } from "./protocol";
 
 function buildSystemPrompt() {
 	// Compressed prompt (optimized for Grok - no caching support)
@@ -33,6 +33,7 @@ function buildUserPrompt(
 			cha: number;
 		};
 	} | null,
+	memories?: MemoryEntryData[],
 ) {
 	// Compressed history format
 	const hist = history
@@ -54,7 +55,15 @@ function buildUserPrompt(
 		profile = `${className || "Искатель"}. ${bio ? `${bio}. ` : ""}${abilityStr}.`;
 	}
 
-	return `История:\n${hist}\n\nДействие: ${input.content}\n${profile ? `Персонаж: ${profile}\n` : ""}Проверка: ${ruleText}. Исход: ${outcomeText}.\nОпиши результат (2-5 предложений).`;
+	// Format memories for prompt context in Russian
+	let memoriesText = "";
+	if (memories && memories.length > 0) {
+		memoriesText = `\n\nВоспоминания:\n${memories
+			.map((m, i) => `${i + 1}. [Ход ${m.turnNumber}] ${m.summary}`)
+			.join("\n")}`;
+	}
+
+	return `История:\n${hist}\n\nДействие: ${input.content}\n${profile ? `Персонаж: ${profile}\n` : ""}${memoriesText}Проверка: ${ruleText}. Исход: ${outcomeText}.\nОпиши результат (2-5 предложений).`;
 }
 
 export async function* streamNarrative(
@@ -74,6 +83,7 @@ export async function* streamNarrative(
 			cha: number;
 		};
 	} | null,
+	memories?: MemoryEntryData[],
 	timeoutMs = 30000,
 ): AsyncGenerator<string, void, void> {
 	if (!process.env.OPENROUTER_API_KEY) {
@@ -99,6 +109,7 @@ export async function* streamNarrative(
 		outcome,
 		history,
 		characterProfile,
+		memories,
 	);
 
 	const messages: Message[] = [

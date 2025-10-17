@@ -1,3 +1,8 @@
+import type { MemoryEntryData } from "@/db/schema";
+
+// Re-export MemoryEntryData for convenience
+export type { MemoryEntryData };
+
 export type CheckType = "none" | "skill" | "contest" | "save";
 
 export interface PlayerProfile {
@@ -19,8 +24,15 @@ export interface ChatHistoryEntry {
 	content: string;
 }
 
+export interface MemoryContext {
+	memories: MemoryEntryData[];
+	retrievalTimeMs: number;
+	wasRetrieved: boolean;
+}
+
 export interface DecideContext {
 	history?: ChatHistoryEntry[];
+	memories?: MemoryContext;
 }
 
 export interface RulesOutput {

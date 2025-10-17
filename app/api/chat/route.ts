@@ -5,10 +5,16 @@ import {
 	getCharacterProfile,
 	getOrCreateCharacter,
 } from "@/lib/agents/character";
+import { retrieveMemories } from "@/lib/agents/memory";
+import {
+	extractMemoryFromTurn,
+	storeMemory,
+} from "@/lib/agents/memory-storage";
 import { streamNarrative } from "@/lib/agents/narrative-llm";
 import type { DecideContext, PlayerInput } from "@/lib/agents/protocol";
 import { decideCheck } from "@/lib/agents/rules";
 import { type DiceResult, applyModifiers, rollD20 } from "@/lib/mechanics/dice";
+import { analyzeMemoryNeed } from "@/lib/memory/heuristic";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { and, desc, eq, inArray } from "drizzle-orm";
 import { cookies } from "next/headers";
@@ -108,6 +114,10 @@ export async function POST(req: Request) {
 		.reverse()
 		.map((m) => ({ role: m.role as "player" | "gm", content: m.content }));
 
+	// Heuristic Gate: determine if memory retrieval is needed
+	// Note: analyzeMemoryNeed now logs internally
+	const heuristicResult = analyzeMemoryNeed(input.content, history);
+
 	const decideCtx: DecideContext = { history };
 
 	const stream = new ReadableStream<Uint8Array>({
@@ -115,6 +125,43 @@ export async function POST(req: Request) {
 			const encoder = new TextEncoder();
 			const send = (obj: unknown) =>
 				controller.enqueue(encoder.encode(sseChunk(obj)));
+
+			// Memory retrieval (parallel with Rules/Character agents)
+			let memoryRetrievalPromise: Promise<{
+				memories: import("@/db/schema").MemoryEntryData[];
+				retrievalTimeMs: number;
+				query: string;
+			} | null> | null = null;
+
+			if (heuristicResult.shouldRetrieve) {
+				// Start memory retrieval in parallel
+				memoryRetrievalPromise = retrieveMemories(session.id, input.content, {
+					limit: 5,
+					similarityThreshold: 0.7,
+					timeoutMs: 2000,
+				}).catch((err) => {
+					console.error("[Memory] Retrieval error:", err);
+					return null;
+				});
+
+				// Send SSE event for UI
+				console.log("[SSE] Sending memory_status: triggered=true");
+				send({
+					type: "memory_status",
+					payload: {
+						triggered: true,
+						triggers: heuristicResult.triggers,
+						entities: heuristicResult.entities,
+						confidence: heuristicResult.confidence,
+					},
+				});
+			} else {
+				console.log("[SSE] Sending memory_status: triggered=false");
+				send({
+					type: "memory_status",
+					payload: { triggered: false },
+				});
+			}
 
 			// Step 1: Rules decide
 			const rules = await decideCheck(input, decideCtx);
@@ -156,6 +203,33 @@ export async function POST(req: Request) {
 			// Step 4: Get character profile from DB
 			const characterProfile = await getCharacterProfile(session.id);
 
+			// Step 4.5: Wait for memory retrieval (if triggered)
+			let retrievedMemories:
+				| import("@/db/schema").MemoryEntryData[]
+				| undefined = undefined;
+			if (memoryRetrievalPromise) {
+				try {
+					const memoryResult = await memoryRetrievalPromise;
+					if (memoryResult && memoryResult.memories.length > 0) {
+						retrievedMemories = memoryResult.memories;
+						console.log(
+							"[SSE] Sending memory_retrieved: count=",
+							memoryResult.memories.length,
+						);
+						send({
+							type: "memory_retrieved",
+							payload: {
+								count: memoryResult.memories.length,
+								retrievalTimeMs: memoryResult.retrievalTimeMs,
+							},
+						});
+					}
+				} catch (err) {
+					console.error("[Memory] Failed to retrieve memories:", err);
+					// Continue without memories
+				}
+			}
+
 			// Step 5: Narrative via LLM streaming
 			let fullText = "";
 			try {
@@ -165,6 +239,7 @@ export async function POST(req: Request) {
 					outcome,
 					history,
 					characterProfile,
+					retrievedMemories,
 				)) {
 					fullText += delta;
 					send({ type: "narrative", payload: { textDelta: delta } });
@@ -187,12 +262,51 @@ export async function POST(req: Request) {
 					.values({ sessionId: session.id, role: "gm", content: final.text })
 					.returning()
 			)[0];
-			await db.insert(turns).values({
-				sessionId: session.id,
-				playerMessageId: playerMsg.id,
-				gmMessageId: gmMsg.id,
-				meta: "",
-			});
+			const turn = (
+				await db
+					.insert(turns)
+					.values({
+						sessionId: session.id,
+						playerMessageId: playerMsg.id,
+						gmMessageId: gmMsg.id,
+						meta: "",
+					})
+					.returning()
+			)[0];
+
+			// Step 7: Memory Storage (async, fire-and-forget)
+			// Extract and store important memories from this turn
+			const turnNumber = await db
+				.select({ count: turns.id })
+				.from(turns)
+				.where(eq(turns.sessionId, session.id))
+				.then((rows) => rows.length);
+
+			// Fire-and-forget: don't await, don't block response
+			// But send SSE event if memory was stored
+			Promise.resolve()
+				.then(async () => {
+					const extraction = extractMemoryFromTurn(
+						input.content,
+						final.text,
+						turnNumber,
+					);
+					if (extraction.shouldStore) {
+						await storeMemory(session.id, turn.id, turnNumber, extraction);
+						// Note: Can't send SSE after controller.close()
+						// This is just for logging/future webhook support
+						console.log("[Memory] Stored:", {
+							type: extraction.type,
+							turnNumber,
+						});
+						return true;
+					}
+					return false;
+				})
+				.catch((err) => {
+					console.error("[Memory] Storage error:", err);
+					// Silently fail - memory storage should never break main flow
+				});
 
 			controller.close();
 		},

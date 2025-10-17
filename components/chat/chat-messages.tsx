@@ -6,6 +6,8 @@ import { MessageBubble } from "./message-bubble";
 type Message = {
 	role: "player" | "gm" | "system";
 	content: string;
+	memoryStatus?: "searching" | "found" | "stored";
+	memoryCount?: number;
 };
 
 interface ChatMessagesProps {
@@ -71,6 +73,8 @@ export function ChatMessages({ messages }: ChatMessagesProps) {
 								key={`${msg.role}-${i}-${msg.content.slice(0, 20)}`}
 								role={msg.role}
 								content={msg.content}
+								memoryStatus={msg.memoryStatus}
+								memoryCount={msg.memoryCount}
 							/>
 						))}
 						<div ref={messagesEndRef} />
