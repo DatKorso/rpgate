@@ -1,0 +1,41 @@
+Date : 2025-10-18 00:24:54
+Directory : /Users/korso/Documents/cursor/rpgate
+Total : 10 files,  264 codes, 30 comments, 48 blanks, all 342 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| TypeScript |          2 |        359 |         85 |         74 |        518 |
+| YAML       |          1 |         -7 |        -55 |         -6 |        -68 |
+| Markdown   |          7 |        -88 |          0 |        -20 |       -108 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                               | files      | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                  |         10 |        264 |         30 |         48 |        342 |
+| .serena                                                                            |          8 |        -95 |        -55 |        -26 |       -176 |
+| .serena (Files)                                                                    |          1 |         -7 |        -55 |         -6 |        -68 |
+| .serena/memories                                                                   |          7 |        -88 |          0 |        -20 |       -108 |
+| lib                                                                                |          2 |        359 |         85 |         74 |        518 |
+| lib/knowledge                                                                      |          2 |        359 |         85 |         74 |        518 |
++------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                           | language   | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| /Users/korso/Documents/cursor/rpgate/.serena/memories/code_structure.md            | Markdown   |        -11 |          0 |         -2 |        -13 |
+| /Users/korso/Documents/cursor/rpgate/.serena/memories/darwin_util_commands.md      | Markdown   |        -14 |          0 |         -4 |        -18 |
+| /Users/korso/Documents/cursor/rpgate/.serena/memories/project_overview.md          | Markdown   |         -8 |          0 |         -2 |        -10 |
+| /Users/korso/Documents/cursor/rpgate/.serena/memories/style_and_conventions.md     | Markdown   |        -16 |          0 |         -2 |        -18 |
+| /Users/korso/Documents/cursor/rpgate/.serena/memories/suggested_commands.md        | Markdown   |        -19 |          0 |         -7 |        -26 |
+| /Users/korso/Documents/cursor/rpgate/.serena/memories/task_completion_checklist.md | Markdown   |         -8 |          0 |         -1 |         -9 |
+| /Users/korso/Documents/cursor/rpgate/.serena/memories/tech_stack.md                | Markdown   |        -12 |          0 |         -2 |        -14 |
+| /Users/korso/Documents/cursor/rpgate/.serena/project.yml                           | YAML       |         -7 |        -55 |         -6 |        -68 |
+| /Users/korso/Documents/cursor/rpgate/lib/knowledge/entity-utils.ts                 | TypeScript |        113 |         45 |         33 |        191 |
+| /Users/korso/Documents/cursor/rpgate/lib/knowledge/world-persistence.ts            | TypeScript |        246 |         40 |         41 |        327 |
+| Total                                                                              |            |        264 |         30 |         48 |        342 |
++------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+

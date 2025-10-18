@@ -139,6 +139,72 @@ export const memoryEntries = pgTable("MemoryEntry", {
 	createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const worldEntities = pgTable(
+	"WorldEntity",
+	{
+		id: serial("id").primaryKey(),
+		sessionId: integer("session_id")
+			.notNull()
+			.references(() => sessions.id, { onDelete: "cascade" }),
+		type: varchar("type", { length: 20 }).notNull(),
+		name: varchar("name", { length: 200 }).notNull(),
+		properties: jsonb("properties")
+			.$type<Record<string, unknown>>()
+			.default(sql`'{}'::jsonb`)
+			.notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		updatedAt: timestamp("updated_at").defaultNow().notNull(),
+	},
+	(table) => ({
+		uniqueEntity: sql`UNIQUE (${table.sessionId}, ${table.type}, ${table.name})`,
+		typeCheck: sql`CHECK (${table.type} IN ('location', 'npc', 'item', 'faction', 'event'))`,
+	}),
+);
+
+export const worldRelationships = pgTable(
+	"WorldRelationship",
+	{
+		id: serial("id").primaryKey(),
+		sessionId: integer("session_id").notNull(),
+		sourceEntityId: integer("source_entity_id")
+			.notNull()
+			.references(() => worldEntities.id, { onDelete: "cascade" }),
+		targetEntityId: integer("target_entity_id")
+			.notNull()
+			.references(() => worldEntities.id, { onDelete: "cascade" }),
+		relationshipType: varchar("relationship_type", { length: 50 }).notNull(),
+		properties: jsonb("properties")
+			.$type<Record<string, unknown>>()
+			.default(sql`'{}'::jsonb`),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+	},
+	(table) => ({
+		selfRelationshipCheck: sql`CHECK (${table.sourceEntityId} != ${table.targetEntityId})`,
+	}),
+);
+
+export const playerKnowledge = pgTable(
+	"PlayerKnowledge",
+	{
+		id: serial("id").primaryKey(),
+		sessionId: integer("session_id").notNull(),
+		entityId: integer("entity_id")
+			.notNull()
+			.references(() => worldEntities.id, { onDelete: "cascade" }),
+		awarenessLevel: varchar("awareness_level", { length: 20 }).notNull(),
+		knownFacts: jsonb("known_facts")
+			.$type<KnownFact[]>()
+			.default(sql`'[]'::jsonb`)
+			.notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		updatedAt: timestamp("updated_at").defaultNow().notNull(),
+	},
+	(table) => ({
+		uniquePlayerKnowledge: sql`UNIQUE (${table.sessionId}, ${table.entityId})`,
+		awarenessLevelCheck: sql`CHECK (${table.awarenessLevel} IN ('unaware', 'heard_of', 'met', 'familiar'))`,
+	}),
+);
+
 // TypeScript types for MemoryEntry
 export type MemoryType = "location" | "npc" | "event" | "decision" | "item";
 
@@ -154,4 +220,26 @@ export interface MemoryEntryData {
 	};
 	turnNumber: number;
 	similarity?: number; // cosine similarity (0-1)
+}
+
+// TypeScript types for WorldEntity
+export type WorldEntityType = "location" | "npc" | "item" | "faction" | "event";
+
+// TypeScript types for PlayerKnowledge
+export type AwarenessLevel = "unaware" | "heard_of" | "met" | "familiar";
+export type KnowledgeSource =
+	| "arrived"
+	| "observation"
+	| "heard_from_npc"
+	| "read_in_book"
+	| "met_personally"
+	| "owns"
+	| "used";
+
+export interface KnownFact {
+	property: string;
+	value: unknown;
+	learnedAt: number;
+	source: KnowledgeSource;
+	confidence?: "certain" | "likely" | "rumor";
 }

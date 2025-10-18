@@ -1,4 +1,12 @@
 import {
+	type PlayerKnowledgeContext,
+	formatPlayerKnowledgeForLLM,
+} from "@/lib/knowledge/player-loader";
+import {
+	type WorldKnowledgeContext,
+	formatWorldKnowledgeForLLM,
+} from "@/lib/knowledge/world-loader";
+import {
 	DEFAULT_MODEL,
 	type Message,
 	streamOpenRouter,
@@ -34,6 +42,8 @@ function buildUserPrompt(
 		};
 	} | null,
 	memories?: MemoryEntryData[],
+	worldKnowledge?: WorldKnowledgeContext,
+	playerKnowledge?: PlayerKnowledgeContext,
 ) {
 	// Compressed history format
 	const hist = history
@@ -63,7 +73,35 @@ function buildUserPrompt(
 			.join("\n")}`;
 	}
 
-	return `История:\n${hist}\n\nДействие: ${input.content}\n${profile ? `Персонаж: ${profile}\n` : ""}${memoriesText}Проверка: ${ruleText}. Исход: ${outcomeText}.\nОпиши результат (2-5 предложений).`;
+	// Format world knowledge (GM only)
+	let worldKnowledgeText = "";
+	if (worldKnowledge && worldKnowledge.entities.length > 0) {
+		worldKnowledgeText = `\n\n${formatWorldKnowledgeForLLM(worldKnowledge)}`;
+	}
+
+	// Format player knowledge (what PC knows)
+	let playerKnowledgeText = "";
+	if (playerKnowledge && playerKnowledge.knownEntities.length > 0) {
+		playerKnowledgeText = `\n\n${formatPlayerKnowledgeForLLM(playerKnowledge)}`;
+	}
+
+	// Add knowledge boundary instructions if knowledge is present
+	let knowledgeInstructions = "";
+	if (worldKnowledgeText || playerKnowledgeText) {
+		knowledgeInstructions = `\n\n=== ИНСТРУКЦИЯ ===
+Используй World Knowledge для понимания мира и создания консистентного повествования.
+
+КРИТИЧЕСКИ ВАЖНО: Персонаж может использовать только информацию из раздела "PLAYER CHARACTER KNOWLEDGE"!
+
+Если персонаж пытается вспомнить что-то, чего нет в его знаниях:
+- Скажи, что он не знает этого
+- Предложи способ узнать (спросить у NPC, исследовать, и т.д.)
+
+Если NPC знает информацию из World Knowledge, он может рассказать её персонажу.
+После этого информация будет добавлена в Player Knowledge автоматически.`;
+	}
+
+	return `История:\n${hist}\n\nДействие: ${input.content}\n${profile ? `Персонаж: ${profile}\n` : ""}${memoriesText}${worldKnowledgeText}${playerKnowledgeText}${knowledgeInstructions}\nПроверка: ${ruleText}. Исход: ${outcomeText}.\nОпиши результат (2-5 предложений).`;
 }
 
 export async function* streamNarrative(
@@ -84,6 +122,8 @@ export async function* streamNarrative(
 		};
 	} | null,
 	memories?: MemoryEntryData[],
+	worldKnowledge?: WorldKnowledgeContext,
+	playerKnowledge?: PlayerKnowledgeContext,
 	timeoutMs = 30000,
 ): AsyncGenerator<string, void, void> {
 	if (!process.env.OPENROUTER_API_KEY) {
@@ -110,6 +150,8 @@ export async function* streamNarrative(
 		history,
 		characterProfile,
 		memories,
+		worldKnowledge,
+		playerKnowledge,
 	);
 
 	const messages: Message[] = [

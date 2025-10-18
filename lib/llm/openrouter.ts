@@ -21,12 +21,12 @@
  * Default LLM model for all agents
  *
  * Options:
- * - "meta-llama/llama-4-maverick:free" - Free, fast, but no JSON mode
+ * - "x-ai/grok-4-fast" - Free, fast, but no JSON mode
  * - "x-ai/grok-4-fast" - Fast, good quality, no caching
  * - "anthropic/claude-3-haiku" - Cheap, supports caching
  * - "anthropic/claude-3-5-sonnet" - Best quality, supports caching
  */
-export const DEFAULT_MODEL = "meta-llama/llama-4-maverick:free";
+export const DEFAULT_MODEL = "x-ai/grok-4-fast";
 
 export interface Message {
 	role: "system" | "user" | "assistant";

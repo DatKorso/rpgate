@@ -1,0 +1,129 @@
+"filename", "language", "JSON", "MS SQL", "YAML", "TypeScript", "JSON with Comments", "Markdown", "TypeScript JSX", "JavaScript", "CSS", "comment", "blank", "total"
+"/Users/korso/Documents/cursor/rpgate/.biome.json", "JSON", 17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 18
+"/Users/korso/Documents/cursor/rpgate/.serena/memories/code_structure.md", "Markdown", 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 2, 13
+"/Users/korso/Documents/cursor/rpgate/.serena/memories/darwin_util_commands.md", "Markdown", 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 4, 18
+"/Users/korso/Documents/cursor/rpgate/.serena/memories/project_overview.md", "Markdown", 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 2, 10
+"/Users/korso/Documents/cursor/rpgate/.serena/memories/style_and_conventions.md", "Markdown", 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 2, 18
+"/Users/korso/Documents/cursor/rpgate/.serena/memories/suggested_commands.md", "Markdown", 0, 0, 0, 0, 0, 19, 0, 0, 0, 0, 7, 26
+"/Users/korso/Documents/cursor/rpgate/.serena/memories/task_completion_checklist.md", "Markdown", 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 1, 9
+"/Users/korso/Documents/cursor/rpgate/.serena/memories/tech_stack.md", "Markdown", 0, 0, 0, 0, 0, 12, 0, 0, 0, 0, 2, 14
+"/Users/korso/Documents/cursor/rpgate/.serena/project.yml", "YAML", 0, 0, 7, 0, 0, 0, 0, 0, 0, 55, 6, 68
+"/Users/korso/Documents/cursor/rpgate/AGENTS.md", "Markdown", 0, 0, 0, 0, 0, 45, 0, 0, 0, 0, 8, 53
+"/Users/korso/Documents/cursor/rpgate/README.md", "Markdown", 0, 0, 0, 0, 0, 45, 0, 0, 0, 0, 9, 54
+"/Users/korso/Documents/cursor/rpgate/app/api/character/regenerate/route.ts", "TypeScript", 0, 0, 0, 50, 0, 0, 0, 0, 0, 6, 9, 65
+"/Users/korso/Documents/cursor/rpgate/app/api/character/route.ts", "TypeScript", 0, 0, 0, 122, 0, 0, 0, 0, 0, 2, 14, 138
+"/Users/korso/Documents/cursor/rpgate/app/api/chat/route.ts", "TypeScript", 0, 0, 0, 412, 0, 0, 0, 0, 0, 38, 38, 488
+"/Users/korso/Documents/cursor/rpgate/app/api/health/route.test.ts", "TypeScript", 0, 0, 0, 19, 0, 0, 0, 0, 0, 0, 5, 24
+"/Users/korso/Documents/cursor/rpgate/app/api/health/route.ts", "TypeScript", 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 2, 6
+"/Users/korso/Documents/cursor/rpgate/app/api/history/route.ts", "TypeScript", 0, 0, 0, 31, 0, 0, 0, 0, 0, 0, 2, 33
+"/Users/korso/Documents/cursor/rpgate/app/api/memory/metrics/route.ts", "TypeScript", 0, 0, 0, 18, 0, 0, 0, 0, 0, 6, 7, 31
+"/Users/korso/Documents/cursor/rpgate/app/api/roll/route.test.ts", "TypeScript", 0, 0, 0, 92, 0, 0, 0, 0, 0, 1, 16, 109
+"/Users/korso/Documents/cursor/rpgate/app/api/roll/route.ts", "TypeScript", 0, 0, 0, 75, 0, 0, 0, 0, 0, 4, 6, 85
+"/Users/korso/Documents/cursor/rpgate/app/api/session/reset/route.ts", "TypeScript", 0, 0, 0, 29, 0, 0, 0, 0, 0, 1, 6, 36
+"/Users/korso/Documents/cursor/rpgate/app/globals.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 56, 0, 4, 60
+"/Users/korso/Documents/cursor/rpgate/app/layout.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 4, 19
+"/Users/korso/Documents/cursor/rpgate/app/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 279, 0, 0, 10, 12, 301
+"/Users/korso/Documents/cursor/rpgate/components/chat/character-panel.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 246, 0, 0, 1, 9, 256
+"/Users/korso/Documents/cursor/rpgate/components/chat/chat-input.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 42, 0, 0, 0, 6, 48
+"/Users/korso/Documents/cursor/rpgate/components/chat/chat-messages.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 72, 0, 0, 4, 11, 87
+"/Users/korso/Documents/cursor/rpgate/components/chat/dice-result.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 67, 0, 0, 0, 6, 73
+"/Users/korso/Documents/cursor/rpgate/components/chat/loading-indicator.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 55, 0, 0, 0, 6, 61
+"/Users/korso/Documents/cursor/rpgate/components/chat/memory-indicator.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 9, 89
+"/Users/korso/Documents/cursor/rpgate/components/chat/message-bubble.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 68, 0, 0, 2, 8, 78
+"/Users/korso/Documents/cursor/rpgate/components/chat/skill-selector.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 62, 0, 0, 0, 4, 66
+"/Users/korso/Documents/cursor/rpgate/components/ui/avatar.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 43, 0, 0, 0, 5, 48
+"/Users/korso/Documents/cursor/rpgate/components/ui/badge.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 5, 38
+"/Users/korso/Documents/cursor/rpgate/components/ui/button.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 52, 0, 0, 0, 5, 57
+"/Users/korso/Documents/cursor/rpgate/components/ui/card.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 75, 0, 0, 0, 8, 83
+"/Users/korso/Documents/cursor/rpgate/components/ui/input.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 21, 0, 0, 0, 4, 25
+"/Users/korso/Documents/cursor/rpgate/components/ui/scroll-area.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 42, 0, 0, 0, 4, 46
+"/Users/korso/Documents/cursor/rpgate/components/ui/select.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 146, 0, 0, 0, 15, 161
+"/Users/korso/Documents/cursor/rpgate/db/index.ts", "TypeScript", 0, 0, 0, 10, 0, 0, 0, 0, 0, 1, 3, 14
+"/Users/korso/Documents/cursor/rpgate/db/schema.ts", "TypeScript", 0, 0, 0, 178, 0, 0, 0, 0, 0, 8, 19, 205
+"/Users/korso/Documents/cursor/rpgate/docs/01-overview.md", "Markdown", 0, 0, 0, 0, 0, 99, 0, 0, 0, 0, 35, 134
+"/Users/korso/Documents/cursor/rpgate/docs/02-game-mechanics.md", "Markdown", 0, 0, 0, 0, 0, 267, 0, 0, 0, 0, 52, 319
+"/Users/korso/Documents/cursor/rpgate/docs/03-architecture.md", "Markdown", 0, 0, 0, 0, 0, 74, 0, 0, 0, 0, 16, 90
+"/Users/korso/Documents/cursor/rpgate/docs/04-agents.md", "Markdown", 0, 0, 0, 0, 0, 96, 0, 0, 0, 0, 21, 117
+"/Users/korso/Documents/cursor/rpgate/docs/05-memory.md", "Markdown", 0, 0, 0, 0, 0, 31, 0, 0, 0, 0, 8, 39
+"/Users/korso/Documents/cursor/rpgate/docs/06-mvp-status.md", "Markdown", 0, 0, 0, 0, 0, 29, 0, 0, 0, 0, 4, 33
+"/Users/korso/Documents/cursor/rpgate/docs/07-ui-components.md", "Markdown", 0, 0, 0, 0, 0, 98, 0, 0, 0, 0, 27, 125
+"/Users/korso/Documents/cursor/rpgate/docs/08-ui-layout.md", "Markdown", 0, 0, 0, 0, 0, 166, 0, 0, 0, 0, 30, 196
+"/Users/korso/Documents/cursor/rpgate/docs/09-component-showcase.md", "Markdown", 0, 0, 0, 0, 0, 337, 0, 0, 0, 0, 82, 419
+"/Users/korso/Documents/cursor/rpgate/docs/10-rate-limiting.md", "Markdown", 0, 0, 0, 0, 0, 59, 0, 0, 0, 0, 23, 82
+"/Users/korso/Documents/cursor/rpgate/docs/11-testing.md", "Markdown", 0, 0, 0, 0, 0, 161, 0, 0, 0, 0, 50, 211
+"/Users/korso/Documents/cursor/rpgate/docs/12-character-generation.md", "Markdown", 0, 0, 0, 0, 0, 189, 0, 0, 0, 0, 73, 262
+"/Users/korso/Documents/cursor/rpgate/docs/13-session-management.md", "Markdown", 0, 0, 0, 0, 0, 230, 0, 0, 0, 0, 79, 309
+"/Users/korso/Documents/cursor/rpgate/docs/14-chat-ux.md", "Markdown", 0, 0, 0, 0, 0, 284, 0, 0, 0, 0, 97, 381
+"/Users/korso/Documents/cursor/rpgate/docs/15-memory-logging.md", "Markdown", 0, 0, 0, 0, 0, 219, 0, 0, 0, 0, 55, 274
+"/Users/korso/Documents/cursor/rpgate/docs/16-grok-optimization.md", "Markdown", 0, 0, 0, 0, 0, 224, 0, 0, 0, 0, 78, 302
+"/Users/korso/Documents/cursor/rpgate/docs/17-model-selection.md", "Markdown", 0, 0, 0, 0, 0, 211, 0, 0, 0, 0, 62, 273
+"/Users/korso/Documents/cursor/rpgate/docs/18-memory-performance.md", "Markdown", 0, 0, 0, 0, 0, 167, 0, 0, 0, 0, 61, 228
+"/Users/korso/Documents/cursor/rpgate/docs/19-memory-ui-indicators.md", "Markdown", 0, 0, 0, 0, 0, 271, 0, 0, 0, 0, 85, 356
+"/Users/korso/Documents/cursor/rpgate/docs/20-memory-context-analysis.md", "Markdown", 0, 0, 0, 0, 0, 283, 0, 0, 0, 0, 88, 371
+"/Users/korso/Documents/cursor/rpgate/docs/21-hybrid-memory-search.md", "Markdown", 0, 0, 0, 0, 0, 353, 0, 0, 0, 0, 101, 454
+"/Users/korso/Documents/cursor/rpgate/docs/22-knowledge-graph-design.md", "Markdown", 0, 0, 0, 0, 0, 422, 0, 0, 0, 0, 160, 582
+"/Users/korso/Documents/cursor/rpgate/drizzle.config.ts", "TypeScript", 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 2, 11
+"/Users/korso/Documents/cursor/rpgate/drizzle/0000_talented_roughhouse.sql", "MS SQL", 0, 36, 0, 0, 0, 0, 0, 0, 0, 4, 0, 40
+"/Users/korso/Documents/cursor/rpgate/drizzle/0001_fast_legion.sql", "MS SQL", 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3
+"/Users/korso/Documents/cursor/rpgate/drizzle/0002_concerned_virginia_dare.sql", "MS SQL", 0, 18, 0, 0, 0, 0, 0, 0, 0, 1, 0, 19
+"/Users/korso/Documents/cursor/rpgate/drizzle/0003_demonic_squadron_sinister.sql", "MS SQL", 0, 17, 0, 0, 0, 0, 0, 0, 0, 6, 0, 23
+"/Users/korso/Documents/cursor/rpgate/drizzle/0004_clear_joshua_kane.sql", "MS SQL", 0, 30, 0, 0, 0, 0, 0, 0, 0, 2, 0, 32
+"/Users/korso/Documents/cursor/rpgate/drizzle/meta/0000_snapshot.json", "JSON", 265, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 266
+"/Users/korso/Documents/cursor/rpgate/drizzle/meta/0001_snapshot.json", "JSON", 285, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 286
+"/Users/korso/Documents/cursor/rpgate/drizzle/meta/0002_snapshot.json", "JSON", 411, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 412
+"/Users/korso/Documents/cursor/rpgate/drizzle/meta/0003_snapshot.json", "JSON", 537, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 537
+"/Users/korso/Documents/cursor/rpgate/drizzle/meta/0004_snapshot.json", "JSON", 693, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 693
+"/Users/korso/Documents/cursor/rpgate/drizzle/meta/_journal.json", "JSON", 41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 41
+"/Users/korso/Documents/cursor/rpgate/env.ts", "TypeScript", 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 3, 16
+"/Users/korso/Documents/cursor/rpgate/lib/agents/character.test.ts", "TypeScript", 0, 0, 0, 84, 0, 0, 0, 0, 0, 2, 14, 100
+"/Users/korso/Documents/cursor/rpgate/lib/agents/character.ts", "TypeScript", 0, 0, 0, 134, 0, 0, 0, 0, 0, 6, 12, 152
+"/Users/korso/Documents/cursor/rpgate/lib/agents/heuristics.test.ts", "TypeScript", 0, 0, 0, 75, 0, 0, 0, 0, 0, 0, 23, 98
+"/Users/korso/Documents/cursor/rpgate/lib/agents/heuristics.ts", "TypeScript", 0, 0, 0, 69, 0, 0, 0, 0, 0, 4, 9, 82
+"/Users/korso/Documents/cursor/rpgate/lib/agents/memory-agent.test.ts", "TypeScript", 0, 0, 0, 758, 0, 0, 0, 0, 0, 16, 94, 868
+"/Users/korso/Documents/cursor/rpgate/lib/agents/memory-agent.ts", "TypeScript", 0, 0, 0, 297, 0, 0, 0, 0, 0, 57, 51, 405
+"/Users/korso/Documents/cursor/rpgate/lib/agents/memory-storage.test.ts", "TypeScript", 0, 0, 0, 225, 0, 0, 0, 0, 0, 15, 64, 304
+"/Users/korso/Documents/cursor/rpgate/lib/agents/memory-storage.ts", "TypeScript", 0, 0, 0, 276, 0, 0, 0, 0, 0, 66, 51, 393
+"/Users/korso/Documents/cursor/rpgate/lib/agents/memory.test.ts", "TypeScript", 0, 0, 0, 292, 0, 0, 0, 0, 0, 22, 48, 362
+"/Users/korso/Documents/cursor/rpgate/lib/agents/memory.ts", "TypeScript", 0, 0, 0, 185, 0, 0, 0, 0, 0, 33, 25, 243
+"/Users/korso/Documents/cursor/rpgate/lib/agents/narrative-llm.ts", "TypeScript", 0, 0, 0, 121, 0, 0, 0, 0, 0, 4, 12, 137
+"/Users/korso/Documents/cursor/rpgate/lib/agents/protocol.ts", "TypeScript", 0, 0, 0, 92, 0, 0, 0, 0, 0, 7, 23, 122
+"/Users/korso/Documents/cursor/rpgate/lib/agents/rules-llm.ts", "TypeScript", 0, 0, 0, 90, 0, 0, 0, 0, 0, 4, 17, 111
+"/Users/korso/Documents/cursor/rpgate/lib/agents/rules.ts", "TypeScript", 0, 0, 0, 43, 0, 0, 0, 0, 0, 2, 4, 49
+"/Users/korso/Documents/cursor/rpgate/lib/agents/world-knowledge-updater.ts", "TypeScript", 0, 0, 0, 192, 0, 0, 0, 0, 0, 18, 38, 248
+"/Users/korso/Documents/cursor/rpgate/lib/llm/openrouter.ts", "TypeScript", 0, 0, 0, 125, 0, 0, 0, 0, 0, 50, 20, 195
+"/Users/korso/Documents/cursor/rpgate/lib/mechanics/ability-scores.test.ts", "TypeScript", 0, 0, 0, 142, 0, 0, 0, 0, 0, 9, 34, 185
+"/Users/korso/Documents/cursor/rpgate/lib/mechanics/ability-scores.ts", "TypeScript", 0, 0, 0, 146, 0, 0, 0, 0, 0, 31, 12, 189
+"/Users/korso/Documents/cursor/rpgate/lib/mechanics/dice.test.ts", "TypeScript", 0, 0, 0, 95, 0, 0, 0, 0, 0, 0, 18, 113
+"/Users/korso/Documents/cursor/rpgate/lib/mechanics/dice.ts", "TypeScript", 0, 0, 0, 36, 0, 0, 0, 0, 0, 0, 6, 42
+"/Users/korso/Documents/cursor/rpgate/lib/memory/config.ts", "TypeScript", 0, 0, 0, 31, 0, 0, 0, 0, 0, 43, 20, 94
+"/Users/korso/Documents/cursor/rpgate/lib/memory/embeddings.test.ts", "TypeScript", 0, 0, 0, 195, 0, 0, 0, 0, 0, 8, 47, 250
+"/Users/korso/Documents/cursor/rpgate/lib/memory/embeddings.ts", "TypeScript", 0, 0, 0, 122, 0, 0, 0, 0, 0, 29, 24, 175
+"/Users/korso/Documents/cursor/rpgate/lib/memory/heuristic.test.ts", "TypeScript", 0, 0, 0, 233, 0, 0, 0, 0, 0, 0, 36, 269
+"/Users/korso/Documents/cursor/rpgate/lib/memory/heuristic.ts", "TypeScript", 0, 0, 0, 148, 0, 0, 0, 0, 0, 25, 23, 196
+"/Users/korso/Documents/cursor/rpgate/lib/memory/logger.test.ts", "TypeScript", 0, 0, 0, 484, 0, 0, 0, 0, 0, 16, 97, 597
+"/Users/korso/Documents/cursor/rpgate/lib/memory/logger.ts", "TypeScript", 0, 0, 0, 409, 0, 0, 0, 0, 0, 49, 52, 510
+"/Users/korso/Documents/cursor/rpgate/lib/rate-limit.ts", "TypeScript", 0, 0, 0, 63, 0, 0, 0, 0, 0, 19, 11, 93
+"/Users/korso/Documents/cursor/rpgate/lib/utils.ts", "TypeScript", 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 2, 7
+"/Users/korso/Documents/cursor/rpgate/middleware.ts", "TypeScript", 0, 0, 0, 21, 0, 0, 0, 0, 0, 0, 3, 24
+"/Users/korso/Documents/cursor/rpgate/next-env.d.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 2, 6
+"/Users/korso/Documents/cursor/rpgate/next.config.mjs", "JavaScript", 0, 0, 0, 0, 0, 0, 0, 4, 0, 1, 2, 7
+"/Users/korso/Documents/cursor/rpgate/package.json", "JSON", 57, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 58
+"/Users/korso/Documents/cursor/rpgate/pnpm-lock.yaml", "YAML", 0, 0, 3024, 0, 0, 0, 0, 0, 0, 0, 736, 3760
+"/Users/korso/Documents/cursor/rpgate/pnpm-workspace.yaml", "YAML", 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1, 5
+"/Users/korso/Documents/cursor/rpgate/postcss.config.mjs", "JavaScript", 0, 0, 0, 0, 0, 0, 0, 7, 0, 1, 2, 10
+"/Users/korso/Documents/cursor/rpgate/scripts/optimize-memory-index.sql", "MS SQL", 0, 60, 0, 0, 0, 0, 0, 0, 0, 48, 12, 120
+"/Users/korso/Documents/cursor/rpgate/scripts/test-heuristic-patterns.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/korso/Documents/cursor/rpgate/scripts/test-memory.ts", "TypeScript", 0, 0, 0, 171, 0, 0, 0, 0, 0, 22, 25, 218
+"/Users/korso/Documents/cursor/rpgate/scripts/test-retrieval.ts", "TypeScript", 0, 0, 0, 31, 0, 0, 0, 0, 0, 3, 8, 42
+"/Users/korso/Documents/cursor/rpgate/scripts/verify-knowledge-tables.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/korso/Documents/cursor/rpgate/tailwind.config.ts", "TypeScript", 0, 0, 0, 54, 0, 0, 0, 0, 0, 0, 3, 57
+"/Users/korso/Documents/cursor/rpgate/tests/README.md", "Markdown", 0, 0, 0, 0, 0, 119, 0, 0, 0, 0, 41, 160
+"/Users/korso/Documents/cursor/rpgate/tests/chat-e2e.test.ts", "TypeScript", 0, 0, 0, 193, 0, 0, 0, 0, 0, 19, 45, 257
+"/Users/korso/Documents/cursor/rpgate/tests/db.test.ts", "TypeScript", 0, 0, 0, 81, 0, 0, 0, 0, 0, 2, 15, 98
+"/Users/korso/Documents/cursor/rpgate/tests/memory-agent-integration.test.ts", "TypeScript", 0, 0, 0, 647, 0, 0, 0, 0, 0, 48, 83, 778
+"/Users/korso/Documents/cursor/rpgate/tests/memory-integration.test.ts", "TypeScript", 0, 0, 0, 427, 0, 0, 0, 0, 0, 55, 73, 555
+"/Users/korso/Documents/cursor/rpgate/tests/memory-performance.README.md", "Markdown", 0, 0, 0, 0, 0, 74, 0, 0, 0, 0, 26, 100
+"/Users/korso/Documents/cursor/rpgate/tests/memory-performance.test.ts", "TypeScript", 0, 0, 0, 271, 0, 0, 0, 0, 0, 25, 67, 363
+"/Users/korso/Documents/cursor/rpgate/tsconfig.json", "JSON with Comments", 0, 0, 0, 0, 31, 0, 0, 0, 0, 0, 1, 32
+"/Users/korso/Documents/cursor/rpgate/vitest.config.ts", "TypeScript", 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 3, 27
+"Total", "-", 2306, 164, 3035, 8149, 31, 4641, 1398, 11, 56, 915, 3629, 24335

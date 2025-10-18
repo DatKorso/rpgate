@@ -1,0 +1,185 @@
+Date : 2025-10-18 00:24:54
+Directory : /Users/korso/Documents/cursor/rpgate
+Total : 121 files,  20055 codes, 945 comments, 3677 blanks, all 24677 lines
+
+Languages
++--------------------+------------+------------+------------+------------+------------+
+| language           | files      | code       | comment    | blank      | total      |
++--------------------+------------+------------+------------+------------+------------+
+| TypeScript         |         58 |      8,508 |        865 |      1,422 |     10,795 |
+| Markdown           |         26 |      4,553 |          0 |      1,371 |      5,924 |
+| YAML               |          2 |      3,028 |          0 |        737 |      3,765 |
+| JSON               |          8 |      2,306 |          0 |          5 |      2,311 |
+| TypeScript JSX     |         17 |      1,398 |         17 |        121 |      1,536 |
+| MS SQL             |          6 |        164 |         61 |         12 |        237 |
+| CSS                |          1 |         56 |          0 |          4 |         60 |
+| JSON with Comments |          1 |         31 |          0 |          1 |         32 |
+| JavaScript         |          2 |         11 |          2 |          4 |         17 |
++--------------------+------------+------------+------------+------------+------------+
+
+Directories
++---------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                            | files      | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                               |        121 |     20,055 |        945 |      3,677 |     24,677 |
+| . (Files)                                                                       |         15 |      3,355 |          6 |        777 |      4,138 |
+| app                                                                             |         13 |      1,202 |         68 |        125 |      1,395 |
+| app (Files)                                                                     |          3 |        350 |         10 |         20 |        380 |
+| app/api                                                                         |         10 |        852 |         58 |        105 |      1,015 |
+| app/api/character                                                               |          2 |        172 |          8 |         23 |        203 |
+| app/api/character (Files)                                                       |          1 |        122 |          2 |         14 |        138 |
+| app/api/character/regenerate                                                    |          1 |         50 |          6 |          9 |         65 |
+| app/api/chat                                                                    |          1 |        412 |         38 |         38 |        488 |
+| app/api/health                                                                  |          2 |         23 |          0 |          7 |         30 |
+| app/api/history                                                                 |          1 |         31 |          0 |          2 |         33 |
+| app/api/memory                                                                  |          1 |         18 |          6 |          7 |         31 |
+| app/api/memory/metrics                                                          |          1 |         18 |          6 |          7 |         31 |
+| app/api/roll                                                                    |          2 |        167 |          5 |         22 |        194 |
+| app/api/session                                                                 |          1 |         29 |          1 |          6 |         36 |
+| app/api/session/reset                                                           |          1 |         29 |          1 |          6 |         36 |
+| components                                                                      |         15 |      1,104 |          7 |        105 |      1,216 |
+| components/chat                                                                 |          8 |        692 |          7 |         59 |        758 |
+| components/ui                                                                   |          7 |        412 |          0 |         46 |        458 |
+| db                                                                              |          2 |        188 |          9 |         22 |        219 |
+| docs                                                                            |         22 |      4,270 |          0 |      1,287 |      5,557 |
+| drizzle                                                                         |         11 |      2,336 |         13 |          3 |      2,352 |
+| drizzle (Files)                                                                 |          5 |        104 |         13 |          0 |        117 |
+| drizzle/meta                                                                    |          6 |      2,232 |          0 |          3 |      2,235 |
+| lib                                                                             |         31 |      5,526 |        620 |        961 |      7,107 |
+| lib (Files)                                                                     |          2 |         68 |         19 |         13 |        100 |
+| lib/agents                                                                      |         15 |      2,933 |        256 |        485 |      3,674 |
+| lib/knowledge                                                                   |          2 |        359 |         85 |         74 |        518 |
+| lib/llm                                                                         |          1 |        125 |         50 |         20 |        195 |
+| lib/mechanics                                                                   |          4 |        419 |         40 |         70 |        529 |
+| lib/memory                                                                      |          7 |      1,622 |        170 |        299 |      2,091 |
+| scripts                                                                         |          5 |        262 |         73 |         47 |        382 |
+| tests                                                                           |          7 |      1,812 |        149 |        350 |      2,311 |
++---------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++---------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| filename                                                                        | language           | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| /Users/korso/Documents/cursor/rpgate/.biome.json                                | JSON               |         17 |          0 |          1 |         18 |
+| /Users/korso/Documents/cursor/rpgate/AGENTS.md                                  | Markdown           |         45 |          0 |          8 |         53 |
+| /Users/korso/Documents/cursor/rpgate/README.md                                  | Markdown           |         45 |          0 |          9 |         54 |
+| /Users/korso/Documents/cursor/rpgate/app/api/character/regenerate/route.ts      | TypeScript         |         50 |          6 |          9 |         65 |
+| /Users/korso/Documents/cursor/rpgate/app/api/character/route.ts                 | TypeScript         |        122 |          2 |         14 |        138 |
+| /Users/korso/Documents/cursor/rpgate/app/api/chat/route.ts                      | TypeScript         |        412 |         38 |         38 |        488 |
+| /Users/korso/Documents/cursor/rpgate/app/api/health/route.test.ts               | TypeScript         |         19 |          0 |          5 |         24 |
+| /Users/korso/Documents/cursor/rpgate/app/api/health/route.ts                    | TypeScript         |          4 |          0 |          2 |          6 |
+| /Users/korso/Documents/cursor/rpgate/app/api/history/route.ts                   | TypeScript         |         31 |          0 |          2 |         33 |
+| /Users/korso/Documents/cursor/rpgate/app/api/memory/metrics/route.ts            | TypeScript         |         18 |          6 |          7 |         31 |
+| /Users/korso/Documents/cursor/rpgate/app/api/roll/route.test.ts                 | TypeScript         |         92 |          1 |         16 |        109 |
+| /Users/korso/Documents/cursor/rpgate/app/api/roll/route.ts                      | TypeScript         |         75 |          4 |          6 |         85 |
+| /Users/korso/Documents/cursor/rpgate/app/api/session/reset/route.ts             | TypeScript         |         29 |          1 |          6 |         36 |
+| /Users/korso/Documents/cursor/rpgate/app/globals.css                            | CSS                |         56 |          0 |          4 |         60 |
+| /Users/korso/Documents/cursor/rpgate/app/layout.tsx                             | TypeScript JSX     |         15 |          0 |          4 |         19 |
+| /Users/korso/Documents/cursor/rpgate/app/page.tsx                               | TypeScript JSX     |        279 |         10 |         12 |        301 |
+| /Users/korso/Documents/cursor/rpgate/components/chat/character-panel.tsx        | TypeScript JSX     |        246 |          1 |          9 |        256 |
+| /Users/korso/Documents/cursor/rpgate/components/chat/chat-input.tsx             | TypeScript JSX     |         42 |          0 |          6 |         48 |
+| /Users/korso/Documents/cursor/rpgate/components/chat/chat-messages.tsx          | TypeScript JSX     |         72 |          4 |         11 |         87 |
+| /Users/korso/Documents/cursor/rpgate/components/chat/dice-result.tsx            | TypeScript JSX     |         67 |          0 |          6 |         73 |
+| /Users/korso/Documents/cursor/rpgate/components/chat/loading-indicator.tsx      | TypeScript JSX     |         55 |          0 |          6 |         61 |
+| /Users/korso/Documents/cursor/rpgate/components/chat/memory-indicator.tsx       | TypeScript JSX     |         80 |          0 |          9 |         89 |
+| /Users/korso/Documents/cursor/rpgate/components/chat/message-bubble.tsx         | TypeScript JSX     |         68 |          2 |          8 |         78 |
+| /Users/korso/Documents/cursor/rpgate/components/chat/skill-selector.tsx         | TypeScript JSX     |         62 |          0 |          4 |         66 |
+| /Users/korso/Documents/cursor/rpgate/components/ui/avatar.tsx                   | TypeScript JSX     |         43 |          0 |          5 |         48 |
+| /Users/korso/Documents/cursor/rpgate/components/ui/badge.tsx                    | TypeScript JSX     |         33 |          0 |          5 |         38 |
+| /Users/korso/Documents/cursor/rpgate/components/ui/button.tsx                   | TypeScript JSX     |         52 |          0 |          5 |         57 |
+| /Users/korso/Documents/cursor/rpgate/components/ui/card.tsx                     | TypeScript JSX     |         75 |          0 |          8 |         83 |
+| /Users/korso/Documents/cursor/rpgate/components/ui/input.tsx                    | TypeScript JSX     |         21 |          0 |          4 |         25 |
+| /Users/korso/Documents/cursor/rpgate/components/ui/scroll-area.tsx              | TypeScript JSX     |         42 |          0 |          4 |         46 |
+| /Users/korso/Documents/cursor/rpgate/components/ui/select.tsx                   | TypeScript JSX     |        146 |          0 |         15 |        161 |
+| /Users/korso/Documents/cursor/rpgate/db/index.ts                                | TypeScript         |         10 |          1 |          3 |         14 |
+| /Users/korso/Documents/cursor/rpgate/db/schema.ts                               | TypeScript         |        178 |          8 |         19 |        205 |
+| /Users/korso/Documents/cursor/rpgate/docs/01-overview.md                        | Markdown           |         99 |          0 |         35 |        134 |
+| /Users/korso/Documents/cursor/rpgate/docs/02-game-mechanics.md                  | Markdown           |        267 |          0 |         52 |        319 |
+| /Users/korso/Documents/cursor/rpgate/docs/03-architecture.md                    | Markdown           |         74 |          0 |         16 |         90 |
+| /Users/korso/Documents/cursor/rpgate/docs/04-agents.md                          | Markdown           |         96 |          0 |         21 |        117 |
+| /Users/korso/Documents/cursor/rpgate/docs/05-memory.md                          | Markdown           |         31 |          0 |          8 |         39 |
+| /Users/korso/Documents/cursor/rpgate/docs/06-mvp-status.md                      | Markdown           |         29 |          0 |          4 |         33 |
+| /Users/korso/Documents/cursor/rpgate/docs/07-ui-components.md                   | Markdown           |         98 |          0 |         27 |        125 |
+| /Users/korso/Documents/cursor/rpgate/docs/08-ui-layout.md                       | Markdown           |        166 |          0 |         30 |        196 |
+| /Users/korso/Documents/cursor/rpgate/docs/09-component-showcase.md              | Markdown           |        337 |          0 |         82 |        419 |
+| /Users/korso/Documents/cursor/rpgate/docs/10-rate-limiting.md                   | Markdown           |         59 |          0 |         23 |         82 |
+| /Users/korso/Documents/cursor/rpgate/docs/11-testing.md                         | Markdown           |        161 |          0 |         50 |        211 |
+| /Users/korso/Documents/cursor/rpgate/docs/12-character-generation.md            | Markdown           |        189 |          0 |         73 |        262 |
+| /Users/korso/Documents/cursor/rpgate/docs/13-session-management.md              | Markdown           |        230 |          0 |         79 |        309 |
+| /Users/korso/Documents/cursor/rpgate/docs/14-chat-ux.md                         | Markdown           |        284 |          0 |         97 |        381 |
+| /Users/korso/Documents/cursor/rpgate/docs/15-memory-logging.md                  | Markdown           |        219 |          0 |         55 |        274 |
+| /Users/korso/Documents/cursor/rpgate/docs/16-grok-optimization.md               | Markdown           |        224 |          0 |         78 |        302 |
+| /Users/korso/Documents/cursor/rpgate/docs/17-model-selection.md                 | Markdown           |        211 |          0 |         62 |        273 |
+| /Users/korso/Documents/cursor/rpgate/docs/18-memory-performance.md              | Markdown           |        167 |          0 |         61 |        228 |
+| /Users/korso/Documents/cursor/rpgate/docs/19-memory-ui-indicators.md            | Markdown           |        271 |          0 |         85 |        356 |
+| /Users/korso/Documents/cursor/rpgate/docs/20-memory-context-analysis.md         | Markdown           |        283 |          0 |         88 |        371 |
+| /Users/korso/Documents/cursor/rpgate/docs/21-hybrid-memory-search.md            | Markdown           |        353 |          0 |        101 |        454 |
+| /Users/korso/Documents/cursor/rpgate/docs/22-knowledge-graph-design.md          | Markdown           |        422 |          0 |        160 |        582 |
+| /Users/korso/Documents/cursor/rpgate/drizzle.config.ts                          | TypeScript         |          9 |          0 |          2 |         11 |
+| /Users/korso/Documents/cursor/rpgate/drizzle/0000_talented_roughhouse.sql       | MS SQL             |         36 |          4 |          0 |         40 |
+| /Users/korso/Documents/cursor/rpgate/drizzle/0001_fast_legion.sql               | MS SQL             |          3 |          0 |          0 |          3 |
+| /Users/korso/Documents/cursor/rpgate/drizzle/0002_concerned_virginia_dare.sql   | MS SQL             |         18 |          1 |          0 |         19 |
+| /Users/korso/Documents/cursor/rpgate/drizzle/0003_demonic_squadron_sinister.sql | MS SQL             |         17 |          6 |          0 |         23 |
+| /Users/korso/Documents/cursor/rpgate/drizzle/0004_clear_joshua_kane.sql         | MS SQL             |         30 |          2 |          0 |         32 |
+| /Users/korso/Documents/cursor/rpgate/drizzle/meta/0000_snapshot.json            | JSON               |        265 |          0 |          1 |        266 |
+| /Users/korso/Documents/cursor/rpgate/drizzle/meta/0001_snapshot.json            | JSON               |        285 |          0 |          1 |        286 |
+| /Users/korso/Documents/cursor/rpgate/drizzle/meta/0002_snapshot.json            | JSON               |        411 |          0 |          1 |        412 |
+| /Users/korso/Documents/cursor/rpgate/drizzle/meta/0003_snapshot.json            | JSON               |        537 |          0 |          0 |        537 |
+| /Users/korso/Documents/cursor/rpgate/drizzle/meta/0004_snapshot.json            | JSON               |        693 |          0 |          0 |        693 |
+| /Users/korso/Documents/cursor/rpgate/drizzle/meta/_journal.json                 | JSON               |         41 |          0 |          0 |         41 |
+| /Users/korso/Documents/cursor/rpgate/env.ts                                     | TypeScript         |         13 |          0 |          3 |         16 |
+| /Users/korso/Documents/cursor/rpgate/lib/agents/character.test.ts               | TypeScript         |         84 |          2 |         14 |        100 |
+| /Users/korso/Documents/cursor/rpgate/lib/agents/character.ts                    | TypeScript         |        134 |          6 |         12 |        152 |
+| /Users/korso/Documents/cursor/rpgate/lib/agents/heuristics.test.ts              | TypeScript         |         75 |          0 |         23 |         98 |
+| /Users/korso/Documents/cursor/rpgate/lib/agents/heuristics.ts                   | TypeScript         |         69 |          4 |          9 |         82 |
+| /Users/korso/Documents/cursor/rpgate/lib/agents/memory-agent.test.ts            | TypeScript         |        758 |         16 |         94 |        868 |
+| /Users/korso/Documents/cursor/rpgate/lib/agents/memory-agent.ts                 | TypeScript         |        297 |         57 |         51 |        405 |
+| /Users/korso/Documents/cursor/rpgate/lib/agents/memory-storage.test.ts          | TypeScript         |        225 |         15 |         64 |        304 |
+| /Users/korso/Documents/cursor/rpgate/lib/agents/memory-storage.ts               | TypeScript         |        276 |         66 |         51 |        393 |
+| /Users/korso/Documents/cursor/rpgate/lib/agents/memory.test.ts                  | TypeScript         |        292 |         22 |         48 |        362 |
+| /Users/korso/Documents/cursor/rpgate/lib/agents/memory.ts                       | TypeScript         |        185 |         33 |         25 |        243 |
+| /Users/korso/Documents/cursor/rpgate/lib/agents/narrative-llm.ts                | TypeScript         |        121 |          4 |         12 |        137 |
+| /Users/korso/Documents/cursor/rpgate/lib/agents/protocol.ts                     | TypeScript         |         92 |          7 |         23 |        122 |
+| /Users/korso/Documents/cursor/rpgate/lib/agents/rules-llm.ts                    | TypeScript         |         90 |          4 |         17 |        111 |
+| /Users/korso/Documents/cursor/rpgate/lib/agents/rules.ts                        | TypeScript         |         43 |          2 |          4 |         49 |
+| /Users/korso/Documents/cursor/rpgate/lib/agents/world-knowledge-updater.ts      | TypeScript         |        192 |         18 |         38 |        248 |
+| /Users/korso/Documents/cursor/rpgate/lib/knowledge/entity-utils.ts              | TypeScript         |        113 |         45 |         33 |        191 |
+| /Users/korso/Documents/cursor/rpgate/lib/knowledge/world-persistence.ts         | TypeScript         |        246 |         40 |         41 |        327 |
+| /Users/korso/Documents/cursor/rpgate/lib/llm/openrouter.ts                      | TypeScript         |        125 |         50 |         20 |        195 |
+| /Users/korso/Documents/cursor/rpgate/lib/mechanics/ability-scores.test.ts       | TypeScript         |        142 |          9 |         34 |        185 |
+| /Users/korso/Documents/cursor/rpgate/lib/mechanics/ability-scores.ts            | TypeScript         |        146 |         31 |         12 |        189 |
+| /Users/korso/Documents/cursor/rpgate/lib/mechanics/dice.test.ts                 | TypeScript         |         95 |          0 |         18 |        113 |
+| /Users/korso/Documents/cursor/rpgate/lib/mechanics/dice.ts                      | TypeScript         |         36 |          0 |          6 |         42 |
+| /Users/korso/Documents/cursor/rpgate/lib/memory/config.ts                       | TypeScript         |         31 |         43 |         20 |         94 |
+| /Users/korso/Documents/cursor/rpgate/lib/memory/embeddings.test.ts              | TypeScript         |        195 |          8 |         47 |        250 |
+| /Users/korso/Documents/cursor/rpgate/lib/memory/embeddings.ts                   | TypeScript         |        122 |         29 |         24 |        175 |
+| /Users/korso/Documents/cursor/rpgate/lib/memory/heuristic.test.ts               | TypeScript         |        233 |          0 |         36 |        269 |
+| /Users/korso/Documents/cursor/rpgate/lib/memory/heuristic.ts                    | TypeScript         |        148 |         25 |         23 |        196 |
+| /Users/korso/Documents/cursor/rpgate/lib/memory/logger.test.ts                  | TypeScript         |        484 |         16 |         97 |        597 |
+| /Users/korso/Documents/cursor/rpgate/lib/memory/logger.ts                       | TypeScript         |        409 |         49 |         52 |        510 |
+| /Users/korso/Documents/cursor/rpgate/lib/rate-limit.ts                          | TypeScript         |         63 |         19 |         11 |         93 |
+| /Users/korso/Documents/cursor/rpgate/lib/utils.ts                               | TypeScript         |          5 |          0 |          2 |          7 |
+| /Users/korso/Documents/cursor/rpgate/middleware.ts                              | TypeScript         |         21 |          0 |          3 |         24 |
+| /Users/korso/Documents/cursor/rpgate/next-env.d.ts                              | TypeScript         |          0 |          4 |          2 |          6 |
+| /Users/korso/Documents/cursor/rpgate/next.config.mjs                            | JavaScript         |          4 |          1 |          2 |          7 |
+| /Users/korso/Documents/cursor/rpgate/package.json                               | JSON               |         57 |          0 |          1 |         58 |
+| /Users/korso/Documents/cursor/rpgate/pnpm-lock.yaml                             | YAML               |      3,024 |          0 |        736 |      3,760 |
+| /Users/korso/Documents/cursor/rpgate/pnpm-workspace.yaml                        | YAML               |          4 |          0 |          1 |          5 |
+| /Users/korso/Documents/cursor/rpgate/postcss.config.mjs                         | JavaScript         |          7 |          1 |          2 |         10 |
+| /Users/korso/Documents/cursor/rpgate/scripts/optimize-memory-index.sql          | MS SQL             |         60 |         48 |         12 |        120 |
+| /Users/korso/Documents/cursor/rpgate/scripts/test-heuristic-patterns.ts         | TypeScript         |          0 |          0 |          1 |          1 |
+| /Users/korso/Documents/cursor/rpgate/scripts/test-memory.ts                     | TypeScript         |        171 |         22 |         25 |        218 |
+| /Users/korso/Documents/cursor/rpgate/scripts/test-retrieval.ts                  | TypeScript         |         31 |          3 |          8 |         42 |
+| /Users/korso/Documents/cursor/rpgate/scripts/verify-knowledge-tables.ts         | TypeScript         |          0 |          0 |          1 |          1 |
+| /Users/korso/Documents/cursor/rpgate/tailwind.config.ts                         | TypeScript         |         54 |          0 |          3 |         57 |
+| /Users/korso/Documents/cursor/rpgate/tests/README.md                            | Markdown           |        119 |          0 |         41 |        160 |
+| /Users/korso/Documents/cursor/rpgate/tests/chat-e2e.test.ts                     | TypeScript         |        193 |         19 |         45 |        257 |
+| /Users/korso/Documents/cursor/rpgate/tests/db.test.ts                           | TypeScript         |         81 |          2 |         15 |         98 |
+| /Users/korso/Documents/cursor/rpgate/tests/memory-agent-integration.test.ts     | TypeScript         |        647 |         48 |         83 |        778 |
+| /Users/korso/Documents/cursor/rpgate/tests/memory-integration.test.ts           | TypeScript         |        427 |         55 |         73 |        555 |
+| /Users/korso/Documents/cursor/rpgate/tests/memory-performance.README.md         | Markdown           |         74 |          0 |         26 |        100 |
+| /Users/korso/Documents/cursor/rpgate/tests/memory-performance.test.ts           | TypeScript         |        271 |         25 |         67 |        363 |
+| /Users/korso/Documents/cursor/rpgate/tsconfig.json                              | JSON with Comments |         31 |          0 |          1 |         32 |
+| /Users/korso/Documents/cursor/rpgate/vitest.config.ts                           | TypeScript         |         24 |          0 |          3 |         27 |
+| Total                                                                           |                    |     20,055 |        945 |      3,677 |     24,677 |
++---------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+

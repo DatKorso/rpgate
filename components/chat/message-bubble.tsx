@@ -25,9 +25,7 @@ export function MessageBubble({
 	if (isSystem) {
 		// Memory status indicator
 		if (memoryStatus) {
-			return (
-				<MemoryIndicator status={memoryStatus} count={memoryCount} />
-			);
+			return <MemoryIndicator status={memoryStatus} count={memoryCount} />;
 		}
 
 		// Regular system message

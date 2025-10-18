@@ -1,6 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createEmbedding } from "./embeddings";
 
+// Type for mocked OpenAI constructor
+type MockedOpenAI = { mockImplementation: (fn: () => unknown) => void };
+
 // Mock OpenAI client
 vi.mock("openai", () => {
 	return {
@@ -23,7 +26,7 @@ describe("Embedding Service", () => {
 
 	describe("validation", () => {
 		it("should throw error when API key is missing", async () => {
-			delete process.env.AITUNNEL_API_KEY;
+			process.env.AITUNNEL_API_KEY = undefined;
 
 			await expect(createEmbedding("test text")).rejects.toThrow(
 				"AITUNNEL_API_KEY not configured",
@@ -65,7 +68,9 @@ describe("Embedding Service", () => {
 
 			const OpenAI = (await import("openai")).default;
 			const mockCreate = vi.fn().mockResolvedValue(mockResponse);
-			(OpenAI as any).mockImplementation(() => ({
+			(
+				OpenAI as unknown as { mockImplementation: (fn: () => unknown) => void }
+			).mockImplementation(() => ({
 				embeddings: { create: mockCreate },
 			}));
 
@@ -97,7 +102,7 @@ describe("Embedding Service", () => {
 			};
 
 			const OpenAI = (await import("openai")).default;
-			(OpenAI as any).mockImplementation(() => ({
+			(OpenAI as unknown as MockedOpenAI).mockImplementation(() => ({
 				embeddings: { create: vi.fn().mockResolvedValue(mockResponse) },
 			}));
 
@@ -116,7 +121,7 @@ describe("Embedding Service", () => {
 			};
 
 			const OpenAI = (await import("openai")).default;
-			(OpenAI as any).mockImplementation(() => ({
+			(OpenAI as unknown as MockedOpenAI).mockImplementation(() => ({
 				embeddings: { create: vi.fn().mockResolvedValue(mockResponse) },
 			}));
 
@@ -144,7 +149,7 @@ describe("Embedding Service", () => {
 				.mockResolvedValueOnce(mockSuccessResponse);
 
 			const OpenAI = (await import("openai")).default;
-			(OpenAI as any).mockImplementation(() => ({
+			(OpenAI as unknown as MockedOpenAI).mockImplementation(() => ({
 				embeddings: { create: mockCreate },
 			}));
 
@@ -162,7 +167,7 @@ describe("Embedding Service", () => {
 				.mockRejectedValue(new Error("Persistent network error"));
 
 			const OpenAI = (await import("openai")).default;
-			(OpenAI as any).mockImplementation(() => ({
+			(OpenAI as unknown as MockedOpenAI).mockImplementation(() => ({
 				embeddings: { create: mockCreate },
 			}));
 
@@ -178,7 +183,7 @@ describe("Embedding Service", () => {
 
 			const mockCreate = vi.fn();
 			const OpenAI = (await import("openai")).default;
-			(OpenAI as any).mockImplementation(() => ({
+			(OpenAI as unknown as MockedOpenAI).mockImplementation(() => ({
 				embeddings: { create: mockCreate },
 			}));
 
@@ -211,7 +216,7 @@ describe("Embedding Service", () => {
 			);
 
 			const OpenAI = (await import("openai")).default;
-			(OpenAI as any).mockImplementation(() => ({
+			(OpenAI as unknown as MockedOpenAI).mockImplementation(() => ({
 				embeddings: { create: mockCreate },
 			}));
 
@@ -225,7 +230,7 @@ describe("Embedding Service", () => {
 
 			const mockCreate = vi.fn();
 			const OpenAI = (await import("openai")).default;
-			(OpenAI as any).mockImplementation(() => ({
+			(OpenAI as unknown as MockedOpenAI).mockImplementation(() => ({
 				embeddings: { create: mockCreate },
 			}));
 

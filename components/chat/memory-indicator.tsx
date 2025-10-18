@@ -63,14 +63,13 @@ export function MemoryIndicator({
 	const Icon = config.icon;
 
 	return (
-		<div
+		<output
 			className={cn(
 				"flex items-center justify-center gap-2 py-2",
 				"animate-in fade-in-0 slide-in-from-bottom-2",
 				!visible && "animate-out fade-out-0 slide-out-to-bottom-2",
 				className,
 			)}
-			role="status"
 			aria-live="polite"
 			aria-label={config.text}
 		>
@@ -84,6 +83,6 @@ export function MemoryIndicator({
 				<Icon className={cn("h-3.5 w-3.5", config.iconColor, config.animate)} />
 				<span>{config.text}</span>
 			</div>
-		</div>
+		</output>
 	);
 }

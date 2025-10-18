@@ -69,3 +69,74 @@ export interface GMOutput {
 	text: string;
 	summary?: string;
 }
+
+/**
+ * Memory Agent Types
+ */
+
+export type EntityType = "location" | "npc" | "item" | "faction" | "event";
+
+export interface ExtractedEntity {
+	name: string;
+	type: EntityType;
+	context?: string;
+}
+
+export interface MemoryAgentDecision {
+	shouldRetrieve: boolean;
+	reason: string;
+	queries: string[];
+	entities: ExtractedEntity[];
+	confidence: number;
+}
+
+export interface MemoryAgentOptions {
+	timeoutMs?: number;
+	model?: string;
+	sessionId?: number;
+}
+
+/**
+ * World Knowledge Updater Types
+ */
+
+export interface WorldEntityData {
+	type: EntityType;
+	name: string;
+	properties: Record<string, unknown>;
+	isNew: boolean;
+}
+
+export interface WorldRelationshipData {
+	sourceEntityName: string;
+	targetEntityName: string;
+	relationshipType: string;
+	properties?: Record<string, unknown>;
+}
+
+export interface WorldKnowledgeUpdate {
+	entities: WorldEntityData[];
+	relationships: WorldRelationshipData[];
+	extractionTimeMs: number;
+}
+
+/**
+ * Player Knowledge Updater Types
+ */
+
+export interface PlayerKnowledgeData {
+	entityName: string;
+	entityType: EntityType;
+	awarenessLevel: "unaware" | "heard_of" | "met" | "familiar";
+	newFacts: Array<{
+		property: string;
+		value: unknown;
+		source: string;
+		confidence?: string;
+	}>;
+}
+
+export interface PlayerKnowledgeUpdate {
+	updates: PlayerKnowledgeData[];
+	extractionTimeMs: number;
+}

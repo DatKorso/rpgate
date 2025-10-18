@@ -2,11 +2,11 @@
 
 ## Current Model
 
-**Default:** `meta-llama/llama-4-maverick:free`
+**Default:** `x-ai/grok-4-fast`
 
 Set in `lib/llm/openrouter.ts`:
 ```typescript
-export const DEFAULT_MODEL = "meta-llama/llama-4-maverick:free";
+export const DEFAULT_MODEL = "x-ai/grok-4-fast";
 ```
 
 ## Model Comparison
@@ -268,5 +268,5 @@ LLM_MODEL=x-ai/grok-4-fast
 Then in code:
 ```typescript
 export const DEFAULT_MODEL = 
-  process.env.LLM_MODEL || "meta-llama/llama-4-maverick:free";
+  process.env.LLM_MODEL || "x-ai/grok-4-fast";
 ```

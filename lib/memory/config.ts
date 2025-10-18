@@ -39,7 +39,7 @@ export const RETRIEVAL_CONFIG = {
 	DEFAULT_SIMILARITY_THRESHOLD: 0.7,
 
 	/** Default timeout for retrieval operations (ms) */
-	DEFAULT_TIMEOUT_MS: 2000,
+	DEFAULT_TIMEOUT_MS: 4000,
 
 	/** Timeout for query embedding creation during retrieval (ms) */
 	QUERY_EMBEDDING_TIMEOUT_MS: 5000,
@@ -65,6 +65,20 @@ export const HEURISTIC_CONFIG = {
 
 	/** Number of recent messages to check for entity context */
 	RECENT_CONTEXT_SIZE: 5,
+} as const;
+
+/**
+ * Memory Agent Configuration
+ */
+export const MEMORY_AGENT_CONFIG = {
+	/** Default timeout for Memory Agent LLM calls (ms) */
+	DEFAULT_TIMEOUT_MS: 6000,
+
+	/** Default LLM model for Memory Agent */
+	DEFAULT_MODEL: "x-ai/grok-4-fast" as const,
+
+	/** Minimum confidence threshold to trigger retrieval (0-1) */
+	CONFIDENCE_THRESHOLD: 0.6,
 } as const;
 
 /**

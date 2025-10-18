@@ -72,7 +72,9 @@ describe("Memory Agent - retrieveMemories", () => {
 			fields: [],
 		};
 
-		vi.mocked(dbModule.db.execute).mockResolvedValue(mockDbResults as any);
+		vi.mocked(dbModule.db.execute).mockResolvedValue(
+			mockDbResults as unknown as dbModule.QueryResult<Record<string, unknown>>,
+		);
 
 		// Execute retrieval
 		const result = await retrieveMemories(mockSessionId, mockQuery);
@@ -123,7 +125,9 @@ describe("Memory Agent - retrieveMemories", () => {
 			fields: [],
 		};
 
-		vi.mocked(dbModule.db.execute).mockResolvedValue(mockDbResults as any);
+		vi.mocked(dbModule.db.execute).mockResolvedValue(
+			mockDbResults as unknown as dbModule.QueryResult<Record<string, unknown>>,
+		);
 
 		// Retrieve with high threshold
 		const result = await retrieveMemories(mockSessionId, mockQuery, {
@@ -182,7 +186,7 @@ describe("Memory Agent - retrieveMemories", () => {
 			rowCount: 0,
 			oid: 0,
 			fields: [],
-		} as any);
+		} as unknown as dbModule.QueryResult<Record<string, unknown>>);
 
 		const result = await retrieveMemories(mockSessionId, mockQuery);
 
@@ -262,7 +266,9 @@ describe("Memory Agent - retrieveMemories", () => {
 			fields: [],
 		};
 
-		vi.mocked(dbModule.db.execute).mockResolvedValue(mockDbResults as any);
+		vi.mocked(dbModule.db.execute).mockResolvedValue(
+			mockDbResults as unknown as dbModule.QueryResult<Record<string, unknown>>,
+		);
 
 		const result = await retrieveMemories(mockSessionId, mockQuery, {
 			typeFilter: ["location"],
@@ -306,7 +312,9 @@ describe("Memory Agent - retrieveMemories", () => {
 			fields: [],
 		};
 
-		vi.mocked(dbModule.db.execute).mockResolvedValue(mockDbResults as any);
+		vi.mocked(dbModule.db.execute).mockResolvedValue(
+			mockDbResults as unknown as dbModule.QueryResult<Record<string, unknown>>,
+		);
 
 		const result = await retrieveMemories(mockSessionId, mockQuery, {
 			entityFilter: ["Дракон"],
@@ -339,7 +347,9 @@ describe("Memory Agent - retrieveMemories", () => {
 			fields: [],
 		};
 
-		vi.mocked(dbModule.db.execute).mockResolvedValue(mockDbResults as any);
+		vi.mocked(dbModule.db.execute).mockResolvedValue(
+			mockDbResults as unknown as dbModule.QueryResult<Record<string, unknown>>,
+		);
 
 		const result = await retrieveMemories(mockSessionId, mockQuery, {
 			limit: 3,
