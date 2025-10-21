@@ -78,6 +78,7 @@ const updateSchema = z.object({
 			enableMemoryAgent: z.boolean().optional(),
 			enableWorldKnowledge: z.boolean().optional(),
 			enablePlayerKnowledge: z.boolean().optional(),
+			enableDiceChecks: z.boolean().optional(),
 		})
 		.optional(),
 	action: z.enum(["set", "clear"]).optional(),
@@ -91,6 +92,7 @@ const updateSchema = z.object({
  * Body examples:
  * - Set global flags: { "scope": "global", "flags": { "enableMemoryAgent": false } }
  * - Set session flags: { "scope": "session", "sessionId": 123, "flags": { "enableWorldKnowledge": false } }
+ * - Disable dice checks: { "scope": "global", "flags": { "enableDiceChecks": false } }
  * - Clear session flags: { "scope": "session", "sessionId": 123, "action": "clear" }
  */
 export async function POST(req: Request) {

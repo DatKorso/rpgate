@@ -173,7 +173,7 @@ async function upsertPlayerKnowledge(
 		console.warn(
 			`[Player Persistence] Entity not found, creating: ${knowledgeData.entityName} (${knowledgeData.entityType})`,
 		);
-		
+
 		const [newEntity] = await db
 			.insert(worldEntities)
 			.values({
@@ -183,7 +183,7 @@ async function upsertPlayerKnowledge(
 				properties: {},
 			})
 			.returning();
-		
+
 		entity = [newEntity];
 	}
 

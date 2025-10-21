@@ -9,6 +9,7 @@ export interface FeatureFlags {
 	enableMemoryAgent: boolean;
 	enableWorldKnowledge: boolean;
 	enablePlayerKnowledge: boolean;
+	enableDiceChecks: boolean;
 }
 
 export interface FeatureFlagOverrides {
@@ -24,6 +25,7 @@ const DEFAULT_FLAGS: FeatureFlags = {
 	enableMemoryAgent: true,
 	enableWorldKnowledge: true,
 	enablePlayerKnowledge: true,
+	enableDiceChecks: true,
 };
 
 /**
@@ -115,4 +117,11 @@ export function isWorldKnowledgeEnabled(sessionId: number): boolean {
  */
 export function isPlayerKnowledgeEnabled(sessionId: number): boolean {
 	return getFeatureFlags(sessionId).enablePlayerKnowledge;
+}
+
+/**
+ * Check if Dice Checks (d20 mechanics) are enabled for a session
+ */
+export function isDiceChecksEnabled(sessionId: number): boolean {
+	return getFeatureFlags(sessionId).enableDiceChecks;
 }

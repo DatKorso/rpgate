@@ -1,26 +1,38 @@
 import { describe, expect, it } from "vitest";
-import { type Modifiers, applyModifiers, classifyD20, rollD20 } from "./dice";
+import {
+	type Modifiers,
+	applyModifiers,
+	classifyD20,
+	performSkillCheck,
+	rollD20,
+} from "./dice";
 
 describe("dice mechanics", () => {
 	describe("classifyD20", () => {
 		it("should classify 1 as CRIT_FAIL", () => {
-			expect(classifyD20(1)).toBe("CRIT_FAIL");
+			expect(classifyD20(1, 15)).toBe("CRIT_FAIL");
 		});
 
 		it("should classify 20 as CRIT_SUCCESS", () => {
-			expect(classifyD20(20)).toBe("CRIT_SUCCESS");
+			expect(classifyD20(20, 25)).toBe("CRIT_SUCCESS");
 		});
 
-		it("should classify 2-9 as FAIL", () => {
-			expect(classifyD20(2)).toBe("FAIL");
-			expect(classifyD20(5)).toBe("FAIL");
-			expect(classifyD20(9)).toBe("FAIL");
+		it("should use legacy logic without DC", () => {
+			expect(classifyD20(2, 8)).toBe("FAIL");
+			expect(classifyD20(5, 9)).toBe("FAIL");
+			expect(classifyD20(10, 10)).toBe("SUCCESS");
+			expect(classifyD20(15, 15)).toBe("SUCCESS");
 		});
 
-		it("should classify 10-19 as SUCCESS", () => {
-			expect(classifyD20(10)).toBe("SUCCESS");
-			expect(classifyD20(15)).toBe("SUCCESS");
-			expect(classifyD20(19)).toBe("SUCCESS");
+		it("should use DC-based logic when DC provided", () => {
+			expect(classifyD20(10, 15, 20)).toBe("FAIL"); // 15 < 20
+			expect(classifyD20(10, 20, 20)).toBe("SUCCESS"); // 20 >= 20
+			expect(classifyD20(5, 18, 15)).toBe("SUCCESS"); // 18 >= 15
+		});
+
+		it("should handle critical results with DC", () => {
+			expect(classifyD20(1, 25, 10)).toBe("CRIT_FAIL"); // Always fail on 1
+			expect(classifyD20(20, 22, 25)).toBe("CRIT_SUCCESS"); // Always success on 20
 		});
 	});
 
@@ -107,6 +119,75 @@ describe("dice mechanics", () => {
 
 			const roll1 = rollD20(() => 0.01); // floor(0.01 * 20) + 1 = 1
 			expect(roll1).toBe(1);
+		});
+	});
+
+	describe("performSkillCheck", () => {
+		it("should perform complete skill check with success", () => {
+			const mods: Modifiers = {
+				ability: 3,
+				skill: 2,
+				equipment: 1,
+				temporary: 0,
+			};
+			const result = performSkillCheck(12, mods, 15);
+
+			expect(result.roll).toBe(12);
+			expect(result.modified).toBe(18); // 12 + 3 + 2 + 1
+			expect(result.dc).toBe(15);
+			expect(result.success).toBe(true); // 18 >= 15
+			expect(result.margin).toBe(3); // 18 - 15
+			expect(result.critical).toBe(false);
+			expect(result.category).toBe("SUCCESS");
+		});
+
+		it("should handle critical success", () => {
+			const mods: Modifiers = {
+				ability: 0,
+				skill: 0,
+				equipment: 0,
+				temporary: 0,
+			};
+			const result = performSkillCheck(20, mods, 25);
+
+			expect(result.roll).toBe(20);
+			expect(result.modified).toBe(20);
+			expect(result.success).toBe(true); // Critical success always succeeds
+			expect(result.critical).toBe(true);
+			expect(result.category).toBe("CRIT_SUCCESS");
+		});
+
+		it("should handle critical failure", () => {
+			const mods: Modifiers = {
+				ability: 10,
+				skill: 5,
+				equipment: 3,
+				temporary: 2,
+			};
+			const result = performSkillCheck(1, mods, 5);
+
+			expect(result.roll).toBe(1);
+			expect(result.modified).toBe(21); // 1 + 20
+			expect(result.success).toBe(false); // Critical failure always fails
+			expect(result.critical).toBe(true);
+			expect(result.category).toBe("CRIT_FAIL");
+		});
+
+		it("should handle regular failure", () => {
+			const mods: Modifiers = {
+				ability: 1,
+				skill: 1,
+				equipment: 0,
+				temporary: 0,
+			};
+			const result = performSkillCheck(8, mods, 15);
+
+			expect(result.roll).toBe(8);
+			expect(result.modified).toBe(10); // 8 + 2
+			expect(result.success).toBe(false); // 10 < 15
+			expect(result.margin).toBe(-5); // 10 - 15
+			expect(result.critical).toBe(false);
+			expect(result.category).toBe("FAIL");
 		});
 	});
 });

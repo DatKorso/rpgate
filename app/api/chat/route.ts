@@ -21,13 +21,19 @@ import type { DecideContext, PlayerInput } from "@/lib/agents/protocol";
 import { decideCheck } from "@/lib/agents/rules";
 import { updateWorldKnowledge } from "@/lib/agents/world-knowledge-updater";
 import {
+	isDiceChecksEnabled,
 	isMemoryAgentEnabled,
 	isPlayerKnowledgeEnabled,
 	isWorldKnowledgeEnabled,
 } from "@/lib/feature-flags";
 import { persistPlayerKnowledge } from "@/lib/knowledge/player-persistence";
 import { persistWorldKnowledge } from "@/lib/knowledge/world-persistence";
-import { type DiceResult, applyModifiers, rollD20 } from "@/lib/mechanics/dice";
+import {
+	type DiceResult,
+	applyModifiers,
+	performSkillCheck,
+	rollD20,
+} from "@/lib/mechanics/dice";
 import { mergeMemoryResults } from "@/lib/memory/deduplication";
 import { analyzeMemoryNeed as analyzeMemoryNeedHeuristic } from "@/lib/memory/heuristic";
 import {
@@ -351,13 +357,13 @@ export async function POST(req: Request) {
 				margin: number;
 			} | null = null;
 
-			if (rules.requiresCheck && rules.type === "skill" && rules.dc) {
+			if (rules.requiresCheck && rules.type === "skill" && rules.dc && isDiceChecksEnabled(session.id)) {
 				// Step 2: Character modifiers
 				await getOrCreateCharacter(session.id, input.profile);
 				const modifiers = await computeSkillModifiers(session.id, rules.skill);
 				// Step 3: Roll and compute outcome
 				const roll = rollD20();
-				rollResult = applyModifiers(roll, modifiers);
+				rollResult = applyModifiers(roll, modifiers, rules.dc);
 				const critical = rollResult.roll === 1 || rollResult.roll === 20;
 				const success = critical
 					? rollResult.roll === 20

@@ -402,7 +402,9 @@ export function EnhancedCharacterPanel({
 										value={abilityPriority || "none"}
 										onValueChange={(value) =>
 											setAbilityPriority(
-												value === "none" ? undefined : (value as "physical" | "mental" | "social"),
+												value === "none"
+													? undefined
+													: (value as "physical" | "mental" | "social"),
 											)
 										}
 										disabled={disabled}
@@ -463,7 +465,10 @@ export function EnhancedCharacterPanel({
 												onValueChange={(value) =>
 													setAppearance((prev) => ({
 														...prev,
-														height: value === "none" ? undefined : (value as AppearanceData["height"]),
+														height:
+															value === "none"
+																? undefined
+																: (value as AppearanceData["height"]),
 													}))
 												}
 												disabled={disabled}
@@ -490,7 +495,10 @@ export function EnhancedCharacterPanel({
 												onValueChange={(value) =>
 													setAppearance((prev) => ({
 														...prev,
-														build: value === "none" ? undefined : (value as AppearanceData["build"]),
+														build:
+															value === "none"
+																? undefined
+																: (value as AppearanceData["build"]),
 													}))
 												}
 												disabled={disabled}
@@ -517,7 +525,10 @@ export function EnhancedCharacterPanel({
 												onValueChange={(value) =>
 													setAppearance((prev) => ({
 														...prev,
-														hair: value === "none" ? undefined : (value as AppearanceData["hair"]),
+														hair:
+															value === "none"
+																? undefined
+																: (value as AppearanceData["hair"]),
 													}))
 												}
 												disabled={disabled}
@@ -544,7 +555,10 @@ export function EnhancedCharacterPanel({
 												onValueChange={(value) =>
 													setAppearance((prev) => ({
 														...prev,
-														eyes: value === "none" ? undefined : (value as AppearanceData["eyes"]),
+														eyes:
+															value === "none"
+																? undefined
+																: (value as AppearanceData["eyes"]),
 													}))
 												}
 												disabled={disabled}
@@ -597,7 +611,10 @@ export function EnhancedCharacterPanel({
 												onValueChange={(value) =>
 													setBackground((prev) => ({
 														...prev,
-														origin: value === "none" ? undefined : (value as BackgroundData["origin"]),
+														origin:
+															value === "none"
+																? undefined
+																: (value as BackgroundData["origin"]),
 													}))
 												}
 												disabled={disabled}
@@ -624,7 +641,10 @@ export function EnhancedCharacterPanel({
 												onValueChange={(value) =>
 													setBackground((prev) => ({
 														...prev,
-														profession: value === "none" ? undefined : (value as BackgroundData["profession"]),
+														profession:
+															value === "none"
+																? undefined
+																: (value as BackgroundData["profession"]),
 													}))
 												}
 												disabled={disabled}
@@ -719,7 +739,9 @@ export function EnhancedCharacterPanel({
 								value={abilityPriority || "none"}
 								onValueChange={(value) =>
 									setAbilityPriority(
-										value === "none" ? undefined : (value as "physical" | "mental" | "social"),
+										value === "none"
+											? undefined
+											: (value as "physical" | "mental" | "social"),
 									)
 								}
 								disabled={disabled}
@@ -781,7 +803,10 @@ export function EnhancedCharacterPanel({
 											onValueChange={(value) =>
 												setAppearance((prev) => ({
 													...prev,
-													height: value === "none" ? undefined : (value as AppearanceData["height"]),
+													height:
+														value === "none"
+															? undefined
+															: (value as AppearanceData["height"]),
 												}))
 											}
 											disabled={disabled}
@@ -808,7 +833,10 @@ export function EnhancedCharacterPanel({
 											onValueChange={(value) =>
 												setAppearance((prev) => ({
 													...prev,
-													build: value === "none" ? undefined : (value as AppearanceData["build"]),
+													build:
+														value === "none"
+															? undefined
+															: (value as AppearanceData["build"]),
 												}))
 											}
 											disabled={disabled}
@@ -835,7 +863,10 @@ export function EnhancedCharacterPanel({
 											onValueChange={(value) =>
 												setAppearance((prev) => ({
 													...prev,
-													hair: value === "none" ? undefined : (value as AppearanceData["hair"]),
+													hair:
+														value === "none"
+															? undefined
+															: (value as AppearanceData["hair"]),
 												}))
 											}
 											disabled={disabled}
@@ -862,7 +893,10 @@ export function EnhancedCharacterPanel({
 											onValueChange={(value) =>
 												setAppearance((prev) => ({
 													...prev,
-													eyes: value === "none" ? undefined : (value as AppearanceData["eyes"]),
+													eyes:
+														value === "none"
+															? undefined
+															: (value as AppearanceData["eyes"]),
 												}))
 											}
 											disabled={disabled}
@@ -917,7 +951,10 @@ export function EnhancedCharacterPanel({
 											onValueChange={(value) =>
 												setBackground((prev) => ({
 													...prev,
-													origin: value === "none" ? undefined : (value as BackgroundData["origin"]),
+													origin:
+														value === "none"
+															? undefined
+															: (value as BackgroundData["origin"]),
 												}))
 											}
 											disabled={disabled}
@@ -944,7 +981,10 @@ export function EnhancedCharacterPanel({
 											onValueChange={(value) =>
 												setBackground((prev) => ({
 													...prev,
-													profession: value === "none" ? undefined : (value as BackgroundData["profession"]),
+													profession:
+														value === "none"
+															? undefined
+															: (value as BackgroundData["profession"]),
 												}))
 											}
 											disabled={disabled}

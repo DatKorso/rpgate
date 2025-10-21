@@ -4,6 +4,7 @@ import {
 	getAllSessionOverrides,
 	getFeatureFlags,
 	getGlobalFeatureFlags,
+	isDiceChecksEnabled,
 	isMemoryAgentEnabled,
 	isPlayerKnowledgeEnabled,
 	isWorldKnowledgeEnabled,
@@ -18,6 +19,7 @@ describe("Feature Flags", () => {
 			enableMemoryAgent: true,
 			enableWorldKnowledge: true,
 			enablePlayerKnowledge: true,
+			enableDiceChecks: true,
 		});
 		// Clear all session overrides
 		const overrides = getAllSessionOverrides();
@@ -32,6 +34,7 @@ describe("Feature Flags", () => {
 			expect(flags.enableMemoryAgent).toBe(true);
 			expect(flags.enableWorldKnowledge).toBe(true);
 			expect(flags.enablePlayerKnowledge).toBe(true);
+			expect(flags.enableDiceChecks).toBe(true);
 		});
 
 		it("should update global flags", () => {
@@ -128,6 +131,13 @@ describe("Feature Flags", () => {
 			setSessionFeatureFlags(1, { enablePlayerKnowledge: false });
 			expect(isPlayerKnowledgeEnabled(1)).toBe(false);
 		});
+
+		it("should check if Dice Checks are enabled", () => {
+			expect(isDiceChecksEnabled(1)).toBe(true);
+
+			setSessionFeatureFlags(1, { enableDiceChecks: false });
+			expect(isDiceChecksEnabled(1)).toBe(false);
+		});
 	});
 
 	describe("Backward Compatibility", () => {
@@ -136,11 +146,13 @@ describe("Feature Flags", () => {
 				enableMemoryAgent: false,
 				enableWorldKnowledge: false,
 				enablePlayerKnowledge: false,
+				enableDiceChecks: false,
 			});
 
 			expect(isMemoryAgentEnabled(1)).toBe(false);
 			expect(isWorldKnowledgeEnabled(1)).toBe(false);
 			expect(isPlayerKnowledgeEnabled(1)).toBe(false);
+			expect(isDiceChecksEnabled(1)).toBe(false);
 		});
 
 		it("should allow gradual rollout by enabling features one at a time", () => {
@@ -149,6 +161,7 @@ describe("Feature Flags", () => {
 				enableMemoryAgent: false,
 				enableWorldKnowledge: false,
 				enablePlayerKnowledge: false,
+				enableDiceChecks: false,
 			});
 
 			// Enable Memory Agent for session 1
