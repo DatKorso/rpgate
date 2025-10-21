@@ -1,6 +1,8 @@
+import type { AppearanceData, BackgroundData } from "@/lib/agents/protocol";
 import { sql } from "drizzle-orm";
 import {
 	customType,
+	index,
 	integer,
 	jsonb,
 	pgTable,
@@ -75,35 +77,63 @@ export const rolls = pgTable("Roll", {
 	createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const characters = pgTable("Character", {
-	id: serial("id").primaryKey(),
-	sessionId: integer("session_id")
-		.notNull()
-		.references(() => sessions.id, { onDelete: "cascade" }),
-	className: varchar("class_name", { length: 100 }).default(""),
-	bio: text("bio").default(""),
-	// Ability modifiers (not raw scores) for simplicity in MVP
-	strMod: integer("str_mod").default(0).notNull(),
-	dexMod: integer("dex_mod").default(0).notNull(),
-	conMod: integer("con_mod").default(0).notNull(),
-	intMod: integer("int_mod").default(0).notNull(),
-	wisMod: integer("wis_mod").default(0).notNull(),
-	chaMod: integer("cha_mod").default(0).notNull(),
-	skills: jsonb("skills")
-		.$type<Record<string, number>>()
-		.default(sql`'{}'::jsonb`)
-		.notNull(),
-	equipment: jsonb("equipment")
-		.$type<Record<string, number>>()
-		.default(sql`'{}'::jsonb`)
-		.notNull(),
-	temporary: jsonb("temporary")
-		.$type<Record<string, number>>()
-		.default(sql`'{}'::jsonb`)
-		.notNull(),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-	updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+export const characters = pgTable(
+	"Character",
+	{
+		id: serial("id").primaryKey(),
+		sessionId: integer("session_id")
+			.notNull()
+			.references(() => sessions.id, { onDelete: "cascade" }),
+		className: varchar("class_name", { length: 100 }).default(""),
+		bio: text("bio").default(""),
+		// Ability modifiers (not raw scores) for simplicity in MVP
+		strMod: integer("str_mod").default(0).notNull(),
+		dexMod: integer("dex_mod").default(0).notNull(),
+		conMod: integer("con_mod").default(0).notNull(),
+		intMod: integer("int_mod").default(0).notNull(),
+		wisMod: integer("wis_mod").default(0).notNull(),
+		chaMod: integer("cha_mod").default(0).notNull(),
+		skills: jsonb("skills")
+			.$type<Record<string, number>>()
+			.default(sql`'{}'::jsonb`)
+			.notNull(),
+		equipment: jsonb("equipment")
+			.$type<Record<string, number>>()
+			.default(sql`'{}'::jsonb`)
+			.notNull(),
+		temporary: jsonb("temporary")
+			.$type<Record<string, number>>()
+			.default(sql`'{}'::jsonb`)
+			.notNull(),
+		// Enhanced character data
+		appearance: jsonb("appearance")
+			.$type<AppearanceData>()
+			.default(sql`'{}'::jsonb`)
+			.notNull(),
+		background: jsonb("background")
+			.$type<BackgroundData>()
+			.default(sql`'{}'::jsonb`)
+			.notNull(),
+		abilityPriority: varchar("ability_priority", { length: 20 }),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		updatedAt: timestamp("updated_at").defaultNow().notNull(),
+	},
+	(table) => ({
+		// GIN indexes for JSONB columns for efficient querying
+		appearanceIdx: index("idx_characters_appearance").using(
+			"gin",
+			table.appearance,
+		),
+		backgroundIdx: index("idx_characters_background").using(
+			"gin",
+			table.background,
+		),
+		// B-tree index for ability_priority column
+		abilityPriorityIdx: index("idx_characters_ability_priority").on(
+			table.abilityPriority,
+		),
+	}),
+);
 
 export const memoryEntries = pgTable("MemoryEntry", {
 	id: serial("id").primaryKey(),

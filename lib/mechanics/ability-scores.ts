@@ -186,3 +186,109 @@ export function generateAbilityScoresForClass(className: string): {
 		},
 	};
 }
+/**
+ * Get ability score bonuses based on priority selection
+ * Physical: +2 STR/DEX, +1 CON
+ * Mental: +2 INT/WIS, +1 CON
+ * Social: +2 CHA/WIS, +1 CON
+ */
+export function getPriorityBonuses(
+	priority: "physical" | "mental" | "social",
+): {
+	str: number;
+	dex: number;
+	con: number;
+	int: number;
+	wis: number;
+	cha: number;
+} {
+	switch (priority) {
+		case "physical":
+			return { str: 2, dex: 2, con: 1, int: 0, wis: 0, cha: 0 };
+		case "mental":
+			return { str: 0, dex: 0, con: 1, int: 2, wis: 2, cha: 0 };
+		case "social":
+			return { str: 0, dex: 0, con: 1, int: 0, wis: 2, cha: 2 };
+		default:
+			return { str: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 0 };
+	}
+}
+
+/**
+ * Apply bonuses to ability scores
+ */
+function applyBonusesToScores(
+	scores: {
+		str: number;
+		dex: number;
+		con: number;
+		int: number;
+		wis: number;
+		cha: number;
+	},
+	bonuses: {
+		str: number;
+		dex: number;
+		con: number;
+		int: number;
+		wis: number;
+		cha: number;
+	},
+): {
+	str: number;
+	dex: number;
+	con: number;
+	int: number;
+	wis: number;
+	cha: number;
+} {
+	return {
+		str: scores.str + bonuses.str,
+		dex: scores.dex + bonuses.dex,
+		con: scores.con + bonuses.con,
+		int: scores.int + bonuses.int,
+		wis: scores.wis + bonuses.wis,
+		cha: scores.cha + bonuses.cha,
+	};
+}
+
+/**
+ * Generate ability scores with priority-based bonuses
+ * Generates base scores then applies priority bonuses
+ */
+export function generateAbilityScoresWithPriority(
+	priority: "physical" | "mental" | "social",
+): {
+	scores: {
+		str: number;
+		dex: number;
+		con: number;
+		int: number;
+		wis: number;
+		cha: number;
+	};
+	modifiers: {
+		str: number;
+		dex: number;
+		con: number;
+		int: number;
+		wis: number;
+		cha: number;
+	};
+} {
+	const baseScores = generateAbilityScores();
+	const bonuses = getPriorityBonuses(priority);
+	const adjustedScores = applyBonusesToScores(baseScores.scores, bonuses);
+
+	return {
+		scores: adjustedScores,
+		modifiers: {
+			str: scoreToModifier(adjustedScores.str),
+			dex: scoreToModifier(adjustedScores.dex),
+			con: scoreToModifier(adjustedScores.con),
+			int: scoreToModifier(adjustedScores.int),
+			wis: scoreToModifier(adjustedScores.wis),
+			cha: scoreToModifier(adjustedScores.cha),
+		},
+	};
+}

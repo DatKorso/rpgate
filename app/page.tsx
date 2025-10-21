@@ -1,7 +1,7 @@
 "use client";
-import { CharacterPanel } from "@/components/chat/character-panel";
 import { ChatInput } from "@/components/chat/chat-input";
 import { ChatMessages } from "@/components/chat/chat-messages";
+import { EnhancedCharacterPanel } from "@/components/chat/enhanced-character-panel";
 import { LoadingIndicator } from "@/components/chat/loading-indicator";
 import { MemoryIndicator } from "@/components/chat/memory-indicator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -35,13 +35,19 @@ export default function HomePage() {
 		});
 	}, []);
 
-	async function saveProfile(newClassName: string, newBio: string) {
-		setClassName(newClassName);
-		setBio(newBio);
+	async function saveProfile(profile: {
+		className: string;
+		bio: string;
+		appearance?: import("@/lib/agents/protocol").AppearanceData;
+		background?: import("@/lib/agents/protocol").BackgroundData;
+		abilityPriority?: "physical" | "mental" | "social";
+	}) {
+		setClassName(profile.className);
+		setBio(profile.bio);
 		const r = await fetch("/api/character", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ className: newClassName, bio: newBio }),
+			body: JSON.stringify(profile),
 		});
 		if (!r.ok) {
 			const msg = await r.text();
@@ -286,7 +292,7 @@ export default function HomePage() {
 					</Card>
 
 					<div className="space-y-4">
-						<CharacterPanel
+						<EnhancedCharacterPanel
 							key={characterKey}
 							onSave={saveProfile}
 							onReset={resetSession}

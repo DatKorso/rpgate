@@ -11,7 +11,14 @@ import {
 	type Message,
 	streamOpenRouter,
 } from "@/lib/llm/openrouter";
-import type { MemoryEntryData, PlayerInput, RulesOutput } from "./protocol";
+import type {
+	AppearanceData,
+	BackgroundData,
+	EnhancedCharacterProfile,
+	MemoryEntryData,
+	PlayerInput,
+	RulesOutput,
+} from "./protocol";
 
 function buildSystemPrompt() {
 	// Compressed prompt (optimized for Grok - no caching support)
@@ -24,23 +31,118 @@ function buildSystemPrompt() {
 	);
 }
 
+/**
+ * Format appearance data for narrative context
+ */
+export function formatAppearanceForNarrative(
+	appearance: AppearanceData,
+): string {
+	const parts: string[] = [];
+
+	if (appearance.age) {
+		parts.push(`${appearance.age} лет`);
+	}
+
+	if (appearance.height) {
+		const heightMap = {
+			низкий: "низкого роста",
+			средний: "среднего роста",
+			высокий: "высокого роста",
+		};
+		parts.push(heightMap[appearance.height]);
+	}
+
+	if (appearance.build) {
+		const buildMap = {
+			худощавый: "худощавого телосложения",
+			крепкий: "крепкого телосложения",
+			полный: "полного телосложения",
+		};
+		parts.push(buildMap[appearance.build]);
+	}
+
+	if (appearance.hair) {
+		const hairMap = {
+			темные: "с темными волосами",
+			светлые: "со светлыми волосами",
+			рыжие: "с рыжими волосами",
+			седые: "с седыми волосами",
+		};
+		parts.push(hairMap[appearance.hair]);
+	}
+
+	if (appearance.eyes) {
+		const eyeMap = {
+			карие: "с карими глазами",
+			голубые: "с голубыми глазами",
+			зеленые: "с зелеными глазами",
+			серые: "с серыми глазами",
+		};
+		parts.push(eyeMap[appearance.eyes]);
+	}
+
+	if (appearance.distinguishingMarks) {
+		parts.push(`особые приметы: ${appearance.distinguishingMarks}`);
+	}
+
+	return parts.join(", ");
+}
+
+/**
+ * Format background data for narrative context
+ */
+export function formatBackgroundForNarrative(
+	background: BackgroundData,
+): string {
+	const parts: string[] = [];
+
+	if (background.origin) {
+		const originMap = {
+			деревня: "родом из деревни",
+			город: "родом из города",
+			дворянство: "дворянского происхождения",
+			кочевники: "из кочевого племени",
+		};
+		parts.push(originMap[background.origin]);
+	}
+
+	if (background.profession) {
+		const professionMap = {
+			ремесленник: "по профессии ремесленник",
+			торговец: "по профессии торговец",
+			солдат: "по профессии солдат",
+			ученый: "по профессии ученый",
+		};
+		parts.push(professionMap[background.profession]);
+	}
+
+	if (background.motivation) {
+		parts.push(`мотивация: ${background.motivation}`);
+	}
+
+	return parts.join(", ");
+}
+
 function buildUserPrompt(
 	input: PlayerInput,
 	rules: RulesOutput,
 	outcome: { success: boolean; critical: boolean; margin: number } | null,
 	history: { role: "player" | "gm"; content: string }[],
-	characterProfile?: {
-		className: string;
-		bio: string;
-		abilities: {
-			str: number;
-			dex: number;
-			con: number;
-			int: number;
-			wis: number;
-			cha: number;
-		};
-	} | null,
+	characterProfile?:
+		| EnhancedCharacterProfile
+		| {
+				className: string;
+				bio: string;
+				abilities: {
+					str: number;
+					dex: number;
+					con: number;
+					int: number;
+					wis: number;
+					cha: number;
+				};
+		  }
+		| null,
 	memories?: MemoryEntryData[],
 	worldKnowledge?: WorldKnowledgeContext,
 	playerKnowledge?: PlayerKnowledgeContext,
@@ -62,7 +164,43 @@ function buildUserPrompt(
 	if (characterProfile) {
 		const { className, bio, abilities } = characterProfile;
 		const abilityStr = `СИЛ${abilities.str >= 0 ? "+" : ""}${abilities.str} ЛОВ${abilities.dex >= 0 ? "+" : ""}${abilities.dex} ТЕЛ${abilities.con >= 0 ? "+" : ""}${abilities.con} ИНТ${abilities.int >= 0 ? "+" : ""}${abilities.int} МДР${abilities.wis >= 0 ? "+" : ""}${abilities.wis} ХАР${abilities.cha >= 0 ? "+" : ""}${abilities.cha}`;
-		profile = `${className || "Искатель"}. ${bio ? `${bio}. ` : ""}${abilityStr}.`;
+
+		const profileParts = [`${className || "Искатель"}`];
+
+		if (bio) {
+			profileParts.push(bio);
+		}
+
+		// Add appearance if available (enhanced profile)
+		if (
+			"appearance" in characterProfile &&
+			characterProfile.appearance &&
+			Object.keys(characterProfile.appearance).length > 0
+		) {
+			const appearanceText = formatAppearanceForNarrative(
+				characterProfile.appearance,
+			);
+			if (appearanceText) {
+				profileParts.push(`Внешность: ${appearanceText}`);
+			}
+		}
+
+		// Add background if available (enhanced profile)
+		if (
+			"background" in characterProfile &&
+			characterProfile.background &&
+			Object.keys(characterProfile.background).length > 0
+		) {
+			const backgroundText = formatBackgroundForNarrative(
+				characterProfile.background,
+			);
+			if (backgroundText) {
+				profileParts.push(`Предыстория: ${backgroundText}`);
+			}
+		}
+
+		profileParts.push(abilityStr);
+		profile = `${profileParts.join(". ")}.`;
 	}
 
 	// Format memories for prompt context in Russian
@@ -109,18 +247,21 @@ export async function* streamNarrative(
 	rules: RulesOutput,
 	outcome: { success: boolean; critical: boolean; margin: number } | null,
 	history: { role: "player" | "gm"; content: string }[],
-	characterProfile?: {
-		className: string;
-		bio: string;
-		abilities: {
-			str: number;
-			dex: number;
-			con: number;
-			int: number;
-			wis: number;
-			cha: number;
-		};
-	} | null,
+	characterProfile?:
+		| EnhancedCharacterProfile
+		| {
+				className: string;
+				bio: string;
+				abilities: {
+					str: number;
+					dex: number;
+					con: number;
+					int: number;
+					wis: number;
+					cha: number;
+				};
+		  }
+		| null,
 	memories?: MemoryEntryData[],
 	worldKnowledge?: WorldKnowledgeContext,
 	playerKnowledge?: PlayerKnowledgeContext,

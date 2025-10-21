@@ -882,7 +882,7 @@ describe("Player Knowledge Integration", () => {
 			process.env.DATABASE_URL = originalUrl;
 		});
 
-		it("should handle missing world entity", async () => {
+		it("should auto-create missing world entity", async () => {
 			vi.mocked(callOpenRouter).mockResolvedValue({
 				ok: true,
 				json: async () => ({
@@ -919,9 +919,19 @@ describe("Player Knowledge Integration", () => {
 			);
 			const result = await persistPlayerKnowledge(testSessionId, 1, update);
 
-			// Should have error for missing entity
-			expect(result.errors.length).toBeGreaterThan(0);
-			expect(result.knowledgeCreated).toBe(0);
+			// Should auto-create missing entity and succeed
+			expect(result.errors.length).toBe(0);
+			expect(result.knowledgeCreated).toBe(1);
+			expect(result.factsAdded).toBe(1);
+
+			// Verify entity was created in worldEntities
+			const entities = await db
+				.select()
+				.from(worldEntities)
+				.where(eq(worldEntities.sessionId, testSessionId));
+			expect(entities).toHaveLength(1);
+			expect(entities[0].name).toBe("Неизвестныйnpc");
+			expect(entities[0].type).toBe("npc");
 		}, 10000);
 	});
 });

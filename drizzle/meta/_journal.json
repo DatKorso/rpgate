@@ -43,6 +43,20 @@
       "when": 1760738681235,
       "tag": "0005_clammy_fallen_one",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1760890273030,
+      "tag": "0006_kind_celestials",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1760893892389,
+      "tag": "0007_volatile_rage",
+      "breakpoints": true
     }
   ]
 }

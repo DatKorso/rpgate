@@ -169,9 +169,22 @@ async function upsertPlayerKnowledge(
 	}
 
 	if (entity.length === 0) {
-		throw new Error(
-			`Entity not found: ${knowledgeData.entityName} (${knowledgeData.entityType})`,
+		// Entity not found - create it automatically
+		console.warn(
+			`[Player Persistence] Entity not found, creating: ${knowledgeData.entityName} (${knowledgeData.entityType})`,
 		);
+		
+		const [newEntity] = await db
+			.insert(worldEntities)
+			.values({
+				sessionId,
+				type: knowledgeData.entityType,
+				name: normalizedName,
+				properties: {},
+			})
+			.returning();
+		
+		entity = [newEntity];
 	}
 
 	const entityId = entity[0].id;

@@ -5,10 +5,52 @@ export type { MemoryEntryData };
 
 export type CheckType = "none" | "skill" | "contest" | "save";
 
+export interface AppearanceData {
+	age?: number;
+	height?: "низкий" | "средний" | "высокий";
+	build?: "худощавый" | "крепкий" | "полный";
+	hair?: "темные" | "светлые" | "рыжие" | "седые";
+	eyes?: "карие" | "голубые" | "зеленые" | "серые";
+	distinguishingMarks?: string;
+}
+
+export interface BackgroundData {
+	origin?: "деревня" | "город" | "дворянство" | "кочевники";
+	profession?: "ремесленник" | "торговец" | "солдат" | "ученый";
+	motivation?: string;
+}
+
 export interface PlayerProfile {
 	name?: string;
 	className?: string; // свободная строка
 	bio?: string;
+	appearance?: AppearanceData;
+	background?: BackgroundData;
+	abilityPriority?: "physical" | "mental" | "social";
+}
+
+export interface EnhancedCharacterProfile {
+	// Core identity
+	name?: string;
+	className: string;
+	bio: string;
+
+	// Physical appearance
+	appearance: AppearanceData;
+
+	// Background story
+	background: BackgroundData;
+
+	// Game mechanics
+	abilityPriority?: "physical" | "mental" | "social";
+	abilities: {
+		str: number;
+		dex: number;
+		con: number;
+		int: number;
+		wis: number;
+		cha: number;
+	};
 }
 
 export interface PlayerInput {

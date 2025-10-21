@@ -2,7 +2,7 @@ import { db } from "@/db";
 import { messages, rolls, sessions, turns } from "@/db/schema";
 import {
 	computeSkillModifiers,
-	getCharacterProfile,
+	getEnhancedCharacterProfile,
 	getOrCreateCharacter,
 } from "@/lib/agents/character";
 import { retrieveMemories } from "@/lib/agents/memory";
@@ -378,7 +378,7 @@ export async function POST(req: Request) {
 			}
 
 			// Step 4: Get character profile from DB
-			const characterProfile = await getCharacterProfile(session.id);
+			const characterProfile = await getEnhancedCharacterProfile(session.id);
 
 			// Step 4.5: Wait for memory retrieval (if triggered)
 			let retrievedMemories:

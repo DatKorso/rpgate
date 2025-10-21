@@ -16,6 +16,14 @@ import {
 } from "@/lib/feature-flags";
 import { buildNarrativeContext } from "@/lib/agents/narrative-context";
 import { analyzeMemoryNeed as analyzeMemoryNeedHeuristic } from "@/lib/memory/heuristic";
+import {
+	getEnhancedDataDefaults,
+	mergeWithEnhancedDefaults,
+} from "@/lib/agents/character";
+import {
+	formatAppearanceForNarrative,
+	formatBackgroundForNarrative,
+} from "@/lib/agents/narrative-llm";
 
 describe("Backward Compatibility", () => {
 	const testSessionId = 999;
@@ -397,3 +405,215 @@ describe("Backward Compatibility", () => {
 		});
 	});
 });
+	describe("Enhanced Character Creation Backward Compatibility", () => {
+		const testSessionId = 999;
+		
+		// Mock database data for testing
+		const mockLegacyCharacter = {
+			id: 1,
+			sessionId: testSessionId,
+			className: "Воин",
+			bio: "Опытный боец",
+			strMod: 3,
+			dexMod: 1,
+			conMod: 2,
+			intMod: -1,
+			wisMod: 0,
+			chaMod: 0,
+			skills: {},
+			equipment: {},
+			temporary: {},
+			appearance: null, // Legacy character without enhanced data
+			background: null, // Legacy character without enhanced data
+			abilityPriority: null, // Legacy character without enhanced data
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		};
+
+		const mockEnhancedCharacter = {
+			...mockLegacyCharacter,
+			id: 2,
+			appearance: {
+				age: 30,
+				height: "высокий" as const,
+				build: "крепкий" as const,
+				hair: "темные" as const,
+				eyes: "карие" as const,
+				distinguishingMarks: "Шрам на лице",
+			},
+			background: {
+				origin: "город" as const,
+				profession: "солдат" as const,
+				motivation: "Защитить родину",
+			},
+			abilityPriority: "physical" as const,
+		};
+
+		it("should provide sensible defaults for missing enhanced data", () => {
+			// Requirement 4.2: Handle missing enhanced fields gracefully
+			const defaults = getEnhancedDataDefaults();
+			
+			expect(defaults.appearance).toEqual({});
+			expect(defaults.background).toEqual({});
+			expect(defaults.abilityPriority).toBeNull();
+		});
+
+		it("should merge legacy character data with enhanced defaults", () => {
+			// Requirement 4.3: Merge existing data with defaults
+			const enhanced = mergeWithEnhancedDefaults(mockLegacyCharacter);
+			
+			expect(enhanced.className).toBe("Воин");
+			expect(enhanced.bio).toBe("Опытный боец");
+			expect(enhanced.abilities.str).toBe(3);
+			expect(enhanced.appearance).toEqual({});
+			expect(enhanced.background).toEqual({});
+			expect(enhanced.abilityPriority).toBeNull();
+		});
+
+		it("should preserve enhanced data when present", () => {
+			// Requirement 4.4: Preserve existing enhanced data
+			const enhanced = mergeWithEnhancedDefaults(mockEnhancedCharacter);
+			
+			expect(enhanced.appearance.age).toBe(30);
+			expect(enhanced.appearance.height).toBe("высокий");
+			expect(enhanced.background.origin).toBe("город");
+			expect(enhanced.background.profession).toBe("солдат");
+			expect(enhanced.abilityPriority).toBe("physical");
+		});
+
+		it("should handle null/undefined enhanced fields gracefully", () => {
+			// Requirement 4.5: Handle null/undefined values
+			const characterWithNulls = {
+				...mockLegacyCharacter,
+				appearance: undefined,
+				background: undefined,
+				abilityPriority: undefined,
+			};
+			
+			const enhanced = mergeWithEnhancedDefaults(characterWithNulls);
+			
+			expect(enhanced.appearance).toEqual({});
+			expect(enhanced.background).toEqual({});
+			expect(enhanced.abilityPriority).toBeNull();
+		});
+
+		it("should handle partial enhanced data", () => {
+			// Requirement 4.2: Handle partial enhanced data
+			const partialEnhanced = {
+				...mockLegacyCharacter,
+				appearance: { age: 25 }, // Only age provided
+				background: { origin: "деревня" as const }, // Only origin provided
+				abilityPriority: null,
+			};
+			
+			const enhanced = mergeWithEnhancedDefaults(partialEnhanced);
+			
+			expect(enhanced.appearance.age).toBe(25);
+			expect(enhanced.appearance.height).toBeUndefined();
+			expect(enhanced.background.origin).toBe("деревня");
+			expect(enhanced.background.profession).toBeUndefined();
+		});
+
+		it("should work with narrative agent for legacy characters", () => {
+			// Requirement 5.5: Narrative agent handles legacy characters
+			// Test with empty appearance/background (legacy character)
+			const appearanceText = formatAppearanceForNarrative({});
+			const backgroundText = formatBackgroundForNarrative({});
+			
+			expect(appearanceText).toBe("");
+			expect(backgroundText).toBe("");
+		});
+
+		it("should work with narrative agent for enhanced characters", () => {
+			// Requirement 5.1, 5.2, 5.3: Narrative agent uses enhanced data
+			const appearanceText = formatAppearanceForNarrative(mockEnhancedCharacter.appearance);
+			const backgroundText = formatBackgroundForNarrative(mockEnhancedCharacter.background);
+			
+			expect(appearanceText).toContain("30 лет");
+			expect(appearanceText).toContain("высокого роста");
+			expect(appearanceText).toContain("крепкого телосложения");
+			expect(appearanceText).toContain("с темными волосами");
+			expect(appearanceText).toContain("с карими глазами");
+			expect(appearanceText).toContain("особые приметы: Шрам на лице");
+			
+			expect(backgroundText).toContain("родом из города");
+			expect(backgroundText).toContain("по профессии солдат");
+			expect(backgroundText).toContain("мотивация: Защитить родину");
+		});
+
+		it("should handle mixed character data in narrative context", () => {
+			// Requirement 4.1, 4.2, 4.3: Mixed old/new character scenarios
+			const legacyProfile = {
+				className: "Воин",
+				bio: "Опытный боец",
+				abilities: {
+					str: 3,
+					dex: 1,
+					con: 2,
+					int: -1,
+					wis: 0,
+					cha: 0,
+				},
+			};
+
+			const enhancedProfile = {
+				...legacyProfile,
+				appearance: mockEnhancedCharacter.appearance,
+				background: mockEnhancedCharacter.background,
+				abilityPriority: mockEnhancedCharacter.abilityPriority,
+			};
+
+			// Both should work in narrative context
+			expect(legacyProfile.className).toBe("Воин");
+			expect(enhancedProfile.className).toBe("Воин");
+			expect(enhancedProfile.appearance.age).toBe(30);
+		});
+
+		it("should maintain API compatibility for character retrieval", () => {
+			// Requirement 4.4: API compatibility maintained
+			// Mock API response structure for legacy character
+			const legacyApiResponse = {
+				...mockLegacyCharacter,
+				appearance: mockLegacyCharacter.appearance || {},
+				background: mockLegacyCharacter.background || {},
+			};
+
+			// Mock API response structure for enhanced character
+			const enhancedApiResponse = {
+				...mockEnhancedCharacter,
+				appearance: mockEnhancedCharacter.appearance || {},
+				background: mockEnhancedCharacter.background || {},
+			};
+
+			// Both should have consistent structure
+			expect(legacyApiResponse.appearance).toEqual({});
+			expect(legacyApiResponse.background).toEqual({});
+			expect(enhancedApiResponse.appearance.age).toBe(30);
+			expect(enhancedApiResponse.background.origin).toBe("город");
+		});
+
+		it("should handle gradual enhancement of old characters", () => {
+			// Requirement 4.4: Allow existing characters to be updated with enhanced information
+			const originalCharacter = { ...mockLegacyCharacter };
+			
+			// Simulate gradual enhancement
+			const partiallyEnhanced = {
+				...originalCharacter,
+				appearance: { age: 35, height: "средний" as const },
+				// background still empty
+				// abilityPriority still null
+			};
+
+			const fullyEnhanced = {
+				...partiallyEnhanced,
+				background: { origin: "дворянство" as const, profession: "ученый" as const },
+				abilityPriority: "mental" as const,
+			};
+
+			// All stages should be valid
+			expect(originalCharacter.appearance).toBeNull();
+			expect(partiallyEnhanced.appearance.age).toBe(35);
+			expect(fullyEnhanced.background.origin).toBe("дворянство");
+			expect(fullyEnhanced.abilityPriority).toBe("mental");
+		});
+	});

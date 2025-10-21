@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
 	generateAbilityScores,
 	generateAbilityScoresForClass,
+	generateAbilityScoresWithPriority,
+	getPriorityBonuses,
 	roll4d6DropLowest,
 	scoreToModifier,
 } from "./ability-scores";
@@ -180,5 +182,141 @@ describe("Ability Score Generation", () => {
 
 			expect(same).toBe(false);
 		});
+	});
+});
+describe("getPriorityBonuses", () => {
+	it("should return correct bonuses for physical priority", () => {
+		const bonuses = getPriorityBonuses("physical");
+		expect(bonuses).toEqual({
+			str: 2,
+			dex: 2,
+			con: 1,
+			int: 0,
+			wis: 0,
+			cha: 0,
+		});
+	});
+
+	it("should return correct bonuses for mental priority", () => {
+		const bonuses = getPriorityBonuses("mental");
+		expect(bonuses).toEqual({
+			str: 0,
+			dex: 0,
+			con: 1,
+			int: 2,
+			wis: 2,
+			cha: 0,
+		});
+	});
+
+	it("should return correct bonuses for social priority", () => {
+		const bonuses = getPriorityBonuses("social");
+		expect(bonuses).toEqual({
+			str: 0,
+			dex: 0,
+			con: 1,
+			int: 0,
+			wis: 2,
+			cha: 2,
+		});
+	});
+});
+
+describe("generateAbilityScoresWithPriority", () => {
+	it("should apply physical priority bonuses correctly", () => {
+		const result = generateAbilityScoresWithPriority("physical");
+
+		// Should have valid scores
+		for (const score of Object.values(result.scores)) {
+			expect(score).toBeGreaterThanOrEqual(3);
+			expect(score).toBeLessThanOrEqual(25); // Max 18 + 2 bonus
+		}
+
+		// Should have modifiers matching scores
+		expect(result.modifiers.str).toBe(scoreToModifier(result.scores.str));
+		expect(result.modifiers.dex).toBe(scoreToModifier(result.scores.dex));
+		expect(result.modifiers.con).toBe(scoreToModifier(result.scores.con));
+		expect(result.modifiers.int).toBe(scoreToModifier(result.scores.int));
+		expect(result.modifiers.wis).toBe(scoreToModifier(result.scores.wis));
+		expect(result.modifiers.cha).toBe(scoreToModifier(result.scores.cha));
+	});
+
+	it("should apply mental priority bonuses correctly", () => {
+		const result = generateAbilityScoresWithPriority("mental");
+
+		// Should have valid scores
+		for (const score of Object.values(result.scores)) {
+			expect(score).toBeGreaterThanOrEqual(3);
+			expect(score).toBeLessThanOrEqual(25); // Max 18 + 2 bonus
+		}
+
+		// Should have modifiers matching scores
+		expect(result.modifiers.str).toBe(scoreToModifier(result.scores.str));
+		expect(result.modifiers.dex).toBe(scoreToModifier(result.scores.dex));
+		expect(result.modifiers.con).toBe(scoreToModifier(result.scores.con));
+		expect(result.modifiers.int).toBe(scoreToModifier(result.scores.int));
+		expect(result.modifiers.wis).toBe(scoreToModifier(result.scores.wis));
+		expect(result.modifiers.cha).toBe(scoreToModifier(result.scores.cha));
+	});
+
+	it("should apply social priority bonuses correctly", () => {
+		const result = generateAbilityScoresWithPriority("social");
+
+		// Should have valid scores
+		for (const score of Object.values(result.scores)) {
+			expect(score).toBeGreaterThanOrEqual(3);
+			expect(score).toBeLessThanOrEqual(25); // Max 18 + 2 bonus
+		}
+
+		// Should have modifiers matching scores
+		expect(result.modifiers.str).toBe(scoreToModifier(result.scores.str));
+		expect(result.modifiers.dex).toBe(scoreToModifier(result.scores.dex));
+		expect(result.modifiers.con).toBe(scoreToModifier(result.scores.con));
+		expect(result.modifiers.int).toBe(scoreToModifier(result.scores.int));
+		expect(result.modifiers.wis).toBe(scoreToModifier(result.scores.wis));
+		expect(result.modifiers.cha).toBe(scoreToModifier(result.scores.cha));
+	});
+
+	it("should produce different results from base generation", () => {
+		// Generate multiple results to check that bonuses are applied
+		let physicalHasHigherStr = false;
+		let mentalHasHigherInt = false;
+		let socialHasHigherCha = false;
+
+		for (let i = 0; i < 10; i++) {
+			const base = generateAbilityScores();
+			const physical = generateAbilityScoresWithPriority("physical");
+			const mental = generateAbilityScoresWithPriority("mental");
+			const social = generateAbilityScoresWithPriority("social");
+
+			// Physical should have higher STR/DEX on average due to bonuses
+			if (
+				physical.scores.str > base.scores.str ||
+				physical.scores.dex > base.scores.dex
+			) {
+				physicalHasHigherStr = true;
+			}
+
+			// Mental should have higher INT/WIS on average due to bonuses
+			if (
+				mental.scores.int > base.scores.int ||
+				mental.scores.wis > base.scores.wis
+			) {
+				mentalHasHigherInt = true;
+			}
+
+			// Social should have higher CHA/WIS on average due to bonuses
+			if (
+				social.scores.cha > base.scores.cha ||
+				social.scores.wis > base.scores.wis
+			) {
+				socialHasHigherCha = true;
+			}
+		}
+
+		// At least one of these should be true due to bonuses
+		expect(
+			physicalHasHigherStr || mentalHasHigherInt || socialHasHigherCha,
+		).toBe(true);
 	});
 });

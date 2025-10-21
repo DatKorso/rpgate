@@ -46,7 +46,69 @@ export async function classifyRulesLLM(
 
 Верни ТОЛЬКО JSON объект, начинающийся с { и заканчивающийся }.`;
 
-	const userPrompt = `История:\n${history}\n\nДействие: ${input.content}\nКласс: ${input.profile?.className ?? ""}\nБио: ${input.profile?.bio ?? ""}`;
+	// Build character context including enhanced data if available
+	let characterContext = "";
+	if (input.profile) {
+		const parts: string[] = [];
+
+		if (input.profile.className) {
+			parts.push(`Класс: ${input.profile.className}`);
+		}
+
+		if (input.profile.bio) {
+			parts.push(`Био: ${input.profile.bio}`);
+		}
+
+		// Add appearance context if available (enhanced profile)
+		if (
+			input.profile.appearance &&
+			Object.keys(input.profile.appearance).length > 0
+		) {
+			const appearance = input.profile.appearance;
+			const appearanceParts: string[] = [];
+
+			if (appearance.age) appearanceParts.push(`${appearance.age} лет`);
+			if (appearance.height) appearanceParts.push(`рост ${appearance.height}`);
+			if (appearance.build)
+				appearanceParts.push(`телосложение ${appearance.build}`);
+
+			if (appearanceParts.length > 0) {
+				parts.push(`Внешность: ${appearanceParts.join(", ")}`);
+			}
+		}
+
+		// Add background context if available (enhanced profile)
+		if (
+			input.profile.background &&
+			Object.keys(input.profile.background).length > 0
+		) {
+			const background = input.profile.background;
+			const backgroundParts: string[] = [];
+
+			if (background.origin)
+				backgroundParts.push(`происхождение: ${background.origin}`);
+			if (background.profession)
+				backgroundParts.push(`профессия: ${background.profession}`);
+
+			if (backgroundParts.length > 0) {
+				parts.push(`Предыстория: ${backgroundParts.join(", ")}`);
+			}
+		}
+
+		// Add ability priority context if available
+		if (input.profile.abilityPriority) {
+			const priorityMap = {
+				physical: "физические способности",
+				mental: "умственные способности",
+				social: "социальные способности",
+			};
+			parts.push(`Приоритет: ${priorityMap[input.profile.abilityPriority]}`);
+		}
+
+		characterContext = parts.join("\n");
+	}
+
+	const userPrompt = `История:\n${history}\n\nДействие: ${input.content}${characterContext ? `\n${characterContext}` : ""}`;
 
 	const messages: Message[] = [
 		{ role: "system", content: systemPrompt },
