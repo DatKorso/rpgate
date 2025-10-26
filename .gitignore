@@ -68,3 +68,6 @@ docker-compose.override.yml
 
 # Github Copilot settings
 .github/
+
+# VS Code settings
+.vscode/

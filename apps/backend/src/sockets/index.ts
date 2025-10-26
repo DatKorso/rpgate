@@ -10,48 +10,102 @@ import { WEBSOCKET_EVENTS } from "@rpgate/shared/constants";
  * Register WebSocket route and handlers
  */
 export async function registerWebSocketHandlers(fastify: FastifyInstance): Promise<void> {
-  // WebSocket route
-  fastify.register(async function (fastify) {
-    fastify.get('/ws', { websocket: true }, (connection: any) => {
-      const connectionId = generateConnectionId();
-      const connectionData = {
-        socket: connection.socket,
-        rooms: new Set<string>(),
-        user: undefined as WebSocketUser | undefined,
-      };
+  try {
+    // WebSocket route
+    await fastify.register(async function (fastify) {
+      fastify.get('/ws', { websocket: true }, (connection: any) => {
+        const connectionId = generateConnectionId();
+        const connectionData = {
+          socket: connection.socket,
+          rooms: new Set<string>(),
+          user: undefined as WebSocketUser | undefined,
+        };
 
-      // Store connection
-      (fastify as any).websocketConnections.set(connectionId, connectionData);
+        // Enhanced connection data
+        const enhancedConnectionData = {
+          ...connectionData,
+          connectedAt: new Date(),
+          lastActivity: new Date(),
+          messageCount: 0,
+        };
 
-      fastify.log.info({ connectionId }, "WebSocket connected");
+        // Store connection
+        (fastify as any).websocketConnections.set(connectionId, enhancedConnectionData);
+        (fastify as any).websocketMetrics.trackConnection(connectionId);
 
-      connection.socket.on('message', (message: any) => {
-        try {
-          const data: ClientToServerMessage = JSON.parse(message.toString());
-          handleClientMessage(fastify, connectionId, connectionData, data);
-        } catch (error) {
-          fastify.log.error({ error, connectionId }, "Failed to parse WebSocket message");
-          sendError(connection.socket, "Invalid message format");
-        }
-      });
+        fastify.log.info({ 
+          connectionId,
+          remoteAddress: connection.socket.remoteAddress,
+          userAgent: connection.socket.headers?.['user-agent'],
+          timestamp: new Date().toISOString(),
+        }, "WebSocket connection established");
 
-      connection.socket.on('close', () => {
-        fastify.log.info({ connectionId }, "WebSocket disconnected");
-        
-        // Leave all rooms
-        for (const room of connectionData.rooms) {
-          leaveRoom(fastify, connectionId, connectionData, room);
-        }
-        
-        // Remove connection
-        (fastify as any).websocketConnections.delete(connectionId);
-      });
+        connection.socket.on('message', (message: any) => {
+          try {
+            const data: ClientToServerMessage = JSON.parse(message.toString());
+            
+            // Update activity and message count
+            enhancedConnectionData.lastActivity = new Date();
+            enhancedConnectionData.messageCount++;
+            (fastify as any).websocketMetrics.trackMessage();
+            
+            fastify.log.debug({ 
+              connectionId, 
+              messageType: data.type,
+              messageCount: enhancedConnectionData.messageCount,
+            }, "WebSocket message received");
+            
+            handleClientMessage(fastify, connectionId, enhancedConnectionData, data);
+          } catch (error) {
+            (fastify as any).websocketMetrics.trackError();
+            fastify.log.error({ 
+              error, 
+              connectionId,
+              rawMessage: message.toString().substring(0, 100), // Log first 100 chars
+              messageCount: enhancedConnectionData.messageCount,
+            }, "Failed to parse WebSocket message");
+            sendError(connection.socket, "Invalid message format", connectionId);
+          }
+        });
 
-      connection.socket.on('error', (error: any) => {
-        fastify.log.error({ error, connectionId }, "WebSocket error");
+        connection.socket.on('close', (code: number, reason: string) => {
+          const duration = Date.now() - enhancedConnectionData.connectedAt.getTime();
+          
+          fastify.log.info({ 
+            connectionId, 
+            code, 
+            reason: reason.toString(),
+            roomCount: enhancedConnectionData.rooms.size,
+            messageCount: enhancedConnectionData.messageCount,
+            duration: Math.round(duration / 1000), // Duration in seconds
+          }, "WebSocket connection closed");
+          
+          // Use cleanup function from plugin
+          (fastify as any).websocketCleanup(connectionId);
+        });
+
+        connection.socket.on('error', (error: any) => {
+          (fastify as any).websocketMetrics.trackError();
+          fastify.log.error({ 
+            error, 
+            connectionId,
+            errorCode: error.code,
+            errorMessage: error.message,
+            messageCount: enhancedConnectionData.messageCount,
+            roomCount: enhancedConnectionData.rooms.size,
+          }, "WebSocket connection error");
+        });
+
+        // Log connection established (no need to send a message as it's not in the type system)
+        fastify.log.debug({ connectionId }, "WebSocket connection ready for messages");
       });
     });
-  });
+
+    fastify.log.info("WebSocket handlers registered successfully");
+  } catch (error) {
+    fastify.log.error({ error }, "Failed to register WebSocket handlers");
+    throw error;
+  }
 }
 
 function generateConnectionId(): string {
@@ -86,8 +140,13 @@ function handleClientMessage(
       break;
     
     default:
-      fastify.log.warn({ type: message.type, connectionId }, "Unknown message type");
-      sendError(connectionData.socket, "Unknown message type");
+      // TypeScript exhaustiveness check - this should never happen
+      const exhaustiveCheck: never = message;
+      fastify.log.warn({ 
+        type: (exhaustiveCheck as any).type, 
+        connectionId 
+      }, "Unknown message type");
+      sendError(connectionData.socket, "Unknown message type", connectionId);
   }
 }
 
@@ -221,13 +280,21 @@ function handleTypingStop(
   (fastify as any).websocketPublish(roomId, message);
 }
 
-function sendError(socket: any, message: string) {
+function sendError(socket: any, message: string, _connectionId?: string) {
   const errorMessage: ServerToClientMessage = {
     type: WEBSOCKET_EVENTS.ERROR,
-    data: { message },
+    data: { 
+      message,
+      code: 'WEBSOCKET_ERROR'
+    },
   };
 
   if (socket.readyState === 1) {
-    socket.send(JSON.stringify(errorMessage));
+    try {
+      socket.send(JSON.stringify(errorMessage));
+    } catch (error) {
+      // Log error but don't throw to avoid cascading failures
+      console.error('Failed to send WebSocket error message:', error);
+    }
   }
 }

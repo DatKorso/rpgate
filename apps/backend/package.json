@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch --clear-screen=false --env-file=../../.env src/server.ts",
-    "build": "tsc",
+    "build": "pnpm clean && tsc",
     "start": "node dist/server.js",
     "type-check": "tsc --noEmit",
     "lint": "biome check .",
