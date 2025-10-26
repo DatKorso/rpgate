@@ -1,0 +1,32 @@
+{
+  "name": "@rpgate/database",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Database schemas and migrations with Drizzle ORM",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema/index.ts"
+  },
+  "scripts": {
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx src/migrate.ts",
+    "db:studio": "drizzle-kit studio",
+    "db:push": "drizzle-kit push",
+    "type-check": "tsc --noEmit",
+    "lint": "biome check .",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "@rpgate/shared": "workspace:*",
+    "drizzle-orm": "^0.37.0",
+    "postgres": "^3.4.5"
+  },
+  "devDependencies": {
+    "@rpgate/tsconfig": "workspace:*",
+    "@types/node": "^22.10.2",
+    "drizzle-kit": "^0.30.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

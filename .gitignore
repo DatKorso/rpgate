@@ -1,0 +1,70 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+*.lcov
+.nyc_output
+playwright-report/
+test-results/
+
+# Production
+dist/
+build/
+.next/
+out/
+
+# Environment
+.env
+.env*.local
+.env.production
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# OS
+.DS_Store
+*.pem
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+.vscode-test
+
+# Turbo
+.turbo/
+
+# Database
+*.db
+*.db-shm
+*.db-wal
+
+# Docker
+docker-compose.override.yml
+
+# Misc
+*.tsbuildinfo
+.cache/
+.temp/
+.tmp/
+
+# Kiro settings
+.kiro/
+
+# Github Copilot settings
+.github/

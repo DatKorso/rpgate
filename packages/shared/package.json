@@ -1,0 +1,27 @@
+{
+  "name": "@rpgate/shared",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Shared types, schemas, and utilities",
+  "type": "module",
+  "exports": {
+    "./schemas": "./src/schemas/index.ts",
+    "./types": "./src/types/index.ts",
+    "./constants": "./src/constants/index.ts",
+    "./utils": "./src/utils/index.ts"
+  },
+  "scripts": {
+    "build": "tsc",
+    "type-check": "tsc --noEmit",
+    "lint": "biome check .",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@rpgate/tsconfig": "workspace:*",
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  }
+}
