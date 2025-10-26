@@ -105,7 +105,7 @@ export function LoginForm() {
       // Error is handled by auth context and displayed via error state
       setFormErrors(prev => ({
         ...prev,
-        general: error || 'Login failed. Please check your credentials.',
+        general: error || 'Ошибка входа. Проверьте правильность данных.',
       }));
     } finally {
       setIsSubmitting(false);
@@ -117,9 +117,9 @@ export function LoginForm() {
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
-        <CardTitle>Welcome Back</CardTitle>
+        <CardTitle>Добро пожаловать!</CardTitle>
         <CardDescription>
-          Sign in to your RPGate account to continue your adventures
+          Войдите в свой аккаунт RPGate, чтобы продолжить приключения
         </CardDescription>
       </CardHeader>
       
@@ -128,12 +128,12 @@ export function LoginForm() {
           {/* Username Field */}
           <div className="space-y-2">
             <label htmlFor="username" className="text-sm font-medium">
-              Username
+              Имя пользователя
             </label>
             <Input
               id="username"
               type="text"
-              placeholder="Enter your username"
+              placeholder="Введите имя пользователя"
               value={formData.username}
               onChange={handleInputChange('username')}
               disabled={isFormDisabled}
@@ -152,12 +152,12 @@ export function LoginForm() {
           {/* Password Field */}
           <div className="space-y-2">
             <label htmlFor="password" className="text-sm font-medium">
-              Password
+              Пароль
             </label>
             <Input
               id="password"
               type="password"
-              placeholder="Enter your password"
+              placeholder="Введите пароль"
               value={formData.password}
               onChange={handleInputChange('password')}
               disabled={isFormDisabled}
@@ -186,7 +186,7 @@ export function LoginForm() {
             className="w-full"
             disabled={isFormDisabled}
           >
-            {isSubmitting ? 'Signing In...' : 'Sign In'}
+            {isSubmitting ? 'Вход...' : 'Войти'}
           </Button>
         </form>
       </CardContent>

@@ -12,21 +12,6 @@ const rateLimitPlugin: FastifyPluginAsync = async (fastify) => {
     timeWindow: env.RATE_LIMIT_WINDOW,
     redis: fastify.redis,
     
-    // Skip rate limiting for certain endpoints during development
-    skip: (request: any) => {
-      const skipPaths = ["/health", "/health/db", "/health/redis", "/health/detailed"];
-      if (skipPaths.includes(request.url)) {
-        return true;
-      }
-      
-      // Skip rate limiting for auth endpoints to avoid conflicts
-      if (request.url.startsWith("/api/v1/auth/")) {
-        return true;
-      }
-      
-      return false;
-    },
-    
     // Use IP address for rate limiting key
     keyGenerator: (request: any) => {
       // Use X-Forwarded-For if behind proxy, otherwise use connection IP

@@ -107,7 +107,7 @@ export function RegisterForm() {
       // Error is handled by auth context and displayed via error state
       setFormErrors(prev => ({
         ...prev,
-        general: error || 'Registration failed. Please try again.',
+        general: error || 'Ошибка регистрации. Попробуйте снова.',
       }));
     } finally {
       setIsSubmitting(false);
@@ -119,9 +119,9 @@ export function RegisterForm() {
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
-        <CardTitle>Create Account</CardTitle>
+        <CardTitle>Создать аккаунт</CardTitle>
         <CardDescription>
-          Join RPGate to start your tabletop RPG adventures
+          Присоединяйтесь к RPGate, чтобы начать свои приключения в настольных РПГ
         </CardDescription>
       </CardHeader>
       
@@ -130,12 +130,12 @@ export function RegisterForm() {
           {/* Username Field */}
           <div className="space-y-2">
             <label htmlFor="username" className="text-sm font-medium">
-              Username
+              Имя пользователя
             </label>
             <Input
               id="username"
               type="text"
-              placeholder="Enter your username"
+              placeholder="Введите имя пользователя"
               value={formData.username}
               onChange={handleInputChange('username')}
               disabled={isFormDisabled}
@@ -154,12 +154,12 @@ export function RegisterForm() {
           {/* Email Field */}
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium">
-              Email
+              Электронная почта
             </label>
             <Input
               id="email"
               type="email"
-              placeholder="Enter your email"
+              placeholder="Введите email"
               value={formData.email}
               onChange={handleInputChange('email')}
               disabled={isFormDisabled}
@@ -178,12 +178,12 @@ export function RegisterForm() {
           {/* Password Field */}
           <div className="space-y-2">
             <label htmlFor="password" className="text-sm font-medium">
-              Password
+              Пароль
             </label>
             <Input
               id="password"
               type="password"
-              placeholder="Enter your password"
+              placeholder="Введите пароль"
               value={formData.password}
               onChange={handleInputChange('password')}
               disabled={isFormDisabled}
@@ -198,7 +198,7 @@ export function RegisterForm() {
               </div>
             )}
             <div className="text-xs text-muted-foreground">
-              Minimum 8 characters required
+              Минимум 8 символов
             </div>
           </div>
 
@@ -215,7 +215,7 @@ export function RegisterForm() {
             className="w-full"
             disabled={isFormDisabled}
           >
-            {isSubmitting ? 'Creating Account...' : 'Create Account'}
+            {isSubmitting ? 'Создание аккаунта...' : 'Создать аккаунт'}
           </Button>
         </form>
       </CardContent>

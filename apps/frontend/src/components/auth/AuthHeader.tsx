@@ -96,7 +96,7 @@ export function AuthHeader() {
                   onClick={handleLogout}
                   disabled={isLoggingOut}
                 >
-                  {isLoggingOut ? 'Signing Out...' : 'Sign Out'}
+                  {isLoggingOut ? 'Выход...' : 'Выйти'}
                 </Button>
               </div>
             ) : (
@@ -108,7 +108,7 @@ export function AuthHeader() {
                   onClick={handleLoginClick}
                   disabled={loading}
                 >
-                  Sign In
+                  Вход
                 </Button>
                 <Button
                   variant="default"
@@ -116,7 +116,7 @@ export function AuthHeader() {
                   onClick={handleRegisterClick}
                   disabled={loading}
                 >
-                  Sign Up
+                  Регистрация
                 </Button>
               </div>
             )}

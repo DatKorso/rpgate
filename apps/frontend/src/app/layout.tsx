@@ -6,8 +6,8 @@ import { AuthProvider } from "@/contexts";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "RPGate - AI-Powered Tabletop RPG",
-  description: "Multiplayer chat with AI Game Master for D&D and other tabletop RPGs",
+  title: "RPGate - ИИ-Мастер для Настольных РПГ",
+  description: "Многопользовательский чат с ИИ-Мастером для D&D и других настольных РПГ",
 };
 
 export default function RootLayout({
@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ru">
       <body className={inter.className}>
         <AuthProvider>
           {children}

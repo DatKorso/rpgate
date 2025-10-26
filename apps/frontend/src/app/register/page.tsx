@@ -27,12 +27,12 @@ export default function RegisterPage() {
           {/* Login Link */}
           <div className="text-center">
             <p className="text-sm text-muted-foreground">
-              Already have an account?{' '}
+              Уже есть аккаунт?{' '}
               <Link 
                 href="/login" 
                 className="text-primary hover:text-primary/80 font-medium transition-colors"
               >
-                Sign in here
+                Войдите здесь
               </Link>
             </p>
           </div>

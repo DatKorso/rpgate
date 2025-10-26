@@ -1,6 +1,6 @@
 import type { FastifyPluginAsync } from "fastify";
 import fp from "fastify-plugin";
-import { authMiddleware, requireAuthMiddleware, optionalAuthMiddleware } from "../middleware/auth.middleware";
+import { requireAuthMiddleware, optionalAuthMiddleware } from "../middleware/auth.middleware";
 
 /**
  * Authentication plugin that registers authentication middleware
