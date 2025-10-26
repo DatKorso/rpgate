@@ -12,7 +12,9 @@ import securityPlugin from "./plugins/security.plugin";
 import corsPlugin from "./plugins/cors.plugin";
 import loggingPlugin from "./plugins/logging.plugin";
 import sessionPlugin from "./plugins/session.plugin";
+import authPlugin from "./plugins/auth.plugin";
 import rateLimitPlugin from "./plugins/rate-limit.plugin";
+import authRateLimitPlugin from "./plugins/auth-rate-limit.plugin";
 import healthCheckPlugin from "./plugins/health.plugin";
 import socketPlugin from "./plugins/socket.plugin";
 
@@ -49,7 +51,9 @@ const middlewarePlugins: PluginConfig[] = [
   { plugin: corsPlugin },
   { plugin: loggingPlugin },
   { plugin: sessionPlugin },
+  { plugin: authPlugin }, // Must be after session plugin
   { plugin: rateLimitPlugin },
+  { plugin: authRateLimitPlugin }, // Must be after general rate limiting
 ];
 
 /**

@@ -5,6 +5,7 @@
   "description": "Shared types, schemas, and utilities",
   "type": "module",
   "exports": {
+    ".": "./src/index.ts",
     "./schemas": "./src/schemas/index.ts",
     "./types": "./src/types/index.ts",
     "./constants": "./src/constants/index.ts",

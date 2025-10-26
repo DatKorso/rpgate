@@ -3,6 +3,8 @@ import { createSuccessResponse } from "../../../utils/response.util";
 
 // Import feature route modules
 import testRoutes from "./test";
+import authRoutes from "./auth";
+import userRoutes from "./users";
 
 /**
  * API v1 routes plugin
@@ -24,6 +26,8 @@ const v1Routes: FastifyPluginAsync = async (fastify) => {
         endpoints: {
           health: "/health",
           test: "/test",
+          auth: "/auth",
+          users: "/users",
           monitoring: "/monitoring",
         },
       },
@@ -33,12 +37,13 @@ const v1Routes: FastifyPluginAsync = async (fastify) => {
 
   // Register feature routes
   await fastify.register(testRoutes, { prefix: "/test" });
+  await fastify.register(authRoutes, { prefix: "/auth" });
+  await fastify.register(userRoutes, { prefix: "/users" });
   
   // Note: Monitoring endpoints are registered directly in the logging plugin
   // to have access to the request monitor instance
   
   // Future feature routes will be registered here:
-  // await fastify.register(authRoutes, { prefix: "/auth" });
   // await fastify.register(roomRoutes, { prefix: "/rooms" });
   // await fastify.register(messageRoutes, { prefix: "/messages" });
   // await fastify.register(userRoutes, { prefix: "/users" });
