@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
-import { getWebSocketClient } from '../lib/websocket';
-import type { WebSocketUser } from '@rpgate/shared/types';
-import { WEBSOCKET_EVENTS } from '@rpgate/shared/constants';
+import { WEBSOCKET_EVENTS } from "@rpgate/shared/constants";
+import type { WebSocketUser } from "@rpgate/shared/types";
+import { useEffect, useRef, useState } from "react";
+import { getWebSocketClient } from "../lib/websocket";
 
 interface UseWebSocketOptions {
   user?: WebSocketUser;
@@ -26,7 +26,7 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
 
   const connect = async () => {
     if (!user) {
-      setError('User is required to connect');
+      setError("User is required to connect");
       return;
     }
 
@@ -35,7 +35,7 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
       setIsConnected(true);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Connection failed');
+      setError(err instanceof Error ? err.message : "Connection failed");
       setIsConnected(false);
     }
   };

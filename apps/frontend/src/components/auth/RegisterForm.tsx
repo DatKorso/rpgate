@@ -1,12 +1,13 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { registerSchema, type RegisterInput } from '@rpgate/shared';
-import { useAuth } from '@/contexts/auth-context';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { useAuth } from "@/contexts/auth-context";
+import { type RegisterInput, registerSchema } from "@rpgate/shared";
+import { useRouter } from "next/navigation";
+import type React from "react";
+import { useState } from "react";
 
 /**
  * User registration form component
@@ -23,13 +24,13 @@ interface FormErrors {
 export function RegisterForm() {
   const router = useRouter();
   const { register, loading, error, clearError } = useAuth();
-  
+
   const [formData, setFormData] = useState<RegisterInput>({
-    username: '',
-    email: '',
-    password: '',
+    username: "",
+    email: "",
+    password: "",
   });
-  
+
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -38,24 +39,24 @@ export function RegisterForm() {
    */
   const validateForm = (): boolean => {
     const result = registerSchema.safeParse(formData);
-    
+
     if (!result.success) {
       const errors: FormErrors = {};
-      
+
       result.error.errors.forEach((error) => {
         const field = error.path[0] as keyof FormErrors;
-        if (field && field !== 'general') {
+        if (field && field !== "general") {
           if (!errors[field]) {
             errors[field] = [];
           }
-          errors[field]!.push(error.message);
+          errors[field]?.push(error.message);
         }
       });
-      
+
       setFormErrors(errors);
       return false;
     }
-    
+
     setFormErrors({});
     return true;
   };
@@ -63,51 +64,50 @@ export function RegisterForm() {
   /**
    * Handle input field changes
    */
-  const handleInputChange = (field: keyof RegisterInput) => (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = event.target.value;
-    
-    setFormData(prev => ({
-      ...prev,
-      [field]: value,
-    }));
-    
-    // Clear field-specific errors when user starts typing
-    if (formErrors[field]) {
-      setFormErrors(prev => ({
+  const handleInputChange =
+    (field: keyof RegisterInput) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value;
+
+      setFormData((prev) => ({
         ...prev,
-        [field]: undefined,
+        [field]: value,
       }));
-    }
-    
-    // Clear general auth errors
-    if (error) {
-      clearError();
-    }
-  };
+
+      // Clear field-specific errors when user starts typing
+      if (formErrors[field]) {
+        setFormErrors((prev) => ({
+          ...prev,
+          [field]: undefined,
+        }));
+      }
+
+      // Clear general auth errors
+      if (error) {
+        clearError();
+      }
+    };
 
   /**
    * Handle form submission
    */
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
-    
+
     try {
       setIsSubmitting(true);
       await register(formData);
-      
+
       // Registration successful, redirect to main app
-      router.push('/');
-    } catch (registrationError) {
+      router.push("/");
+    } catch (_registrationError) {
       // Error is handled by auth context and displayed via error state
-      setFormErrors(prev => ({
+      setFormErrors((prev) => ({
         ...prev,
-        general: error || 'Ошибка регистрации. Попробуйте снова.',
+        general: error || "Ошибка регистрации. Попробуйте снова.",
       }));
     } finally {
       setIsSubmitting(false);
@@ -124,7 +124,7 @@ export function RegisterForm() {
           Присоединяйтесь к RPGate, чтобы начать свои приключения в настольных РПГ
         </CardDescription>
       </CardHeader>
-      
+
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Username Field */}
@@ -137,9 +137,9 @@ export function RegisterForm() {
               type="text"
               placeholder="Введите имя пользователя"
               value={formData.username}
-              onChange={handleInputChange('username')}
+              onChange={handleInputChange("username")}
               disabled={isFormDisabled}
-              className={formErrors.username ? 'border-destructive' : ''}
+              className={formErrors.username ? "border-destructive" : ""}
               autoComplete="username"
             />
             {formErrors.username && (
@@ -161,9 +161,9 @@ export function RegisterForm() {
               type="email"
               placeholder="Введите email"
               value={formData.email}
-              onChange={handleInputChange('email')}
+              onChange={handleInputChange("email")}
               disabled={isFormDisabled}
-              className={formErrors.email ? 'border-destructive' : ''}
+              className={formErrors.email ? "border-destructive" : ""}
               autoComplete="email"
             />
             {formErrors.email && (
@@ -185,9 +185,9 @@ export function RegisterForm() {
               type="password"
               placeholder="Введите пароль"
               value={formData.password}
-              onChange={handleInputChange('password')}
+              onChange={handleInputChange("password")}
               disabled={isFormDisabled}
-              className={formErrors.password ? 'border-destructive' : ''}
+              className={formErrors.password ? "border-destructive" : ""}
               autoComplete="new-password"
             />
             {formErrors.password && (
@@ -197,9 +197,7 @@ export function RegisterForm() {
                 ))}
               </div>
             )}
-            <div className="text-xs text-muted-foreground">
-              Минимум 8 символов
-            </div>
+            <div className="text-xs text-muted-foreground">Минимум 8 символов</div>
           </div>
 
           {/* General Error Display */}
@@ -210,12 +208,8 @@ export function RegisterForm() {
           )}
 
           {/* Submit Button */}
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={isFormDisabled}
-          >
-            {isSubmitting ? 'Создание аккаунта...' : 'Создать аккаунт'}
+          <Button type="submit" className="w-full" disabled={isFormDisabled}>
+            {isSubmitting ? "Создание аккаунта..." : "Создать аккаунт"}
           </Button>
         </form>
       </CardContent>

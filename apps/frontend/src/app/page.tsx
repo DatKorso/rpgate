@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { useAuth } from '@/contexts/auth-context';
-import { AuthHeader } from '@/components/auth';
-import { Button } from '@/components/ui/button';
+import { AuthHeader } from "@/components/auth";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/auth-context";
+import Link from "next/link";
+import React from "react";
 
 export default function HomePage() {
   const { isAuthenticated, user, loading } = useAuth();
@@ -20,7 +20,9 @@ export default function HomePage() {
           {/* Welcome Section */}
           <div className="space-y-4">
             <h1 className="text-4xl font-bold">
-              {isAuthenticated && user ? `Добро пожаловать, ${user.username}!` : 'Добро пожаловать в RPGate'}
+              {isAuthenticated && user
+                ? `Добро пожаловать, ${user.username}!`
+                : "Добро пожаловать в RPGate"}
             </h1>
             <p className="text-xl text-muted-foreground">
               Многопользовательская платформа для настольных РПГ с ИИ-Мастером
@@ -49,7 +51,7 @@ export default function HomePage() {
                 </Button>
               )}
             </div>
-            
+
             <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
               <h2 className="text-xl font-semibold mb-2">ИИ-Мастер</h2>
               <p className="text-sm text-muted-foreground mb-4">

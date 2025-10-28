@@ -7,7 +7,7 @@ import { getWebSocketHealth, type WebSocketHealth } from "../utils/websocket.uti
  * Health status interface
  */
 interface HealthStatus {
-  status: 'healthy' | 'unhealthy' | 'degraded';
+  status: "healthy" | "unhealthy" | "degraded";
   timestamp: string;
   uptime: number;
   version: string;
@@ -36,7 +36,7 @@ interface RedisHealth {
  * Detailed health response interface
  */
 interface DetailedHealthResponse {
-  status: 'healthy' | 'unhealthy' | 'degraded';
+  status: "healthy" | "unhealthy" | "degraded";
   timestamp: string;
   uptime: number;
   version: string;
@@ -70,12 +70,12 @@ const healthCheckPlugin: FastifyPluginAsync = async (fastify) => {
   // Database health check endpoint
   fastify.get("/health/db", async (): Promise<DatabaseHealth> => {
     const startTime = Date.now();
-    
+
     try {
       // Test database connection with a simple query
       await fastify.db.execute("SELECT 1");
       const responseTime = Date.now() - startTime;
-      
+
       return {
         connected: true,
         responseTime,
@@ -83,9 +83,9 @@ const healthCheckPlugin: FastifyPluginAsync = async (fastify) => {
     } catch (error) {
       const responseTime = Date.now() - startTime;
       const errorMessage = error instanceof Error ? error.message : "Unknown database error";
-      
+
       fastify.log.error({ error }, "Database health check failed");
-      
+
       return {
         connected: false,
         responseTime,
@@ -97,12 +97,12 @@ const healthCheckPlugin: FastifyPluginAsync = async (fastify) => {
   // Redis health check endpoint
   fastify.get("/health/redis", async (): Promise<RedisHealth> => {
     const startTime = Date.now();
-    
+
     try {
       // Test Redis connection with a ping
       await fastify.redis.ping();
       const responseTime = Date.now() - startTime;
-      
+
       return {
         connected: true,
         responseTime,
@@ -110,9 +110,9 @@ const healthCheckPlugin: FastifyPluginAsync = async (fastify) => {
     } catch (error) {
       const responseTime = Date.now() - startTime;
       const errorMessage = error instanceof Error ? error.message : "Unknown Redis error";
-      
+
       fastify.log.error({ error }, "Redis health check failed");
-      
+
       return {
         connected: false,
         responseTime,
@@ -126,7 +126,7 @@ const healthCheckPlugin: FastifyPluginAsync = async (fastify) => {
     const metrics = (fastify as any).websocketMetrics;
     if (!metrics) {
       return {
-        status: 'unhealthy',
+        status: "unhealthy",
         stats: {
           totalConnections: 0,
           activeConnections: 0,
@@ -135,7 +135,7 @@ const healthCheckPlugin: FastifyPluginAsync = async (fastify) => {
           averageConnectionDuration: 0,
           errorRate: 0,
         },
-        errors: ['WebSocket metrics not available'],
+        errors: ["WebSocket metrics not available"],
         timestamp: new Date().toISOString(),
       };
     }
@@ -146,34 +146,40 @@ const healthCheckPlugin: FastifyPluginAsync = async (fastify) => {
   // Comprehensive health check endpoint
   fastify.get("/health/detailed", async (): Promise<DetailedHealthResponse> => {
     // Check database health
-    const dbHealth = await fastify.inject({
-      method: "GET",
-      url: "/health/db",
-    }).then(response => JSON.parse(response.body) as DatabaseHealth);
+    const dbHealth = await fastify
+      .inject({
+        method: "GET",
+        url: "/health/db",
+      })
+      .then((response) => JSON.parse(response.body) as DatabaseHealth);
 
     // Check Redis health
-    const redisHealth = await fastify.inject({
-      method: "GET",
-      url: "/health/redis",
-    }).then(response => JSON.parse(response.body) as RedisHealth);
+    const redisHealth = await fastify
+      .inject({
+        method: "GET",
+        url: "/health/redis",
+      })
+      .then((response) => JSON.parse(response.body) as RedisHealth);
 
     // Check WebSocket health
-    const websocketHealth = await fastify.inject({
-      method: "GET",
-      url: "/health/websocket",
-    }).then(response => JSON.parse(response.body) as WebSocketHealth);
+    const websocketHealth = await fastify
+      .inject({
+        method: "GET",
+        url: "/health/websocket",
+      })
+      .then((response) => JSON.parse(response.body) as WebSocketHealth);
 
     // Determine overall status
-    let overallStatus: 'healthy' | 'unhealthy' | 'degraded' = 'healthy';
-    
-    if (!dbHealth.connected || !redisHealth.connected || websocketHealth.status === 'unhealthy') {
-      overallStatus = 'unhealthy';
+    let overallStatus: "healthy" | "unhealthy" | "degraded" = "healthy";
+
+    if (!dbHealth.connected || !redisHealth.connected || websocketHealth.status === "unhealthy") {
+      overallStatus = "unhealthy";
     } else if (
-      dbHealth.responseTime > 1000 || 
-      redisHealth.responseTime > 1000 || 
-      websocketHealth.status === 'degraded'
+      dbHealth.responseTime > 1000 ||
+      redisHealth.responseTime > 1000 ||
+      websocketHealth.status === "degraded"
     ) {
-      overallStatus = 'degraded';
+      overallStatus = "degraded";
     }
 
     // Get performance metrics

@@ -23,7 +23,7 @@ const rootRoutes: FastifyPluginAsync = async (fastify) => {
           docs: "/docs",
         },
       },
-      request
+      request,
     );
   });
 

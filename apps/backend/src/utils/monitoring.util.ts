@@ -63,7 +63,7 @@ export class RequestMonitor {
    */
   recordRequest(metric: RequestMetrics): void {
     this.metrics.push(metric);
-    
+
     // Keep only the most recent metrics
     if (this.metrics.length > this.maxMetrics) {
       this.metrics = this.metrics.slice(-this.maxMetrics);
@@ -75,7 +75,7 @@ export class RequestMonitor {
    */
   getStats(timeWindowMinutes = 60): PerformanceStats {
     const cutoffTime = new Date(Date.now() - timeWindowMinutes * 60 * 1000);
-    const recentMetrics = this.metrics.filter(m => m.timestamp > cutoffTime);
+    const recentMetrics = this.metrics.filter((m) => m.timestamp > cutoffTime);
 
     if (recentMetrics.length === 0) {
       return {
@@ -94,49 +94,53 @@ export class RequestMonitor {
     const totalResponseTime = recentMetrics.reduce((sum, m) => sum + m.responseTime, 0);
     const averageResponseTime = totalResponseTime / totalRequests;
     const requestsPerSecond = totalRequests / (timeWindowMinutes * 60);
-    
+
     // Error rate
-    const errorRequests = recentMetrics.filter(m => m.statusCode >= 400).length;
+    const errorRequests = recentMetrics.filter((m) => m.statusCode >= 400).length;
     const errorRate = errorRequests / totalRequests;
 
     // Status code distribution
     const statusCodeDistribution: Record<string, number> = {};
-    recentMetrics.forEach(m => {
+    recentMetrics.forEach((m) => {
       const statusGroup = `${Math.floor(m.statusCode / 100)}xx`;
       statusCodeDistribution[statusGroup] = (statusCodeDistribution[statusGroup] || 0) + 1;
     });
 
     // Group by endpoint
-    const endpointStats = new Map<string, {
-      responseTimes: number[];
-      errorCount: number;
-      totalCount: number;
-    }>();
+    const endpointStats = new Map<
+      string,
+      {
+        responseTimes: number[];
+        errorCount: number;
+        totalCount: number;
+      }
+    >();
 
-    recentMetrics.forEach(m => {
+    recentMetrics.forEach((m) => {
       const key = `${m.method} ${m.route}`;
       const stats = endpointStats.get(key) || {
         responseTimes: [],
         errorCount: 0,
         totalCount: 0,
       };
-      
+
       stats.responseTimes.push(m.responseTime);
       stats.totalCount++;
       if (m.statusCode >= 400) {
         stats.errorCount++;
       }
-      
+
       endpointStats.set(key, stats);
     });
 
     // Calculate slowest endpoints
     const slowestEndpoints = Array.from(endpointStats.entries())
       .map(([endpoint, stats]) => {
-        const parts = endpoint.split(' ', 2);
-        const method = parts[0] || 'UNKNOWN';
-        const route = parts[1] || '/unknown';
-        const averageResponseTime = stats.responseTimes.reduce((a, b) => a + b, 0) / stats.responseTimes.length;
+        const parts = endpoint.split(" ", 2);
+        const method = parts[0] || "UNKNOWN";
+        const route = parts[1] || "/unknown";
+        const averageResponseTime =
+          stats.responseTimes.reduce((a, b) => a + b, 0) / stats.responseTimes.length;
         return {
           route,
           method,
@@ -150,9 +154,9 @@ export class RequestMonitor {
     // Calculate errors by endpoint
     const errorsByEndpoint = Array.from(endpointStats.entries())
       .map(([endpoint, stats]) => {
-        const parts = endpoint.split(' ', 2);
-        const method = parts[0] || 'UNKNOWN';
-        const route = parts[1] || '/unknown';
+        const parts = endpoint.split(" ", 2);
+        const method = parts[0] || "UNKNOWN";
+        const route = parts[1] || "/unknown";
         return {
           route,
           method,
@@ -160,7 +164,7 @@ export class RequestMonitor {
           errorRate: stats.errorCount / stats.totalCount,
         };
       })
-      .filter(e => e.errorCount > 0)
+      .filter((e) => e.errorCount > 0)
       .sort((a, b) => b.errorRate - a.errorRate)
       .slice(0, 10);
 
@@ -180,10 +184,8 @@ export class RequestMonitor {
    */
   getEndpointMetrics(method: string, route: string, timeWindowMinutes = 60): RequestMetrics[] {
     const cutoffTime = new Date(Date.now() - timeWindowMinutes * 60 * 1000);
-    return this.metrics.filter(m => 
-      m.method === method && 
-      m.route === route && 
-      m.timestamp > cutoffTime
+    return this.metrics.filter(
+      (m) => m.method === method && m.route === route && m.timestamp > cutoffTime,
     );
   }
 
@@ -192,7 +194,7 @@ export class RequestMonitor {
    */
   private cleanup(): void {
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
-    this.metrics = this.metrics.filter(m => m.timestamp > oneHourAgo);
+    this.metrics = this.metrics.filter((m) => m.timestamp > oneHourAgo);
   }
 
   /**
@@ -208,18 +210,21 @@ export class RequestMonitor {
  */
 export function extractRoutePattern(url: string, _method: string): string {
   // Remove query parameters
-  const path = url.split('?')[0];
-  
+  const path = url.split("?")[0];
+
   // Common route patterns
   const patterns = [
     // API versioning
-    { pattern: /^\/api\/v\d+/, replacement: '/api/v*' },
+    { pattern: /^\/api\/v\d+/, replacement: "/api/v*" },
     // UUIDs
-    { pattern: /\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi, replacement: '/:uuid' },
+    {
+      pattern: /\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi,
+      replacement: "/:uuid",
+    },
     // Numeric IDs
-    { pattern: /\/\d+/g, replacement: '/:id' },
+    { pattern: /\/\d+/g, replacement: "/:id" },
     // MongoDB ObjectIds
-    { pattern: /\/[0-9a-f]{24}/gi, replacement: '/:objectId' },
+    { pattern: /\/[0-9a-f]{24}/gi, replacement: "/:objectId" },
   ];
 
   let normalizedPath = path;
@@ -229,7 +234,7 @@ export function extractRoutePattern(url: string, _method: string): string {
     }
   }
 
-  return normalizedPath || '/';
+  return normalizedPath || "/";
 }
 
 /**
@@ -247,10 +252,10 @@ export function sanitizeRequestForLogging(request: FastifyRequest): any {
   // Remove sensitive headers
   delete sanitized.headers.authorization;
   delete sanitized.headers.cookie;
-  delete sanitized.headers['x-api-key'];
+  delete sanitized.headers["x-api-key"];
 
   // Include body for non-GET requests (but sanitize sensitive fields)
-  if (request.method !== 'GET' && request.body) {
+  if (request.method !== "GET" && request.body) {
     sanitized.body = sanitizeBody(request.body);
   }
 
@@ -261,24 +266,24 @@ export function sanitizeRequestForLogging(request: FastifyRequest): any {
  * Sanitize request body for logging
  */
 function sanitizeBody(body: any): any {
-  if (!body || typeof body !== 'object') {
+  if (!body || typeof body !== "object") {
     return body;
   }
 
   const sanitized = { ...body };
-  
+
   // Remove sensitive fields
-  const sensitiveFields = ['password', 'token', 'secret', 'apiKey', 'creditCard'];
-  sensitiveFields.forEach(field => {
+  const sensitiveFields = ["password", "token", "secret", "apiKey", "creditCard"];
+  sensitiveFields.forEach((field) => {
     if (sanitized[field]) {
-      sanitized[field] = '[REDACTED]';
+      sanitized[field] = "[REDACTED]";
     }
   });
 
   // Truncate long strings
-  Object.keys(sanitized).forEach(key => {
-    if (typeof sanitized[key] === 'string' && sanitized[key].length > 1000) {
-      sanitized[key] = sanitized[key].substring(0, 1000) + '...[TRUNCATED]';
+  Object.keys(sanitized).forEach((key) => {
+    if (typeof sanitized[key] === "string" && sanitized[key].length > 1000) {
+      sanitized[key] = sanitized[key].substring(0, 1000) + "...[TRUNCATED]";
     }
   });
 
@@ -291,7 +296,7 @@ function sanitizeBody(body: any): any {
 export function createLogContext(
   request: FastifyRequest,
   reply?: FastifyReply,
-  error?: Error
+  error?: Error,
 ): any {
   const context: any = {
     correlationId: request.id,
@@ -299,14 +304,14 @@ export function createLogContext(
     url: request.url,
     route: extractRoutePattern(request.url, request.method),
     ip: request.ip,
-    userAgent: request.headers['user-agent'],
+    userAgent: request.headers["user-agent"],
     timestamp: new Date().toISOString(),
   };
 
   if (reply) {
     context.statusCode = reply.statusCode;
     context.responseTime = Date.now() - (request.startTime || Date.now());
-    context.contentLength = reply.getHeader('content-length') || 0;
+    context.contentLength = reply.getHeader("content-length") || 0;
   }
 
   if (error) {
@@ -314,7 +319,7 @@ export function createLogContext(
       message: error.message,
       code: (error as any).code,
       statusCode: (error as any).statusCode,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
     };
   }
 

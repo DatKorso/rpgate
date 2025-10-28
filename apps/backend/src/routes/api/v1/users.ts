@@ -21,30 +21,27 @@ const userRoutes: FastifyPluginAsync = async (fastify) => {
           profile: {
             ...request.user,
             isAuthenticated: request.isAuthenticated,
-          }
+          },
         },
-        request
+        request,
       );
-    }
+    },
   );
 
   /**
    * GET /api/v1/users/status
    * Get authentication status (optional auth example)
    */
-  fastify.get(
-    "/status",
-    async (request: FastifyRequest) => {
-      // This endpoint works for both authenticated and unauthenticated users
-      return createSuccessResponse(
-        {
-          isAuthenticated: request.isAuthenticated,
-          user: request.user || null,
-        },
-        request
-      );
-    }
-  );
+  fastify.get("/status", async (request: FastifyRequest) => {
+    // This endpoint works for both authenticated and unauthenticated users
+    return createSuccessResponse(
+      {
+        isAuthenticated: request.isAuthenticated,
+        user: request.user || null,
+      },
+      request,
+    );
+  });
 };
 
 export default userRoutes;

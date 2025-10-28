@@ -1,9 +1,9 @@
-import type { 
-  ClientToServerMessage, 
-  ServerToClientMessage,
-  WebSocketUser 
-} from "@rpgate/shared/types";
 import { WEBSOCKET_EVENTS } from "@rpgate/shared/constants";
+import type {
+  ClientToServerMessage,
+  ServerToClientMessage,
+  WebSocketUser,
+} from "@rpgate/shared/types";
 
 export class WebSocketClient {
   private ws: WebSocket | null = null;
@@ -25,7 +25,7 @@ export class WebSocketClient {
         this.ws = new WebSocket(this.url);
 
         this.ws.onopen = () => {
-          console.log('WebSocket connected');
+          console.log("WebSocket connected");
           this.reconnectAttempts = 0;
           resolve();
         };
@@ -35,17 +35,17 @@ export class WebSocketClient {
             const message: ServerToClientMessage = JSON.parse(event.data);
             this.handleMessage(message);
           } catch (error) {
-            console.error('Failed to parse WebSocket message:', error);
+            console.error("Failed to parse WebSocket message:", error);
           }
         };
 
         this.ws.onclose = () => {
-          console.log('WebSocket disconnected');
+          console.log("WebSocket disconnected");
           this.attemptReconnect();
         };
 
         this.ws.onerror = (error) => {
-          console.error('WebSocket error:', error);
+          console.error("WebSocket error:", error);
           reject(error);
         };
       } catch (error) {
@@ -64,8 +64,10 @@ export class WebSocketClient {
   private attemptReconnect() {
     if (this.reconnectAttempts < this.maxReconnectAttempts && this.user) {
       this.reconnectAttempts++;
-      console.log(`Attempting to reconnect... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
-      
+      console.log(
+        `Attempting to reconnect... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`,
+      );
+
       setTimeout(() => {
         this.connect(this.user!);
       }, this.reconnectDelay * this.reconnectAttempts);
@@ -75,7 +77,7 @@ export class WebSocketClient {
   private handleMessage(message: ServerToClientMessage) {
     const listeners = this.listeners.get(message.type);
     if (listeners) {
-      listeners.forEach(listener => listener(message.data));
+      listeners.forEach((listener) => listener(message.data));
     }
   }
 
@@ -83,7 +85,7 @@ export class WebSocketClient {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(message));
     } else {
-      console.warn('WebSocket is not connected');
+      console.warn("WebSocket is not connected");
     }
   }
 
@@ -92,7 +94,7 @@ export class WebSocketClient {
     if (!this.listeners.has(event)) {
       this.listeners.set(event, new Set());
     }
-    this.listeners.get(event)!.add(listener);
+    this.listeners.get(event)?.add(listener);
   }
 
   off(event: string, listener: (data: any) => void) {
@@ -106,35 +108,35 @@ export class WebSocketClient {
   sendMessage(roomId: string, content: string) {
     this.send({
       type: WEBSOCKET_EVENTS.MESSAGE_SEND,
-      data: { roomId, content }
+      data: { roomId, content },
     });
   }
 
   joinRoom(roomId: string) {
     this.send({
       type: WEBSOCKET_EVENTS.ROOM_JOIN,
-      data: { roomId }
+      data: { roomId },
     });
   }
 
   leaveRoom(roomId: string) {
     this.send({
       type: WEBSOCKET_EVENTS.ROOM_LEAVE,
-      data: { roomId }
+      data: { roomId },
     });
   }
 
   startTyping(roomId: string) {
     this.send({
       type: WEBSOCKET_EVENTS.TYPING_START,
-      data: { roomId }
+      data: { roomId },
     });
   }
 
   stopTyping(roomId: string) {
     this.send({
       type: WEBSOCKET_EVENTS.TYPING_STOP,
-      data: { roomId }
+      data: { roomId },
     });
   }
 }
@@ -144,9 +146,8 @@ let wsClient: WebSocketClient | null = null;
 
 export function getWebSocketClient(): WebSocketClient {
   if (!wsClient) {
-    const wsUrl = process.env.NODE_ENV === 'production' 
-      ? 'wss://your-domain.com/ws'
-      : 'ws://localhost:3001/ws';
+    const wsUrl =
+      process.env.NODE_ENV === "production" ? "wss://your-domain.com/ws" : "ws://localhost:3001/ws";
     wsClient = new WebSocketClient(wsUrl);
   }
   return wsClient;

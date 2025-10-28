@@ -21,7 +21,7 @@ declare module "fastify" {
 export async function authMiddleware(
   request: FastifyRequest,
   reply: FastifyReply,
-  done: HookHandlerDoneFunction
+  done: HookHandlerDoneFunction,
 ): Promise<void> {
   try {
     // Check if response has already been sent (e.g., by rate limiter)
@@ -49,19 +49,25 @@ export async function authMiddleware(
 
     if (!user) {
       // Invalid session - log security event and clear it
-      request.log.warn({
-        correlationId: request.id,
-        event: 'invalid_session_detected',
-        userId,
-        ip: request.ip,
-        userAgent: request.headers["user-agent"],
-        timestamp: new Date().toISOString(),
-      }, "Security event: invalid_session_detected");
+      request.log.warn(
+        {
+          correlationId: request.id,
+          event: "invalid_session_detected",
+          userId,
+          ip: request.ip,
+          userAgent: request.headers["user-agent"],
+          timestamp: new Date().toISOString(),
+        },
+        "Security event: invalid_session_detected",
+      );
 
       try {
         (request.session as any).delete();
       } catch (sessionError) {
-        request.log.error({ error: sessionError, correlationId: request.id }, "Session cleanup error");
+        request.log.error(
+          { error: sessionError, correlationId: request.id },
+          "Session cleanup error",
+        );
       }
       return done();
     }
@@ -88,7 +94,7 @@ export async function authMiddleware(
  */
 export async function requireAuthMiddleware(
   request: FastifyRequest,
-  reply: FastifyReply
+  reply: FastifyReply,
 ): Promise<void> {
   // Check if response has already been sent (e.g., by rate limiter)
   if (reply.sent) {
@@ -113,22 +119,24 @@ export async function requireAuthMiddleware(
 
   if (!request.isAuthenticated || !request.user) {
     // Log unauthorized access attempt
-    request.log.warn({
-      correlationId: request.id,
-      event: 'unauthorized_access_attempt',
-      path: request.url,
-      method: request.method,
-      ip: request.ip,
-      userAgent: request.headers["user-agent"],
-      timestamp: new Date().toISOString(),
-    }, "Security event: unauthorized_access_attempt");
+    request.log.warn(
+      {
+        correlationId: request.id,
+        event: "unauthorized_access_attempt",
+        path: request.url,
+        method: request.method,
+        ip: request.ip,
+        userAgent: request.headers["user-agent"],
+        timestamp: new Date().toISOString(),
+      },
+      "Security event: unauthorized_access_attempt",
+    );
 
-    reply.status(401).send(createErrorResponse(
-      "Authentication required",
-      401,
-      request,
-      "AUTHENTICATION_REQUIRED"
-    ));
+    reply
+      .status(401)
+      .send(
+        createErrorResponse("Authentication required", 401, request, "AUTHENTICATION_REQUIRED"),
+      );
     return;
   }
 }
@@ -139,7 +147,7 @@ export async function requireAuthMiddleware(
  */
 export async function optionalAuthMiddleware(
   request: FastifyRequest,
-  reply: FastifyReply
+  reply: FastifyReply,
 ): Promise<void> {
   // Check if response has already been sent (e.g., by rate limiter)
   if (reply.sent) {

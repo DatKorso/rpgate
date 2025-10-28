@@ -47,7 +47,7 @@ interface ValidationErrorResponse {
  */
 function zodIssueToFieldError(issue: ZodIssue): FieldValidationError {
   const field = issue.path.length > 0 ? issue.path.join(".") : "root";
-  
+
   // Create human-readable constraint based on Zod issue code
   let constraint: string = issue.code;
   let expected: string | undefined;
@@ -128,10 +128,10 @@ function zodIssueToFieldError(issue: ZodIssue): FieldValidationError {
  */
 export function formatZodValidationError(
   error: ZodError,
-  correlationId: string
+  correlationId: string,
 ): ValidationErrorResponse {
   const fieldErrors = error.errors.map(zodIssueToFieldError);
-  
+
   return {
     success: false,
     error: {
@@ -154,7 +154,7 @@ export function formatZodValidationError(
 export function validateWithSchema<T>(
   schema: ZodSchema<T>,
   data: unknown,
-  correlationId?: string
+  correlationId?: string,
 ): ValidationResult<T> {
   try {
     const result = schema.parse(data);
@@ -172,7 +172,7 @@ export function validateWithSchema<T>(
         correlationId,
       };
     }
-    
+
     // Re-throw non-Zod errors
     throw error;
   }
@@ -183,7 +183,7 @@ export function validateWithSchema<T>(
  */
 export function validateRequestBody<T>(
   request: FastifyRequest,
-  schema: ZodSchema<T>
+  schema: ZodSchema<T>,
 ): ValidationResult<T> {
   return validateWithSchema(schema, request.body, request.id);
 }
@@ -193,7 +193,7 @@ export function validateRequestBody<T>(
  */
 export function validateRequestQuery<T>(
   request: FastifyRequest,
-  schema: ZodSchema<T>
+  schema: ZodSchema<T>,
 ): ValidationResult<T> {
   return validateWithSchema(schema, request.query, request.id);
 }
@@ -203,7 +203,7 @@ export function validateRequestQuery<T>(
  */
 export function validateRequestParams<T>(
   request: FastifyRequest,
-  schema: ZodSchema<T>
+  schema: ZodSchema<T>,
 ): ValidationResult<T> {
   return validateWithSchema(schema, request.params, request.id);
 }
@@ -216,7 +216,7 @@ export function createValidationError(
   message: string,
   value: unknown,
   correlationId: string,
-  constraint?: string
+  constraint?: string,
 ): ValidationErrorResponse {
   const fieldError: FieldValidationError = {
     field,
@@ -245,14 +245,16 @@ export function createValidationError(
 /**
  * Fastify preValidation hook for automatic schema validation
  */
-export function createValidationHook<T>(schema: ZodSchema<T>, target: "body" | "query" | "params" = "body") {
+export function createValidationHook<T>(
+  schema: ZodSchema<T>,
+  target: "body" | "query" | "params" = "body",
+) {
   return async function validationHook(request: FastifyRequest) {
-    const data = target === "body" ? request.body : 
-                 target === "query" ? request.query : 
-                 request.params;
-    
+    const data =
+      target === "body" ? request.body : target === "query" ? request.query : request.params;
+
     const result = validateWithSchema(schema, data, request.id);
-    
+
     if (!result.success && result.errors) {
       const validationError = {
         success: false,
@@ -268,16 +270,16 @@ export function createValidationHook<T>(schema: ZodSchema<T>, target: "body" | "
           },
         },
       };
-      
+
       // Create a Fastify error that will be caught by the error handler
       const error = new Error("Request validation failed") as any;
       error.statusCode = 400;
       error.code = "VALIDATION_ERROR";
       error.validation = validationError.error.details;
-      
+
       throw error;
     }
-    
+
     // Replace the original data with the validated and potentially transformed data
     if (target === "body") {
       request.body = result.data;
@@ -289,8 +291,4 @@ export function createValidationHook<T>(schema: ZodSchema<T>, target: "body" | "
   };
 }
 
-export type { 
-  FieldValidationError, 
-  ValidationResult, 
-  ValidationErrorResponse 
-};
+export type { FieldValidationError, ValidationResult, ValidationErrorResponse };

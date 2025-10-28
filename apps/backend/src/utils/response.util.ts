@@ -49,7 +49,7 @@ export interface PaginationMeta {
 export function createSuccessResponse<T>(
   data: T,
   request: FastifyRequest,
-  meta?: Partial<ResponseMeta>
+  meta?: Partial<ResponseMeta>,
 ): ApiResponse<T> {
   return {
     success: true,
@@ -71,7 +71,7 @@ export function createErrorResponse(
   statusCode: number,
   request: FastifyRequest,
   code?: string,
-  details?: unknown
+  details?: unknown,
 ): ApiResponse<never> {
   return {
     success: false,
@@ -100,10 +100,10 @@ export function createPaginatedResponse<T>(
     page: number;
     limit: number;
     total: number;
-  }
+  },
 ): ApiResponse<T[]> {
   const totalPages = Math.ceil(pagination.total / pagination.limit);
-  
+
   return {
     success: true,
     data,

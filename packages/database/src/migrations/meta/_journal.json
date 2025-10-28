@@ -8,6 +8,13 @@
       "when": 1761510752859,
       "tag": "0000_complete_celestials",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1761516104213,
+      "tag": "0001_mysterious_jubilee",
+      "breakpoints": true
     }
   ]
 }

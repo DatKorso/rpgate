@@ -1,12 +1,13 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { loginSchema, type LoginInput } from '@rpgate/shared';
-import { useAuth } from '@/contexts/auth-context';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { useAuth } from "@/contexts/auth-context";
+import { type LoginInput, loginSchema } from "@rpgate/shared";
+import { useRouter } from "next/navigation";
+import type React from "react";
+import { useState } from "react";
 
 /**
  * User login form component
@@ -22,12 +23,12 @@ interface FormErrors {
 export function LoginForm() {
   const router = useRouter();
   const { login, loading, error, clearError } = useAuth();
-  
+
   const [formData, setFormData] = useState<LoginInput>({
-    username: '',
-    password: '',
+    username: "",
+    password: "",
   });
-  
+
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -36,24 +37,24 @@ export function LoginForm() {
    */
   const validateForm = (): boolean => {
     const result = loginSchema.safeParse(formData);
-    
+
     if (!result.success) {
       const errors: FormErrors = {};
-      
+
       result.error.errors.forEach((error) => {
         const field = error.path[0] as keyof FormErrors;
-        if (field && field !== 'general') {
+        if (field && field !== "general") {
           if (!errors[field]) {
             errors[field] = [];
           }
-          errors[field]!.push(error.message);
+          errors[field]?.push(error.message);
         }
       });
-      
+
       setFormErrors(errors);
       return false;
     }
-    
+
     setFormErrors({});
     return true;
   };
@@ -61,51 +62,50 @@ export function LoginForm() {
   /**
    * Handle input field changes
    */
-  const handleInputChange = (field: keyof LoginInput) => (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = event.target.value;
-    
-    setFormData(prev => ({
-      ...prev,
-      [field]: value,
-    }));
-    
-    // Clear field-specific errors when user starts typing
-    if (formErrors[field]) {
-      setFormErrors(prev => ({
+  const handleInputChange =
+    (field: keyof LoginInput) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value;
+
+      setFormData((prev) => ({
         ...prev,
-        [field]: undefined,
+        [field]: value,
       }));
-    }
-    
-    // Clear general auth errors
-    if (error) {
-      clearError();
-    }
-  };
+
+      // Clear field-specific errors when user starts typing
+      if (formErrors[field]) {
+        setFormErrors((prev) => ({
+          ...prev,
+          [field]: undefined,
+        }));
+      }
+
+      // Clear general auth errors
+      if (error) {
+        clearError();
+      }
+    };
 
   /**
    * Handle form submission
    */
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
-    
+
     try {
       setIsSubmitting(true);
       await login(formData);
-      
+
       // Login successful, redirect to main app
-      router.push('/');
-    } catch (loginError) {
+      router.push("/");
+    } catch (_loginError) {
       // Error is handled by auth context and displayed via error state
-      setFormErrors(prev => ({
+      setFormErrors((prev) => ({
         ...prev,
-        general: error || 'Ошибка входа. Проверьте правильность данных.',
+        general: error || "Ошибка входа. Проверьте правильность данных.",
       }));
     } finally {
       setIsSubmitting(false);
@@ -122,7 +122,7 @@ export function LoginForm() {
           Войдите в свой аккаунт RPGate, чтобы продолжить приключения
         </CardDescription>
       </CardHeader>
-      
+
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Username Field */}
@@ -135,9 +135,9 @@ export function LoginForm() {
               type="text"
               placeholder="Введите имя пользователя"
               value={formData.username}
-              onChange={handleInputChange('username')}
+              onChange={handleInputChange("username")}
               disabled={isFormDisabled}
-              className={formErrors.username ? 'border-destructive' : ''}
+              className={formErrors.username ? "border-destructive" : ""}
               autoComplete="username"
             />
             {formErrors.username && (
@@ -159,9 +159,9 @@ export function LoginForm() {
               type="password"
               placeholder="Введите пароль"
               value={formData.password}
-              onChange={handleInputChange('password')}
+              onChange={handleInputChange("password")}
               disabled={isFormDisabled}
-              className={formErrors.password ? 'border-destructive' : ''}
+              className={formErrors.password ? "border-destructive" : ""}
               autoComplete="current-password"
             />
             {formErrors.password && (
@@ -181,12 +181,8 @@ export function LoginForm() {
           )}
 
           {/* Submit Button */}
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={isFormDisabled}
-          >
-            {isSubmitting ? 'Вход...' : 'Войти'}
+          <Button type="submit" className="w-full" disabled={isFormDisabled}>
+            {isSubmitting ? "Вход..." : "Войти"}
           </Button>
         </form>
       </CardContent>

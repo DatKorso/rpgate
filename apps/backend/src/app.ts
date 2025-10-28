@@ -36,10 +36,7 @@ interface PluginConfig {
 /**
  * Core plugins that must be loaded first
  */
-const corePlugins: PluginConfig[] = [
-  { plugin: redisPlugin },
-  { plugin: databasePlugin },
-];
+const corePlugins: PluginConfig[] = [{ plugin: redisPlugin }, { plugin: databasePlugin }];
 
 /**
  * Middleware plugins loaded after core plugins
@@ -59,10 +56,7 @@ const middlewarePlugins: PluginConfig[] = [
 /**
  * Feature plugins loaded last
  */
-const featurePlugins: PluginConfig[] = [
-  { plugin: healthCheckPlugin },
-  { plugin: socketPlugin },
-];
+const featurePlugins: PluginConfig[] = [{ plugin: healthCheckPlugin }, { plugin: socketPlugin }];
 
 /**
  * Register plugins in the correct order
@@ -73,21 +67,21 @@ async function registerPlugins(app: FastifyInstance): Promise<void> {
     logger.info("Registering core plugins...");
     for (const { plugin, options } of corePlugins) {
       await app.register(plugin, options || {});
-      logger.debug(`Registered core plugin: ${plugin.name || 'unnamed'}`);
+      logger.debug(`Registered core plugin: ${plugin.name || "unnamed"}`);
     }
 
     // Register middleware plugins
     logger.info("Registering middleware plugins...");
     for (const { plugin, options } of middlewarePlugins) {
       await app.register(plugin, options || {});
-      logger.debug(`Registered middleware plugin: ${plugin.name || 'unnamed'}`);
+      logger.debug(`Registered middleware plugin: ${plugin.name || "unnamed"}`);
     }
 
     // Register feature plugins
     logger.info("Registering feature plugins...");
     for (const { plugin, options } of featurePlugins) {
       await app.register(plugin, options || {});
-      logger.debug(`Registered feature plugin: ${plugin.name || 'unnamed'}`);
+      logger.debug(`Registered feature plugin: ${plugin.name || "unnamed"}`);
     }
 
     logger.info("All plugins registered successfully");
@@ -96,8 +90,6 @@ async function registerPlugins(app: FastifyInstance): Promise<void> {
     throw error;
   }
 }
-
-
 
 /**
  * Create and configure Fastify application
@@ -144,12 +136,15 @@ export async function createApp(): Promise<FastifyInstance> {
 
     // Add ready hook for startup confirmation
     app.addHook("onReady", async () => {
-      logger.info({
-        environment: env.NODE_ENV,
-        logLevel: env.LOG_LEVEL,
-        host: env.BACKEND_HOST,
-        port: env.BACKEND_PORT,
-      }, "Application ready");
+      logger.info(
+        {
+          environment: env.NODE_ENV,
+          logLevel: env.LOG_LEVEL,
+          host: env.BACKEND_HOST,
+          port: env.BACKEND_PORT,
+        },
+        "Application ready",
+      );
     });
 
     logger.info("Fastify application created successfully");

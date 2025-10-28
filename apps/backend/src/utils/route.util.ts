@@ -14,7 +14,7 @@ export interface RouteModule {
  */
 export async function registerRouteModules(
   fastify: FastifyInstance,
-  modules: RouteModule[]
+  modules: RouteModule[],
 ): Promise<void> {
   for (const { plugin, prefix, options } of modules) {
     await fastify.register(plugin, {
@@ -27,10 +27,7 @@ export async function registerRouteModules(
 /**
  * Create a route module with consistent structure
  */
-export function createRouteModule(
-  name: string,
-  routes: FastifyPluginAsync
-): FastifyPluginAsync {
+export function createRouteModule(name: string, routes: FastifyPluginAsync): FastifyPluginAsync {
   const routeModule: FastifyPluginAsync = async (fastify, options) => {
     // Add route module metadata
     fastify.addHook("onRoute", (routeOptions) => {
@@ -45,7 +42,7 @@ export function createRouteModule(
   };
 
   // Set the module name for debugging
-  Object.defineProperty(routeModule, 'name', { value: name });
+  Object.defineProperty(routeModule, "name", { value: name });
 
   return routeModule;
 }
@@ -65,11 +62,11 @@ export interface RouteInfo {
  */
 export function getRouteInfo(_fastify: FastifyInstance): RouteInfo[] {
   const routes: RouteInfo[] = [];
-  
+
   // This would be implemented to extract route information
   // from the Fastify instance for documentation purposes
   // For now, we'll return an empty array as this is mainly
   // for future documentation generation
-  
+
   return routes;
 }

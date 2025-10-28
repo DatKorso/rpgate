@@ -10,8 +10,16 @@ config({ path: resolve(process.cwd(), "../../.env") });
  */
 const envSchema = z.object({
   // App
-  NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
-  LOG_LEVEL: z.enum(["trace", "debug", "info", "warn", "error", "fatal"]).default("info"),
+  NODE_ENV: z
+    .string()
+    .transform((val) => val.toLowerCase())
+    .pipe(z.enum(["development", "production", "test"]))
+    .default("development"),
+  LOG_LEVEL: z
+    .string()
+    .transform((val) => val.toLowerCase())
+    .pipe(z.enum(["trace", "debug", "info", "warn", "error", "fatal"]))
+    .default("info"),
 
   // Server
   BACKEND_PORT: z.coerce.number().default(3001),
@@ -51,7 +59,7 @@ export function loadEnv(): Env {
 
     if (!result.success) {
       console.error("❌ Environment variable validation failed:");
-      
+
       // Format validation errors for better readability
       const errors = result.error.flatten().fieldErrors;
       Object.entries(errors).forEach(([field, messages]) => {
@@ -76,7 +84,7 @@ export function loadEnv(): Env {
         REDIS_URL: process.env.REDIS_URL ? "[SET]" : "[NOT SET]",
         OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY ? "[SET]" : "[NOT SET]",
       };
-      
+
       Object.entries(safeEnvVars).forEach(([key, value]) => {
         console.error(`  ${key}: ${value}`);
       });

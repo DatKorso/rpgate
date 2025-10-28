@@ -67,13 +67,16 @@ function setupGracefulShutdown(app: FastifyInstance): void {
  */
 async function start(): Promise<StartupResult> {
   const startTime = Date.now();
-  
+
   try {
-    logger.info({
-      nodeVersion: process.version,
-      environment: env.NODE_ENV,
-      pid: process.pid,
-    }, "Starting RPGate API server...");
+    logger.info(
+      {
+        nodeVersion: process.version,
+        environment: env.NODE_ENV,
+        pid: process.pid,
+      },
+      "Starting RPGate API server...",
+    );
 
     // Create the application
     const app = await createApp();
@@ -89,14 +92,17 @@ async function start(): Promise<StartupResult> {
 
     const startupTime = Date.now() - startTime;
 
-    logger.info({
-      address,
-      host: env.BACKEND_HOST,
-      port: env.BACKEND_PORT,
-      environment: env.NODE_ENV,
-      startupTime: `${startupTime}ms`,
-      pid: process.pid,
-    }, "🚀 RPGate API server started successfully");
+    logger.info(
+      {
+        address,
+        host: env.BACKEND_HOST,
+        port: env.BACKEND_PORT,
+        environment: env.NODE_ENV,
+        startupTime: `${startupTime}ms`,
+        pid: process.pid,
+      },
+      "🚀 RPGate API server started successfully",
+    );
 
     return {
       server: app,
@@ -105,11 +111,14 @@ async function start(): Promise<StartupResult> {
     };
   } catch (error) {
     const startupTime = Date.now() - startTime;
-    logger.fatal({ 
-      error,
-      startupTime: `${startupTime}ms`,
-      environment: env.NODE_ENV,
-    }, "Failed to start server");
+    logger.fatal(
+      {
+        error,
+        startupTime: `${startupTime}ms`,
+        environment: env.NODE_ENV,
+      },
+      "Failed to start server",
+    );
     process.exit(1);
   }
 }

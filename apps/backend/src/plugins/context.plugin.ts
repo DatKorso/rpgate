@@ -24,13 +24,12 @@ interface RequestContext {
  * Request context and correlation ID plugin
  */
 const contextPlugin: FastifyPluginAsync = async (fastify) => {
-  
   // Enhanced correlation ID generation
   const generateCorrelationId = (): string => {
     // Use UUID v4 for better uniqueness and traceability
     const uuid = randomUUID();
     const timestamp = Date.now().toString(36);
-    return `req_${timestamp}_${uuid.split('-')[0]}`;
+    return `req_${timestamp}_${uuid.split("-")[0]}`;
   };
 
   // Override the default request ID generator
@@ -39,7 +38,7 @@ const contextPlugin: FastifyPluginAsync = async (fastify) => {
     if (!request.id) {
       request.id = generateCorrelationId();
     }
-    
+
     // Create request context
     const context: RequestContext = {
       correlationId: request.id,
@@ -49,10 +48,10 @@ const contextPlugin: FastifyPluginAsync = async (fastify) => {
       method: request.method,
       url: request.url,
     };
-    
+
     // Store context in request for later use
     request.context = context;
-    
+
     // Add correlation ID to request headers for downstream services
     request.headers["x-correlation-id"] = request.id;
   });
@@ -64,7 +63,7 @@ const contextPlugin: FastifyPluginAsync = async (fastify) => {
       request.context.responseTime = request.context.endTime - request.context.startTime;
       request.context.statusCode = reply.statusCode;
     }
-    
+
     // Ensure correlation ID is in response headers
     reply.header("X-Correlation-ID", request.id);
   });
@@ -80,36 +79,50 @@ const contextPlugin: FastifyPluginAsync = async (fastify) => {
   });
 
   // Add context helper methods to fastify instance
-  fastify.decorate("getRequestContext", function(request: any): RequestContext | undefined {
+  fastify.decorate("getRequestContext", function (request: any): RequestContext | undefined {
     return request.context;
   });
 
-  fastify.decorate("updateRequestContext", function(request: any, updates: Partial<RequestContext>): void {
-    if (request.context) {
-      Object.assign(request.context, updates);
-    }
-  });
+  fastify.decorate(
+    "updateRequestContext",
+    function (request: any, updates: Partial<RequestContext>): void {
+      if (request.context) {
+        Object.assign(request.context, updates);
+      }
+    },
+  );
 
   // Add structured logging with context
-  fastify.decorate("logWithContext", function(request: any, level: "info" | "warn" | "error" | "debug", message: string, extra?: any) {
-    const context = request.context;
-    if (context) {
-      this.log[level]({
-        correlationId: context.correlationId,
-        method: context.method,
-        url: context.url,
-        ip: context.ip,
-        responseTime: context.responseTime,
-        statusCode: context.statusCode,
-        userId: context.userId,
-        sessionId: context.sessionId,
-        timestamp: new Date().toISOString(),
-        ...extra,
-      }, message);
-    } else {
-      this.log[level](extra || {}, message);
-    }
-  });
+  fastify.decorate(
+    "logWithContext",
+    function (
+      request: any,
+      level: "info" | "warn" | "error" | "debug",
+      message: string,
+      extra?: any,
+    ) {
+      const context = request.context;
+      if (context) {
+        this.log[level](
+          {
+            correlationId: context.correlationId,
+            method: context.method,
+            url: context.url,
+            ip: context.ip,
+            responseTime: context.responseTime,
+            statusCode: context.statusCode,
+            userId: context.userId,
+            sessionId: context.sessionId,
+            timestamp: new Date().toISOString(),
+            ...extra,
+          },
+          message,
+        );
+      } else {
+        this.log[level](extra || {}, message);
+      }
+    },
+  );
 
   fastify.log.info("Request context and correlation ID tracking configured");
 };
@@ -119,11 +132,16 @@ declare module "fastify" {
   interface FastifyRequest {
     context?: RequestContext;
   }
-  
+
   interface FastifyInstance {
     getRequestContext(request: FastifyRequest): RequestContext | undefined;
     updateRequestContext(request: FastifyRequest, updates: Partial<RequestContext>): void;
-    logWithContext(request: FastifyRequest, level: "info" | "warn" | "error" | "debug", message: string, extra?: any): void;
+    logWithContext(
+      request: FastifyRequest,
+      level: "info" | "warn" | "error" | "debug",
+      message: string,
+      extra?: any,
+    ): void;
   }
 }
 

@@ -36,6 +36,14 @@ export interface UserLeftEvent {
   data: { userId: string; roomId: string };
 }
 
+export interface RoomMemberCountUpdatedEvent {
+  type: "room:member_count_updated";
+  data: {
+    roomId: string;
+    memberCount: number;
+  };
+}
+
 export interface TypingStartEvent {
   type: "typing:start";
   data: { userId: string; roomId: string };
@@ -78,16 +86,17 @@ export interface TypingStopClientEvent {
 }
 
 // Union types for type safety
-export type ServerToClientMessage = 
+export type ServerToClientMessage =
   | MessageNewEvent
   | RoomUpdatedEvent
+  | RoomMemberCountUpdatedEvent
   | UserJoinedEvent
   | UserLeftEvent
   | TypingStartEvent
   | TypingStopEvent
   | ErrorEvent;
 
-export type ClientToServerMessage = 
+export type ClientToServerMessage =
   | MessageSendEvent
   | RoomJoinEvent
   | RoomLeaveEvent

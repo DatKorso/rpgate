@@ -18,7 +18,7 @@ const apiRoutes: FastifyPluginAsync = async (fastify) => {
         versions: ["v1"],
         documentation: "/api/docs",
       },
-      request
+      request,
     );
   });
 

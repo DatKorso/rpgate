@@ -1,4 +1,4 @@
-import { pgTable, uuid, timestamp, primaryKey } from "drizzle-orm/pg-core";
+import { pgTable, uuid, timestamp, primaryKey, varchar } from "drizzle-orm/pg-core";
 import { users } from "./users.schema";
 import { rooms } from "./rooms.schema";
 
@@ -15,6 +15,9 @@ export const roomMembers = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     joinedAt: timestamp("joined_at", { withTimezone: true }).notNull().defaultNow(),
+    // New fields for room management features
+    role: varchar("role", { length: 20 }).notNull().default("member"), // 'owner' or 'member'
+    lastSeenAt: timestamp("last_seen_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.roomId, table.userId] }),

@@ -1,13 +1,13 @@
-import type { ApiResponse } from '@rpgate/shared';
-import type { LoginInput, RegisterInput } from '@rpgate/shared';
-import type { PublicUser } from '@rpgate/shared';
+import type { ApiResponse } from "@rpgate/shared";
+import type { LoginInput, RegisterInput } from "@rpgate/shared";
+import type { PublicUser } from "@rpgate/shared";
 
 /**
  * Authentication API client for frontend
  * Handles HTTP requests to authentication endpoints with proper error handling
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 export interface AuthResponse {
   user: PublicUser;
@@ -17,10 +17,10 @@ export class AuthApiError extends Error {
   constructor(
     message: string,
     public statusCode: number,
-    public code?: string
+    public code?: string,
   ) {
     super(message);
-    this.name = 'AuthApiError';
+    this.name = "AuthApiError";
   }
 }
 
@@ -36,15 +36,15 @@ class AuthApiClient {
    */
   private async makeRequest<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseUrl}${endpoint}`;
-    
+
     const response = await fetch(url, {
       ...options,
-      credentials: 'include', // Include cookies for session management
+      credentials: "include", // Include cookies for session management
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         ...options.headers,
       },
     });
@@ -53,9 +53,9 @@ class AuthApiClient {
 
     if (!response.ok) {
       throw new AuthApiError(
-        data.error?.message || 'Request failed',
+        data.error?.message || "Request failed",
         response.status,
-        data.error?.code
+        data.error?.code,
       );
     }
 
@@ -66,13 +66,13 @@ class AuthApiClient {
    * Register a new user account
    */
   async register(userData: RegisterInput): Promise<PublicUser> {
-    const response = await this.makeRequest<AuthResponse>('/api/v1/auth/register', {
-      method: 'POST',
+    const response = await this.makeRequest<AuthResponse>("/api/v1/auth/register", {
+      method: "POST",
       body: JSON.stringify(userData),
     });
 
     if (!response.success || !response.data) {
-      throw new AuthApiError('Registration failed', 400);
+      throw new AuthApiError("Registration failed", 400);
     }
 
     return response.data.user;
@@ -82,13 +82,13 @@ class AuthApiClient {
    * Login with username and password
    */
   async login(credentials: LoginInput): Promise<PublicUser> {
-    const response = await this.makeRequest<AuthResponse>('/api/v1/auth/login', {
-      method: 'POST',
+    const response = await this.makeRequest<AuthResponse>("/api/v1/auth/login", {
+      method: "POST",
       body: JSON.stringify(credentials),
     });
 
     if (!response.success || !response.data) {
-      throw new AuthApiError('Login failed', 401);
+      throw new AuthApiError("Login failed", 401);
     }
 
     return response.data.user;
@@ -98,8 +98,8 @@ class AuthApiClient {
    * Logout current user
    */
   async logout(): Promise<void> {
-    await this.makeRequest('/api/v1/auth/logout', {
-      method: 'POST',
+    await this.makeRequest("/api/v1/auth/logout", {
+      method: "POST",
     });
   }
 
@@ -108,8 +108,8 @@ class AuthApiClient {
    */
   async getCurrentUser(): Promise<PublicUser | null> {
     try {
-      const response = await this.makeRequest<AuthResponse>('/api/v1/auth/me');
-      
+      const response = await this.makeRequest<AuthResponse>("/api/v1/auth/me");
+
       if (!response.success || !response.data) {
         return null;
       }

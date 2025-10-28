@@ -40,7 +40,7 @@ export class AuthService {
     event: string,
     context: AuthContext,
     details: Record<string, any> = {},
-    level: 'info' | 'warn' | 'error' = 'info'
+    level: "info" | "warn" | "error" = "info",
   ) {
     const logData = {
       correlationId: context.correlationId,
@@ -56,10 +56,13 @@ export class AuthService {
     delete sanitizedDetails.password;
     delete sanitizedDetails.passwordHash;
 
-    this.logger[level]({
-      ...logData,
-      ...sanitizedDetails,
-    }, `Security event: ${event}`);
+    this.logger[level](
+      {
+        ...logData,
+        ...sanitizedDetails,
+      },
+      `Security event: ${event}`,
+    );
   }
 
   /**
@@ -67,7 +70,7 @@ export class AuthService {
    */
   async register(input: RegisterInput, context: AuthContext): Promise<AuthResult> {
     try {
-      this.logSecurityEvent('registration_attempt', context, {
+      this.logSecurityEvent("registration_attempt", context, {
         username: input.username,
         email: input.email,
       });
@@ -75,12 +78,17 @@ export class AuthService {
       // Validate password strength
       const passwordValidation = validatePasswordStrength(input.password);
       if (!passwordValidation.isValid) {
-        this.logSecurityEvent('registration_failed', context, {
-          username: input.username,
-          email: input.email,
-          reason: 'weak_password',
-          errors: passwordValidation.errors,
-        }, 'warn');
+        this.logSecurityEvent(
+          "registration_failed",
+          context,
+          {
+            username: input.username,
+            email: input.email,
+            reason: "weak_password",
+            errors: passwordValidation.errors,
+          },
+          "warn",
+        );
 
         return {
           success: false,
@@ -89,17 +97,19 @@ export class AuthService {
       }
 
       // Check if username or email already exists
-      const exists = await this.userRepository.existsByUsernameOrEmail(
-        input.username,
-        input.email
-      );
+      const exists = await this.userRepository.existsByUsernameOrEmail(input.username, input.email);
 
       if (exists) {
-        this.logSecurityEvent('registration_failed', context, {
-          username: input.username,
-          email: input.email,
-          reason: 'duplicate_credentials',
-        }, 'warn');
+        this.logSecurityEvent(
+          "registration_failed",
+          context,
+          {
+            username: input.username,
+            email: input.email,
+            reason: "duplicate_credentials",
+          },
+          "warn",
+        );
 
         return {
           success: false,
@@ -124,7 +134,7 @@ export class AuthService {
         createdAt: user.createdAt,
       };
 
-      this.logSecurityEvent('registration_success', context, {
+      this.logSecurityEvent("registration_success", context, {
         userId: user.id,
         username: user.username,
       });
@@ -134,11 +144,16 @@ export class AuthService {
         user: publicUser,
       };
     } catch (error) {
-      this.logSecurityEvent('registration_error', context, {
-        username: input.username,
-        email: input.email,
-        error: error instanceof Error ? error.message : 'Unknown error',
-      }, 'error');
+      this.logSecurityEvent(
+        "registration_error",
+        context,
+        {
+          username: input.username,
+          email: input.email,
+          error: error instanceof Error ? error.message : "Unknown error",
+        },
+        "error",
+      );
 
       return {
         success: false,
@@ -152,7 +167,7 @@ export class AuthService {
    */
   async login(input: LoginInput, context: AuthContext): Promise<AuthResult> {
     try {
-      this.logSecurityEvent('login_attempt', context, {
+      this.logSecurityEvent("login_attempt", context, {
         username: input.username,
       });
 
@@ -160,10 +175,15 @@ export class AuthService {
       const user = await this.userRepository.findByUsername(input.username);
 
       if (!user) {
-        this.logSecurityEvent('login_failed', context, {
-          username: input.username,
-          reason: 'user_not_found',
-        }, 'warn');
+        this.logSecurityEvent(
+          "login_failed",
+          context,
+          {
+            username: input.username,
+            reason: "user_not_found",
+          },
+          "warn",
+        );
 
         return {
           success: false,
@@ -175,11 +195,16 @@ export class AuthService {
       const isValidPassword = await verifyPassword(input.password, user.passwordHash);
 
       if (!isValidPassword) {
-        this.logSecurityEvent('login_failed', context, {
-          userId: user.id,
-          username: input.username,
-          reason: 'invalid_password',
-        }, 'warn');
+        this.logSecurityEvent(
+          "login_failed",
+          context,
+          {
+            userId: user.id,
+            username: input.username,
+            reason: "invalid_password",
+          },
+          "warn",
+        );
 
         return {
           success: false,
@@ -197,7 +222,7 @@ export class AuthService {
         createdAt: user.createdAt,
       };
 
-      this.logSecurityEvent('login_success', context, {
+      this.logSecurityEvent("login_success", context, {
         userId: user.id,
         username: user.username,
       });
@@ -207,10 +232,15 @@ export class AuthService {
         user: publicUser,
       };
     } catch (error) {
-      this.logSecurityEvent('login_error', context, {
-        username: input.username,
-        error: error instanceof Error ? error.message : 'Unknown error',
-      }, 'error');
+      this.logSecurityEvent(
+        "login_error",
+        context,
+        {
+          username: input.username,
+          error: error instanceof Error ? error.message : "Unknown error",
+        },
+        "error",
+      );
 
       return {
         success: false,
@@ -223,7 +253,7 @@ export class AuthService {
    * Log logout event
    */
   async logout(userId: string, username: string, context: AuthContext): Promise<void> {
-    this.logSecurityEvent('logout_success', context, {
+    this.logSecurityEvent("logout_success", context, {
       userId,
       username,
     });
@@ -232,12 +262,22 @@ export class AuthService {
   /**
    * Log logout error
    */
-  async logoutError(userId: string | undefined, username: string | undefined, context: AuthContext, error: any): Promise<void> {
-    this.logSecurityEvent('logout_error', context, {
-      userId,
-      username,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    }, 'error');
+  async logoutError(
+    userId: string | undefined,
+    username: string | undefined,
+    context: AuthContext,
+    error: any,
+  ): Promise<void> {
+    this.logSecurityEvent(
+      "logout_error",
+      context,
+      {
+        userId,
+        username,
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+      "error",
+    );
   }
 
   /**

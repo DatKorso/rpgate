@@ -1,8 +1,8 @@
 import type { FastifyInstance } from "fastify";
-import type { 
-  ClientToServerMessage, 
+import type {
+  ClientToServerMessage,
   ServerToClientMessage,
-  WebSocketUser 
+  WebSocketUser,
 } from "@rpgate/shared/types";
 import { WEBSOCKET_EVENTS } from "@rpgate/shared/constants";
 
@@ -13,7 +13,7 @@ export async function registerWebSocketHandlers(fastify: FastifyInstance): Promi
   try {
     // WebSocket route
     await fastify.register(async function (fastify) {
-      fastify.get('/ws', { websocket: true }, (connection: any) => {
+      fastify.get("/ws", { websocket: true }, (connection: any) => {
         const connectionId = generateConnectionId();
         const connectionData = {
           socket: connection.socket,
@@ -33,67 +33,82 @@ export async function registerWebSocketHandlers(fastify: FastifyInstance): Promi
         (fastify as any).websocketConnections.set(connectionId, enhancedConnectionData);
         (fastify as any).websocketMetrics.trackConnection(connectionId);
 
-        fastify.log.info({ 
-          connectionId,
-          remoteAddress: connection.socket.remoteAddress,
-          userAgent: connection.socket.headers?.['user-agent'],
-          timestamp: new Date().toISOString(),
-        }, "WebSocket connection established");
+        fastify.log.info(
+          {
+            connectionId,
+            remoteAddress: connection.socket.remoteAddress,
+            userAgent: connection.socket.headers?.["user-agent"],
+            timestamp: new Date().toISOString(),
+          },
+          "WebSocket connection established",
+        );
 
-        connection.socket.on('message', (message: any) => {
+        connection.socket.on("message", (message: any) => {
           try {
             const data: ClientToServerMessage = JSON.parse(message.toString());
-            
+
             // Update activity and message count
             enhancedConnectionData.lastActivity = new Date();
             enhancedConnectionData.messageCount++;
             (fastify as any).websocketMetrics.trackMessage();
-            
-            fastify.log.debug({ 
-              connectionId, 
-              messageType: data.type,
-              messageCount: enhancedConnectionData.messageCount,
-            }, "WebSocket message received");
-            
+
+            fastify.log.debug(
+              {
+                connectionId,
+                messageType: data.type,
+                messageCount: enhancedConnectionData.messageCount,
+              },
+              "WebSocket message received",
+            );
+
             handleClientMessage(fastify, connectionId, enhancedConnectionData, data);
           } catch (error) {
             (fastify as any).websocketMetrics.trackError();
-            fastify.log.error({ 
-              error, 
-              connectionId,
-              rawMessage: message.toString().substring(0, 100), // Log first 100 chars
-              messageCount: enhancedConnectionData.messageCount,
-            }, "Failed to parse WebSocket message");
+            fastify.log.error(
+              {
+                error,
+                connectionId,
+                rawMessage: message.toString().substring(0, 100), // Log first 100 chars
+                messageCount: enhancedConnectionData.messageCount,
+              },
+              "Failed to parse WebSocket message",
+            );
             sendError(connection.socket, "Invalid message format", connectionId);
           }
         });
 
-        connection.socket.on('close', (code: number, reason: string) => {
+        connection.socket.on("close", (code: number, reason: string) => {
           const duration = Date.now() - enhancedConnectionData.connectedAt.getTime();
-          
-          fastify.log.info({ 
-            connectionId, 
-            code, 
-            reason: reason.toString(),
-            roomCount: enhancedConnectionData.rooms.size,
-            messageCount: enhancedConnectionData.messageCount,
-            duration: Math.round(duration / 1000), // Duration in seconds
-          }, "WebSocket connection closed");
-          
+
+          fastify.log.info(
+            {
+              connectionId,
+              code,
+              reason: reason.toString(),
+              roomCount: enhancedConnectionData.rooms.size,
+              messageCount: enhancedConnectionData.messageCount,
+              duration: Math.round(duration / 1000), // Duration in seconds
+            },
+            "WebSocket connection closed",
+          );
+
           // Use cleanup function from plugin
           (fastify as any).websocketCleanup(connectionId);
         });
 
-        connection.socket.on('error', (error: any) => {
+        connection.socket.on("error", (error: any) => {
           (fastify as any).websocketMetrics.trackError();
-          fastify.log.error({ 
-            error, 
-            connectionId,
-            errorCode: error.code,
-            errorMessage: error.message,
-            messageCount: enhancedConnectionData.messageCount,
-            roomCount: enhancedConnectionData.rooms.size,
-          }, "WebSocket connection error");
+          fastify.log.error(
+            {
+              error,
+              connectionId,
+              errorCode: error.code,
+              errorMessage: error.message,
+              messageCount: enhancedConnectionData.messageCount,
+              roomCount: enhancedConnectionData.rooms.size,
+            },
+            "WebSocket connection error",
+          );
         });
 
         // Log connection established (no need to send a message as it's not in the type system)
@@ -116,36 +131,39 @@ function handleClientMessage(
   fastify: FastifyInstance,
   connectionId: string,
   connectionData: any,
-  message: ClientToServerMessage
+  message: ClientToServerMessage,
 ) {
   switch (message.type) {
     case WEBSOCKET_EVENTS.MESSAGE_SEND:
       handleMessageSend(fastify, connectionId, connectionData, message.data);
       break;
-    
+
     case WEBSOCKET_EVENTS.ROOM_JOIN:
       handleRoomJoin(fastify, connectionId, connectionData, message.data.roomId);
       break;
-    
+
     case WEBSOCKET_EVENTS.ROOM_LEAVE:
       handleRoomLeave(fastify, connectionId, connectionData, message.data.roomId);
       break;
-    
+
     case WEBSOCKET_EVENTS.TYPING_START:
       handleTypingStart(fastify, connectionId, connectionData, message.data.roomId);
       break;
-    
+
     case WEBSOCKET_EVENTS.TYPING_STOP:
       handleTypingStop(fastify, connectionId, connectionData, message.data.roomId);
       break;
-    
+
     default:
       // TypeScript exhaustiveness check - this should never happen
       const exhaustiveCheck: never = message;
-      fastify.log.warn({ 
-        type: (exhaustiveCheck as any).type, 
-        connectionId 
-      }, "Unknown message type");
+      fastify.log.warn(
+        {
+          type: (exhaustiveCheck as any).type,
+          connectionId,
+        },
+        "Unknown message type",
+      );
       sendError(connectionData.socket, "Unknown message type", connectionId);
   }
 }
@@ -154,7 +172,7 @@ function handleMessageSend(
   fastify: FastifyInstance,
   _connectionId: string,
   connectionData: any,
-  data: { roomId: string; content: string }
+  data: { roomId: string; content: string },
 ) {
   if (!connectionData.user) {
     sendError(connectionData.socket, "User not authenticated");
@@ -187,7 +205,7 @@ function handleRoomJoin(
   fastify: FastifyInstance,
   _connectionId: string,
   connectionData: any,
-  roomId: string
+  roomId: string,
 ) {
   if (!connectionData.user) {
     sendError(connectionData.socket, "User not authenticated");
@@ -214,7 +232,7 @@ function handleRoomLeave(
   fastify: FastifyInstance,
   connectionId: string,
   connectionData: any,
-  roomId: string
+  roomId: string,
 ) {
   leaveRoom(fastify, connectionId, connectionData, roomId);
 }
@@ -223,7 +241,7 @@ function leaveRoom(
   fastify: FastifyInstance,
   _connectionId: string,
   connectionData: any,
-  roomId: string
+  roomId: string,
 ) {
   if (!connectionData.rooms.has(roomId)) return;
 
@@ -246,7 +264,7 @@ function handleTypingStart(
   fastify: FastifyInstance,
   _connectionId: string,
   connectionData: any,
-  roomId: string
+  roomId: string,
 ) {
   if (!connectionData.user || !connectionData.rooms.has(roomId)) return;
 
@@ -265,7 +283,7 @@ function handleTypingStop(
   fastify: FastifyInstance,
   _connectionId: string,
   connectionData: any,
-  roomId: string
+  roomId: string,
 ) {
   if (!connectionData.user || !connectionData.rooms.has(roomId)) return;
 
@@ -283,9 +301,9 @@ function handleTypingStop(
 function sendError(socket: any, message: string, _connectionId?: string) {
   const errorMessage: ServerToClientMessage = {
     type: WEBSOCKET_EVENTS.ERROR,
-    data: { 
+    data: {
       message,
-      code: 'WEBSOCKET_ERROR'
+      code: "WEBSOCKET_ERROR",
     },
   };
 
@@ -294,7 +312,7 @@ function sendError(socket: any, message: string, _connectionId?: string) {
       socket.send(JSON.stringify(errorMessage));
     } catch (error) {
       // Log error but don't throw to avoid cascading failures
-      console.error('Failed to send WebSocket error message:', error);
+      console.error("Failed to send WebSocket error message:", error);
     }
   }
 }

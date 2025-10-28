@@ -11,6 +11,7 @@ export const WEBSOCKET_EVENTS = {
   ROOM_JOIN: "room:join",
   ROOM_LEAVE: "room:leave",
   ROOM_UPDATED: "room:updated",
+  ROOM_MEMBER_COUNT_UPDATED: "room:member_count_updated",
 
   // User events
   USER_JOINED: "user:joined",

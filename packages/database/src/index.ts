@@ -10,7 +10,10 @@ const connectionString = process.env.DATABASE_URL || "";
 
 if (!connectionString) {
   console.error("DATABASE_URL environment variable is not set");
-  console.error("Current environment variables:", Object.keys(process.env).filter(key => key.includes('DATABASE')));
+  console.error(
+    "Current environment variables:",
+    Object.keys(process.env).filter((key) => key.includes("DATABASE")),
+  );
   throw new Error("DATABASE_URL environment variable is not set");
 }
 

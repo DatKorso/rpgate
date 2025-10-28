@@ -27,12 +27,8 @@ export class UserRepository {
    * Find user by username
    */
   async findByUsername(username: string): Promise<User | null> {
-    const [user] = await this.db
-      .select()
-      .from(users)
-      .where(eq(users.username, username))
-      .limit(1);
-    
+    const [user] = await this.db.select().from(users).where(eq(users.username, username)).limit(1);
+
     return user || null;
   }
 
@@ -40,12 +36,8 @@ export class UserRepository {
    * Find user by email
    */
   async findByEmail(email: string): Promise<User | null> {
-    const [user] = await this.db
-      .select()
-      .from(users)
-      .where(eq(users.email, email))
-      .limit(1);
-    
+    const [user] = await this.db.select().from(users).where(eq(users.email, email)).limit(1);
+
     return user || null;
   }
 
@@ -53,12 +45,8 @@ export class UserRepository {
    * Find user by ID
    */
   async findById(id: string): Promise<User | null> {
-    const [user] = await this.db
-      .select()
-      .from(users)
-      .where(eq(users.id, id))
-      .limit(1);
-    
+    const [user] = await this.db.select().from(users).where(eq(users.id, id)).limit(1);
+
     return user || null;
   }
 
@@ -71,7 +59,7 @@ export class UserRepository {
       .from(users)
       .where(or(eq(users.username, username), eq(users.email, email)))
       .limit(1);
-    
+
     return !!existing;
   }
 
@@ -79,9 +67,6 @@ export class UserRepository {
    * Update user's last activity timestamp
    */
   async updateLastActivity(id: string): Promise<void> {
-    await this.db
-      .update(users)
-      .set({ updatedAt: new Date() })
-      .where(eq(users.id, id));
+    await this.db.update(users).set({ updatedAt: new Date() }).where(eq(users.id, id));
   }
 }

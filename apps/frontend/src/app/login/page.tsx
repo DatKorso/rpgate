@@ -1,6 +1,6 @@
-import React from 'react';
-import Link from 'next/link';
-import { LoginForm } from '@/components/auth';
+import { LoginForm } from "@/components/auth";
+import Link from "next/link";
+import React from "react";
 
 /**
  * Login page
@@ -13,7 +13,10 @@ export default function LoginPage() {
       {/* Header */}
       <header className="border-b bg-background">
         <div className="container mx-auto px-4 py-3">
-          <Link href="/" className="text-xl font-bold text-primary hover:text-primary/80 transition-colors">
+          <Link
+            href="/"
+            className="text-xl font-bold text-primary hover:text-primary/80 transition-colors"
+          >
             RPGate
           </Link>
         </div>
@@ -23,13 +26,13 @@ export default function LoginPage() {
       <main className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-md space-y-6">
           <LoginForm />
-          
+
           {/* Register Link */}
           <div className="text-center">
             <p className="text-sm text-muted-foreground">
-              Нет аккаунта?{' '}
-              <Link 
-                href="/register" 
+              Нет аккаунта?{" "}
+              <Link
+                href="/register"
                 className="text-primary hover:text-primary/80 font-medium transition-colors"
               >
                 Зарегистрируйтесь здесь

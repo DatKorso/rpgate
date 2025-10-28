@@ -1,0 +1,435 @@
+import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
+import { db, type Database } from "@rpgate/database";
+import { RoomRepository } from "../src/services/room.repository";
+import { rooms, roomMembers, users } from "@rpgate/database/schema";
+import { eq } from "drizzle-orm";
+
+describe("RoomRepository", () => {
+  let repository: RoomRepository;
+  let testUserId: string;
+  let testUserId2: string;
+
+  beforeAll(async () => {
+    // Create test users
+    const [user1] = await db
+      .insert(users)
+      .values({
+        username: "testuser1",
+        email: "test1@example.com",
+        passwordHash: "hashedpassword",
+      })
+      .returning();
+
+    const [user2] = await db
+      .insert(users)
+      .values({
+        username: "testuser2",
+        email: "test2@example.com",
+        passwordHash: "hashedpassword",
+      })
+      .returning();
+
+    testUserId = user1.id;
+    testUserId2 = user2.id;
+
+    repository = new RoomRepository(db);
+  });
+
+  afterAll(async () => {
+    // Cleanup test data
+    await db.delete(roomMembers);
+    await db.delete(rooms);
+    await db.delete(users).where(eq(users.id, testUserId));
+    await db.delete(users).where(eq(users.id, testUserId2));
+  });
+
+  beforeEach(async () => {
+    // Clean up rooms before each test
+    await db.delete(roomMembers);
+    await db.delete(rooms);
+  });
+
+  describe("create", () => {
+    it("should create a new room", async () => {
+      const newRoom = {
+        name: "Test Room",
+        description: "Test Description",
+        createdBy: testUserId,
+        isPrivate: false,
+        maxMembers: 10,
+      };
+
+      const room = await repository.create(newRoom);
+
+      expect(room).toBeDefined();
+      expect(room.id).toBeTruthy();
+      expect(room.name).toBe(newRoom.name);
+      expect(room.description).toBe(newRoom.description);
+      expect(room.isPrivate).toBe(newRoom.isPrivate);
+      expect(room.maxMembers).toBe(newRoom.maxMembers);
+      expect(room.createdBy).toBe(newRoom.createdBy);
+      expect(room.createdAt).toBeDefined();
+    });
+  });
+
+  describe("findById", () => {
+    it("should find room by id", async () => {
+      const newRoom = await repository.create({
+        name: "Test Room",
+        description: "Test Description",
+        isPrivate: false,
+        maxMembers: 10,
+        createdBy: testUserId,
+      });
+
+      const found = await repository.findById(newRoom.id);
+
+      expect(found).toBeDefined();
+      expect(found?.id).toBe(newRoom.id);
+      expect(found?.name).toBe(newRoom.name);
+    });
+
+    it("should return null for non-existent room", async () => {
+      const found = await repository.findById("00000000-0000-0000-0000-000000000000");
+      expect(found).toBeNull();
+    });
+  });
+
+  describe("findByUserId", () => {
+    it("should find rooms where user is member", async () => {
+      const room1 = await repository.create({
+        name: "Room 1",
+        description: "Description 1",
+        isPrivate: false,
+        maxMembers: 10,
+        createdBy: testUserId,
+      });
+
+      const room2 = await repository.create({
+        name: "Room 2",
+        description: "Description 2",
+        isPrivate: true,
+        maxMembers: 5,
+        createdBy: testUserId2,
+      });
+
+      // Add user as member to both rooms
+      await repository.addMember(room1.id, testUserId, "owner");
+      await repository.addMember(room2.id, testUserId, "member");
+
+      const userRooms = await repository.findByUserId(testUserId);
+
+      expect(userRooms).toHaveLength(2);
+      expect(userRooms.map((r) => r.id)).toContain(room1.id);
+      expect(userRooms.map((r) => r.id)).toContain(room2.id);
+    });
+
+    it("should return empty array for user with no rooms", async () => {
+      const userRooms = await repository.findByUserId(testUserId);
+      expect(userRooms).toEqual([]);
+    });
+  });
+
+  describe("findPublic", () => {
+    it("should find only public rooms", async () => {
+      await repository.create({
+        name: "Public Room",
+        description: "Public",
+        isPrivate: false,
+        maxMembers: 10,
+        createdBy: testUserId,
+      });
+
+      await repository.create({
+        name: "Private Room",
+        description: "Private",
+        isPrivate: true,
+        maxMembers: 10,
+        createdBy: testUserId,
+      });
+
+      const publicRooms = await repository.findPublic();
+
+      expect(publicRooms.length).toBeGreaterThanOrEqual(1);
+      expect(publicRooms.every((r) => r.isPrivate === true)).toBe(true);
+    });
+  });
+
+  describe("update", () => {
+    it("should update room data", async () => {
+      const room = await repository.create({
+        name: "Original Name",
+        description: "Original Description",
+        isPrivate: false,
+        maxMembers: 10,
+        createdBy: testUserId,
+      });
+
+      const updated = await repository.update(room.id, {
+        name: "Updated Name",
+        description: "Updated Description",
+        maxMembers: 20,
+      });
+
+      expect(updated).toBeDefined();
+      expect(updated?.name).toBe("Updated Name");
+      expect(updated?.description).toBe("Updated Description");
+      expect(updated?.maxMembers).toBe(20);
+    });
+
+    it("should return null for non-existent room", async () => {
+      const updated = await repository.update("00000000-0000-0000-0000-000000000000", {
+        name: "Updated Name",
+      });
+      expect(updated).toBeNull();
+    });
+  });
+
+  describe("delete", () => {
+    it("should delete room", async () => {
+      const room = await repository.create({
+        name: "To Delete",
+        description: "Will be deleted",
+        isPrivate: false,
+        maxMembers: 10,
+        createdBy: testUserId,
+      });
+
+      await repository.delete(room.id);
+
+      const found = await repository.findById(room.id);
+      expect(found).toBeNull();
+    });
+  });
+
+  describe("addMember", () => {
+    it("should add member to room", async () => {
+      const room = await repository.create({
+        name: "Test Room",
+        description: "Test",
+        isPrivate: false,
+        maxMembers: 10,
+        createdBy: testUserId,
+      });
+
+      await repository.addMember(room.id, testUserId2, "member");
+
+      const isMember = await repository.isMember(room.id, testUserId2);
+      expect(isMember).toBe(true);
+    });
+
+    it("should add owner with owner role", async () => {
+      const room = await repository.create({
+        name: "Test Room",
+        description: "Test",
+        isPrivate: false,
+        maxMembers: 10,
+        createdBy: testUserId,
+      });
+
+      await repository.addMember(room.id, testUserId, "owner");
+
+      const isOwner = await repository.isOwner(room.id, testUserId);
+      expect(isOwner).toBe(true);
+    });
+  });
+
+  describe("removeMember", () => {
+    it("should remove member from room", async () => {
+      const room = await repository.create({
+        name: "Test Room",
+        description: "Test",
+        isPrivate: false,
+        maxMembers: 10,
+        createdBy: testUserId,
+      });
+
+      await repository.addMember(room.id, testUserId2, "member");
+      await repository.removeMember(room.id, testUserId2);
+
+      const isMember = await repository.isMember(room.id, testUserId2);
+      expect(isMember).toBe(false);
+    });
+  });
+
+  describe("isMember", () => {
+    it("should return true for room member", async () => {
+      const room = await repository.create({
+        name: "Test Room",
+        description: "Test",
+        isPrivate: false,
+        maxMembers: 10,
+        createdBy: testUserId,
+      });
+
+      await repository.addMember(room.id, testUserId, "member");
+
+      const result = await repository.isMember(room.id, testUserId);
+      expect(result).toBe(true);
+    });
+
+    it("should return false for non-member", async () => {
+      const room = await repository.create({
+        name: "Test Room",
+        description: "Test",
+        isPrivate: false,
+        maxMembers: 10,
+        createdBy: testUserId,
+      });
+
+      const result = await repository.isMember(room.id, testUserId2);
+      expect(result).toBe(false);
+    });
+  });
+
+  describe("isOwner", () => {
+    it("should return true for room owner", async () => {
+      const room = await repository.create({
+        name: "Test Room",
+        description: "Test",
+        isPrivate: false,
+        maxMembers: 10,
+        createdBy: testUserId,
+      });
+
+      await repository.addMember(room.id, testUserId, "owner");
+
+      const result = await repository.isOwner(room.id, testUserId);
+      expect(result).toBe(true);
+    });
+
+    it("should return false for non-owner", async () => {
+      const room = await repository.create({
+        name: "Test Room",
+        description: "Test",
+        isPrivate: false,
+        maxMembers: 10,
+        createdBy: testUserId,
+      });
+
+      await repository.addMember(room.id, testUserId2, "member");
+
+      const result = await repository.isOwner(room.id, testUserId2);
+      expect(result).toBe(false);
+    });
+  });
+
+  describe("getMemberCount", () => {
+    it("should return correct member count", async () => {
+      const room = await repository.create({
+        name: "Test Room",
+        description: "Test",
+        isPrivate: false,
+        maxMembers: 10,
+        createdBy: testUserId,
+      });
+
+      await repository.addMember(room.id, testUserId, "owner");
+      await repository.addMember(room.id, testUserId2, "member");
+
+      const count = await repository.getMemberCount(room.id);
+      expect(count).toBe(2);
+    });
+
+    it("should return 0 for room with no members", async () => {
+      const room = await repository.create({
+        name: "Test Room",
+        description: "Test",
+        isPrivate: false,
+        maxMembers: 10,
+        createdBy: testUserId,
+      });
+
+      const count = await repository.getMemberCount(room.id);
+      expect(count).toBe(0);
+    });
+  });
+
+  describe("transferOwnership", () => {
+    it("should transfer ownership to new user", async () => {
+      const room = await repository.create({
+        name: "Test Room",
+        description: "Test",
+        isPrivate: false,
+        maxMembers: 10,
+        createdBy: testUserId,
+      });
+
+      await repository.addMember(room.id, testUserId, "owner");
+      await repository.addMember(room.id, testUserId2, "member");
+
+      await repository.transferOwnership(room.id, testUserId, testUserId2);
+
+      const isOldOwner = await repository.isOwner(room.id, testUserId);
+      const isNewOwner = await repository.isOwner(room.id, testUserId2);
+
+      expect(isOldOwner).toBe(false);
+      expect(isNewOwner).toBe(true);
+
+      // Check room createdBy is updated
+      const updatedRoom = await repository.findById(room.id);
+      expect(updatedRoom?.createdBy).toBe(testUserId2);
+    });
+  });
+
+  describe("getRoomMembers", () => {
+    it("should return all room members with user data", async () => {
+      const room = await repository.create({
+        name: "Test Room",
+        description: "Test",
+        isPrivate: false,
+        maxMembers: 10,
+        createdBy: testUserId,
+      });
+
+      await repository.addMember(room.id, testUserId, "owner");
+      await repository.addMember(room.id, testUserId2, "member");
+
+      const members = await repository.getRoomMembers(room.id);
+
+      expect(members).toHaveLength(2);
+      expect(members[0]).toHaveProperty("username");
+      expect(members.map((m) => m.userId)).toContain(testUserId);
+      expect(members.map((m) => m.userId)).toContain(testUserId2);
+    });
+  });
+
+  describe("findNextOldestMember", () => {
+    it("should find next oldest member excluding current owner", async () => {
+      const room = await repository.create({
+        name: "Test Room",
+        description: "Test",
+        isPrivate: false,
+        maxMembers: 10,
+        createdBy: testUserId,
+      });
+
+      // Add members with different join times
+      await repository.addMember(room.id, testUserId, "owner");
+      
+      // Wait a bit to ensure different timestamps
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      await repository.addMember(room.id, testUserId2, "member");
+
+      const nextOwner = await repository.findNextOldestMember(room.id, testUserId);
+
+      expect(nextOwner).toBeDefined();
+      expect(nextOwner).toBe(testUserId2);
+    });
+
+    it("should return null if no other members exist", async () => {
+      const room = await repository.create({
+        name: "Test Room",
+        description: "Test",
+        isPrivate: false,
+        maxMembers: 10,
+        createdBy: testUserId,
+      });
+
+      await repository.addMember(room.id, testUserId, "owner");
+
+      const nextOwner = await repository.findNextOldestMember(room.id, testUserId);
+      expect(nextOwner).toBeNull();
+    });
+  });
+});

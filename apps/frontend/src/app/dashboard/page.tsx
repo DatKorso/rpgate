@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { useAuth } from '@/contexts/auth-context';
-import { AuthHeader, ProtectedRoute } from '@/components/auth';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { AuthHeader, ProtectedRoute } from "@/components/auth";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/contexts/auth-context";
+import Link from "next/link";
+import React from "react";
 
 /**
  * Dashboard page - protected route example
@@ -36,9 +36,7 @@ function DashboardContent() {
             <Card>
               <CardHeader>
                 <CardTitle>My Rooms</CardTitle>
-                <CardDescription>
-                  Chat rooms you've joined or created
-                </CardDescription>
+                <CardDescription>Chat rooms you've joined or created</CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground mb-4">
@@ -53,9 +51,7 @@ function DashboardContent() {
             <Card>
               <CardHeader>
                 <CardTitle>AI Sessions</CardTitle>
-                <CardDescription>
-                  Your AI Game Master sessions
-                </CardDescription>
+                <CardDescription>Your AI Game Master sessions</CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground mb-4">
@@ -70,9 +66,7 @@ function DashboardContent() {
             <Card>
               <CardHeader>
                 <CardTitle>Profile</CardTitle>
-                <CardDescription>
-                  Manage your account settings
-                </CardDescription>
+                <CardDescription>Manage your account settings</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2 text-sm">
@@ -80,8 +74,8 @@ function DashboardContent() {
                     <span className="font-medium">Username:</span> {user?.username}
                   </div>
                   <div>
-                    <span className="font-medium">Member since:</span>{' '}
-                    {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown'}
+                    <span className="font-medium">Member since:</span>{" "}
+                    {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "Unknown"}
                   </div>
                 </div>
                 <Button variant="outline" className="mt-4">

@@ -8,15 +8,7 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": [
-      "node_modules",
-      "dist",
-      ".next",
-      "build",
-      "coverage",
-      "*.config.js",
-      "*.config.mjs"
-    ]
+    "ignore": ["node_modules", "dist", ".next", "build", "coverage", "*.config.js", "*.config.mjs"]
   },
   "organizeImports": {
     "enabled": true

@@ -19,9 +19,11 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
    */
   const createAuthContext = (request: FastifyRequest) => {
     const forwarded = request.headers["x-forwarded-for"];
-    const ip = forwarded ? 
-      (Array.isArray(forwarded) ? forwarded[0] : forwarded.split(",")[0]?.trim()) :
-      request.ip;
+    const ip = forwarded
+      ? Array.isArray(forwarded)
+        ? forwarded[0]
+        : forwarded.split(",")[0]?.trim()
+      : request.ip;
 
     return {
       correlationId: request.id,
@@ -40,7 +42,7 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
     {
       preValidation: [
         (fastify as any).registrationRateLimit,
-        createValidationHook(registerSchema, "body")
+        createValidationHook(registerSchema, "body"),
       ],
     },
     async (request: FastifyRequest<{ Body: RegisterInput }>, reply: FastifyReply) => {
@@ -54,7 +56,7 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
             result.error || "Registration failed",
             400,
             request,
-            "REGISTRATION_FAILED"
+            "REGISTRATION_FAILED",
           );
         }
 
@@ -65,21 +67,13 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
         }
 
         reply.status(201);
-        return createSuccessResponse(
-          { user: result.user },
-          request
-        );
+        return createSuccessResponse({ user: result.user }, request);
       } catch (error) {
         fastify.log.error({ error, correlationId: request.id }, "Registration error");
         reply.status(500);
-        return createErrorResponse(
-          "Internal server error",
-          500,
-          request,
-          "INTERNAL_ERROR"
-        );
+        return createErrorResponse("Internal server error", 500, request, "INTERNAL_ERROR");
       }
-    }
+    },
   );
 
   /**
@@ -89,10 +83,7 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.post<{ Body: LoginInput }>(
     "/login",
     {
-      preValidation: [
-        (fastify as any).loginRateLimit,
-        createValidationHook(loginSchema, "body")
-      ],
+      preValidation: [(fastify as any).loginRateLimit, createValidationHook(loginSchema, "body")],
     },
     async (request: FastifyRequest<{ Body: LoginInput }>, reply: FastifyReply) => {
       try {
@@ -101,12 +92,7 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
 
         if (!result.success) {
           reply.status(401);
-          return createErrorResponse(
-            "Invalid credentials",
-            401,
-            request,
-            "INVALID_CREDENTIALS"
-          );
+          return createErrorResponse("Invalid credentials", 401, request, "INVALID_CREDENTIALS");
         }
 
         // Create session for authenticated user
@@ -115,66 +101,52 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
           (request.session as any).set("username", result.user.username);
         }
 
-        return createSuccessResponse(
-          { user: result.user },
-          request
-        );
+        return createSuccessResponse({ user: result.user }, request);
       } catch (error) {
         fastify.log.error({ error, correlationId: request.id }, "Login error");
         reply.status(500);
-        return createErrorResponse(
-          "Internal server error",
-          500,
-          request,
-          "INTERNAL_ERROR"
-        );
+        return createErrorResponse("Internal server error", 500, request, "INTERNAL_ERROR");
       }
-    }
+    },
   );
 
   /**
    * POST /api/v1/auth/logout
    * Terminate user session and clear cookies
    */
-  fastify.post(
-    "/logout",
-    async (request: FastifyRequest) => {
-      const context = createAuthContext(request);
-      const session = request.session as any;
-      const userId = session.get("userId");
-      const username = session.get("username");
+  fastify.post("/logout", async (request: FastifyRequest) => {
+    const context = createAuthContext(request);
+    const session = request.session as any;
+    const userId = session.get("userId");
+    const username = session.get("username");
 
+    try {
+      // Log successful logout
+      if (userId && username) {
+        await authService.logout(userId, username, context);
+      }
+
+      // Clear session data
+      session.delete();
+
+      return createSuccessResponse({ message: "Logged out successfully" }, request);
+    } catch (error) {
+      // Log logout error
+      await authService.logoutError(userId, username, context, error);
+
+      // Even if there's an error, we should still clear the session
       try {
-        // Log successful logout
-        if (userId && username) {
-          await authService.logout(userId, username, context);
-        }
-
-        // Clear session data
         session.delete();
-
-        return createSuccessResponse(
-          { message: "Logged out successfully" },
-          request
-        );
-      } catch (error) {
-        // Log logout error
-        await authService.logoutError(userId, username, context, error);
-        
-        // Even if there's an error, we should still clear the session
-        try {
-          session.delete();
-        } catch (sessionError) {
-          fastify.log.error({ error: sessionError, correlationId: request.id }, "Session cleanup error");
-        }
-
-        return createSuccessResponse(
-          { message: "Logged out successfully" },
-          request
+      } catch (sessionError) {
+        fastify.log.error(
+          { error: sessionError, correlationId: request.id },
+          "Session cleanup error",
         );
       }
+
+      return createSuccessResponse({ message: "Logged out successfully" }, request);
     }
-  );
+  });
 
   /**
    * GET /api/v1/auth/me
@@ -187,11 +159,8 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
     },
     async (request: FastifyRequest) => {
       // User is guaranteed to be authenticated due to requireAuth middleware
-      return createSuccessResponse(
-        { user: request.user },
-        request
-      );
-    }
+      return createSuccessResponse({ user: request.user }, request);
+    },
   );
 };
 

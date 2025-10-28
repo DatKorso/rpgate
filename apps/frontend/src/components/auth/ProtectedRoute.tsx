@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import React, { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/auth-context';
+import { useAuth } from "@/contexts/auth-context";
+import { useRouter } from "next/navigation";
+import type React from "react";
+import { useEffect } from "react";
 
 /**
  * Protected route wrapper component
@@ -16,11 +17,7 @@ export interface ProtectedRouteProps {
   fallback?: React.ReactNode;
 }
 
-export function ProtectedRoute({ 
-  children, 
-  redirectTo = '/login',
-  fallback 
-}: ProtectedRouteProps) {
+export function ProtectedRoute({ children, redirectTo = "/login", fallback }: ProtectedRouteProps) {
   const router = useRouter();
   const { isAuthenticated, loading, user } = useAuth();
 
@@ -38,9 +35,7 @@ export function ProtectedRoute({
         <div className="flex min-h-screen items-center justify-center">
           <div className="flex flex-col items-center space-y-4">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-            <p className="text-sm text-muted-foreground">
-              Checking authentication...
-            </p>
+            <p className="text-sm text-muted-foreground">Checking authentication...</p>
           </div>
         </div>
       )

@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useWebSocket } from '../hooks/useWebSocket';
+import { useEffect, useState } from "react";
+import { useWebSocket } from "../hooks/useWebSocket";
 
 interface ChatExampleProps {
   user: {
@@ -11,7 +11,7 @@ interface ChatExampleProps {
 
 export function ChatExample({ user, roomId }: ChatExampleProps) {
   const [messages, setMessages] = useState<any[]>([]);
-  const [newMessage, setNewMessage] = useState('');
+  const [newMessage, setNewMessage] = useState("");
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
 
   const {
@@ -44,23 +44,23 @@ export function ChatExample({ user, roomId }: ChatExampleProps) {
 
   useEffect(() => {
     const unsubscribeMessage = onMessage((message) => {
-      setMessages(prev => [...prev, message]);
+      setMessages((prev) => [...prev, message]);
     });
 
     const unsubscribeUserJoined = onUserJoined((data) => {
-      console.log('User joined:', data);
+      console.log("User joined:", data);
     });
 
     const unsubscribeUserLeft = onUserLeft((data) => {
-      console.log('User left:', data);
+      console.log("User left:", data);
     });
 
     const unsubscribeTypingStart = onTypingStart((data) => {
-      setTypingUsers(prev => [...prev.filter(id => id !== data.userId), data.userId]);
+      setTypingUsers((prev) => [...prev.filter((id) => id !== data.userId), data.userId]);
     });
 
     const unsubscribeTypingStop = onTypingStop((data) => {
-      setTypingUsers(prev => prev.filter(id => id !== data.userId));
+      setTypingUsers((prev) => prev.filter((id) => id !== data.userId));
     });
 
     return () => {
@@ -75,13 +75,13 @@ export function ChatExample({ user, roomId }: ChatExampleProps) {
   const handleSendMessage = () => {
     if (newMessage.trim() && isConnected) {
       sendMessage(roomId, newMessage.trim());
-      setNewMessage('');
+      setNewMessage("");
     }
   };
 
   const handleTyping = (value: string) => {
     setNewMessage(value);
-    
+
     if (value.length > 0) {
       startTyping(roomId);
     } else {
@@ -93,10 +93,7 @@ export function ChatExample({ user, roomId }: ChatExampleProps) {
     return (
       <div className="p-4 bg-red-100 border border-red-400 text-red-700 rounded">
         Error: {error}
-        <button 
-          onClick={connect}
-          className="ml-2 px-2 py-1 bg-red-500 text-white rounded text-sm"
-        >
+        <button onClick={connect} className="ml-2 px-2 py-1 bg-red-500 text-white rounded text-sm">
           Retry
         </button>
       </div>
@@ -107,24 +104,20 @@ export function ChatExample({ user, roomId }: ChatExampleProps) {
     <div className="max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
       <div className="bg-blue-500 text-white p-4">
         <h2 className="text-lg font-semibold">Chat Room: {roomId}</h2>
-        <p className="text-sm opacity-90">
-          Status: {isConnected ? 'Connected' : 'Disconnected'}
-        </p>
+        <p className="text-sm opacity-90">Status: {isConnected ? "Connected" : "Disconnected"}</p>
       </div>
 
       <div className="h-64 overflow-y-auto p-4 space-y-2">
         {messages.map((message, index) => (
           <div key={index} className="bg-gray-100 p-2 rounded">
-            <div className="font-semibold text-sm text-blue-600">
-              {message.username}
-            </div>
+            <div className="font-semibold text-sm text-blue-600">{message.username}</div>
             <div className="text-gray-800">{message.content}</div>
           </div>
         ))}
-        
+
         {typingUsers.length > 0 && (
           <div className="text-sm text-gray-500 italic">
-            {typingUsers.join(', ')} {typingUsers.length === 1 ? 'is' : 'are'} typing...
+            {typingUsers.join(", ")} {typingUsers.length === 1 ? "is" : "are"} typing...
           </div>
         )}
       </div>
@@ -135,7 +128,7 @@ export function ChatExample({ user, roomId }: ChatExampleProps) {
             type="text"
             value={newMessage}
             onChange={(e) => handleTyping(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+            onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
             placeholder="Type a message..."
             className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             disabled={!isConnected}
