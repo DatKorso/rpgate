@@ -52,12 +52,15 @@ export function useRoomMembers(options: UseRoomMembersOptions) {
 
       try {
         // API call to join room
-        await apiJoinRoom(idToUse);
+        const result = await apiJoinRoom(idToUse);
 
         // Notify WebSocket
         wsClient.current.joinRoom(idToUse);
 
         setIsMember(true);
+        setMemberCount((prev) =>
+          typeof result.memberCount === "number" ? result.memberCount : prev,
+        );
         return true;
       } catch (err) {
         const message = err instanceof Error ? err.message : "Ошибка присоединения к комнате";

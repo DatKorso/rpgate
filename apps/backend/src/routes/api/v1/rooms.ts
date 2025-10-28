@@ -272,20 +272,33 @@ const roomRoutes: FastifyPluginAsync = async (fastify) => {
           return createErrorResponse("Unauthorized", 401, request, "UNAUTHORIZED");
         }
 
-        await roomService.joinRoom(request.params.id, request.user.id);
+        const { joined } = await roomService.joinRoom(request.params.id, request.user.id);
 
-        // Get updated room details to get member count
+        // Get updated room details to return consistent metadata
         const room = await roomService.getRoomById(request.params.id, request.user.id);
         const memberCount = room?.memberCount || 0;
 
-        // Notify all room members via WebSocket
-        await notifyUserJoined(fastify, request.params.id, {
-          id: request.user.id,
-          username: request.user.username,
-        });
-        await notifyMemberCountUpdate(fastify, request.params.id, memberCount);
+        if (joined) {
+          // Notify all room members via WebSocket only when a new member joins
+          await notifyUserJoined(fastify, request.params.id, {
+            id: request.user.id,
+            username: request.user.username,
+          });
+          await notifyMemberCountUpdate(fastify, request.params.id, memberCount);
+        }
 
-        return createSuccessResponse({ message: "Вы успешно присоединились к комнате" }, request);
+        const message = joined
+          ? "Вы успешно присоединились к комнате"
+          : "Вы уже являетесь участником этой комнаты";
+
+        return createSuccessResponse(
+          {
+            message,
+            alreadyMember: !joined,
+            memberCount,
+          },
+          request,
+        );
       } catch (error: any) {
         // Handle RoomError with specific status codes
         if (error.statusCode) {
@@ -455,18 +468,26 @@ const roomRoutes: FastifyPluginAsync = async (fastify) => {
         const room = await roomService.getRoomById(result.roomId, request.user.id);
         const memberCount = room?.memberCount || 0;
 
-        // Notify all room members via WebSocket
-        await notifyUserJoined(fastify, result.roomId, {
-          id: request.user.id,
-          username: request.user.username,
-        });
-        await notifyMemberCountUpdate(fastify, result.roomId, memberCount);
+        if (result.joined) {
+          // Notify all room members via WebSocket
+          await notifyUserJoined(fastify, result.roomId, {
+            id: request.user.id,
+            username: request.user.username,
+          });
+          await notifyMemberCountUpdate(fastify, result.roomId, memberCount);
+        }
+
+        const message = result.joined
+          ? "Вы успешно присоединились к комнате"
+          : "Вы уже являетесь участником этой комнаты";
 
         return createSuccessResponse(
           {
-            message: "Вы успешно присоединились к комнате",
+            message,
             roomId: result.roomId,
             roomName: result.roomName,
+            alreadyMember: !result.joined,
+            memberCount,
           },
           request,
         );

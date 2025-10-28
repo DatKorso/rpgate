@@ -23,6 +23,8 @@ import { toast } from "sonner";
  * Handles fetching, creating, updating, and managing rooms with proper state management
  */
 
+import type { JoinRoomResult } from "@/lib/rooms-api";
+
 interface RoomWithStats extends Room {
   memberCount?: number;
   isOwner?: boolean;
@@ -314,26 +316,32 @@ export function useRoom(roomId: string | null) {
    * Join room
    */
   const joinRoom = useCallback(
-    async (targetRoomId?: string): Promise<boolean> => {
+    async (targetRoomId?: string): Promise<JoinRoomResult | null> => {
       const idToUse = targetRoomId || roomId;
-      if (!idToUse) return false;
+      if (!idToUse) return null;
 
       setLoading(true);
       setError(null);
 
       try {
-        await apiJoinRoom(idToUse);
+        const result = await apiJoinRoom(idToUse);
         if (idToUse === roomId) {
           await fetchRoom();
         }
-        toast.success("Вы успешно присоединились к комнате!");
-        return true;
+
+        if (result.alreadyMember) {
+          toast.info(result.message);
+        } else {
+          toast.success(result.message);
+        }
+
+        return result;
       } catch (err) {
         const message = err instanceof Error ? err.message : "Ошибка присоединения к комнате";
         setError(message);
         toast.error(message);
         console.error("Error joining room:", err);
-        return false;
+        return null;
       } finally {
         setLoading(false);
       }
@@ -353,11 +361,12 @@ export function useRoom(roomId: string | null) {
       setError(null);
 
       try {
-        await apiLeaveRoom(idToUse);
+        const result = await apiLeaveRoom(idToUse);
         if (idToUse === roomId) {
           await fetchRoom();
         }
-        toast.success("Вы покинули комнату");
+
+        toast.success(result.message || "Вы покинули комнату");
         return true;
       } catch (err) {
         const message = err instanceof Error ? err.message : "Ошибка выхода из комнаты";

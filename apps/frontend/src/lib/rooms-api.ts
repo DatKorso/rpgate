@@ -28,6 +28,16 @@ export interface InviteLink {
   url: string;
 }
 
+export interface JoinRoomResult {
+  message: string;
+  alreadyMember: boolean;
+  memberCount: number;
+}
+
+export interface LeaveRoomResult {
+  message: string;
+}
+
 /**
  * Fetch paginated list of public rooms
  */
@@ -58,7 +68,7 @@ export async function fetchPublicRooms(
   // Backend returns array in data, pagination in meta.pagination
   // Transform to expected PaginatedResponse format
   const pagination = result.meta?.pagination || {};
-  
+
   return {
     items: result.data,
     total: pagination.total || 0,
@@ -186,7 +196,7 @@ export async function deleteRoom(roomId: string): Promise<void> {
 /**
  * Join a room
  */
-export async function joinRoom(roomId: string): Promise<void> {
+export async function joinRoom(roomId: string): Promise<JoinRoomResult> {
   const response = await fetch(`${API_BASE_URL}/api/v1/rooms/${roomId}/join`, {
     method: "POST",
     credentials: "include",
@@ -196,12 +206,26 @@ export async function joinRoom(roomId: string): Promise<void> {
     const error = await response.json();
     throw new Error(error.error?.message || "Ошибка присоединения к комнате");
   }
+
+  const data: ApiResponse<JoinRoomResult> = await response.json();
+
+  if (!data.success || !data.data) {
+    throw new Error("Неверный формат ответа сервера");
+  }
+
+  const result = data.data;
+
+  return {
+    message: result.message,
+    alreadyMember: Boolean(result.alreadyMember),
+    memberCount: typeof result.memberCount === "number" ? result.memberCount : 0,
+  };
 }
 
 /**
  * Leave a room
  */
-export async function leaveRoom(roomId: string): Promise<void> {
+export async function leaveRoom(roomId: string): Promise<LeaveRoomResult> {
   const response = await fetch(`${API_BASE_URL}/api/v1/rooms/${roomId}/leave`, {
     method: "DELETE",
     credentials: "include",
@@ -211,6 +235,14 @@ export async function leaveRoom(roomId: string): Promise<void> {
     const error = await response.json();
     throw new Error(error.error?.message || "Ошибка выхода из комнаты");
   }
+
+  const data: ApiResponse<LeaveRoomResult> = await response.json();
+
+  if (!data.success || !data.data) {
+    throw new Error("Неверный формат ответа сервера");
+  }
+
+  return { message: data.data.message };
 }
 
 /**

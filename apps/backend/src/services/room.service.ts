@@ -49,6 +49,10 @@ interface PaginatedRooms {
   hasNext: boolean;
 }
 
+interface JoinRoomResult {
+  joined: boolean;
+}
+
 // Error types
 export class RoomError extends Error {
   constructor(
@@ -274,7 +278,7 @@ export class RoomService {
   /**
    * Join a room with capacity and permission checks
    */
-  async joinRoom(roomId: string, userId: string): Promise<void> {
+  async joinRoom(roomId: string, userId: string): Promise<JoinRoomResult> {
     try {
       // Check if room exists
       const room = await this.roomRepository.findById(roomId);
@@ -285,11 +289,18 @@ export class RoomService {
       // Check if user is already a member
       const isMember = await this.roomRepository.isMember(roomId, userId);
       if (isMember) {
-        throw new RoomError(
-          "User is already a member of this room",
-          ROOM_ERRORS.ALREADY_MEMBER,
-          400,
+        await this.roomRepository.updateLastActivity(roomId);
+
+        this.logger.debug(
+          {
+            roomId,
+            userId,
+            roomName: room.name,
+          },
+          "Join request ignored - user already a member",
         );
+
+        return { joined: false };
       }
 
       // Check room capacity
@@ -312,6 +323,8 @@ export class RoomService {
         },
         "User joined room successfully",
       );
+
+      return { joined: true };
     } catch (error) {
       if (error instanceof RoomError) {
         throw error;

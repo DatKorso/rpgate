@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useRoom, useRooms } from "@/hooks/use-rooms";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 
 /**
@@ -14,6 +15,7 @@ import React, { useState, useEffect } from "react";
  */
 
 function RoomsContent() {
+  const router = useRouter();
   const {
     rooms,
     totalRooms,
@@ -53,10 +55,11 @@ function RoomsContent() {
   const handleJoinRoom = async (roomId: string) => {
     setJoiningRoomId(roomId);
     try {
-      const success = await joinRoom(roomId);
-      if (success) {
-        // Refresh rooms to update membership status
-        fetchRooms(currentPage);
+      const joinResult = await joinRoom(roomId);
+      if (joinResult) {
+        // Refresh rooms to update membership status in background
+        void fetchRooms(currentPage);
+        router.push(`/rooms/${roomId}`);
       }
     } finally {
       setJoiningRoomId(null);

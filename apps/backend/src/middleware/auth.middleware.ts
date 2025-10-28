@@ -132,12 +132,11 @@ export async function requireAuthMiddleware(
       "Security event: unauthorized_access_attempt",
     );
 
-    reply
+    return reply
       .status(401)
       .send(
         createErrorResponse("Authentication required", 401, request, "AUTHENTICATION_REQUIRED"),
       );
-    return;
   }
 }
 

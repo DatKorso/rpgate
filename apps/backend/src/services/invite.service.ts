@@ -174,7 +174,7 @@ export class InviteService {
   async joinRoomWithInvite(
     token: string,
     userId: string,
-  ): Promise<{ roomId: string; roomName: string }> {
+  ): Promise<{ roomId: string; roomName: string; joined: boolean }> {
     try {
       // Validate invite token
       const validation = await this.validateInviteToken(token);
@@ -200,11 +200,22 @@ export class InviteService {
       // Check if user is already a member
       const isMember = await this.roomRepository.isMember(roomId, userId);
       if (isMember) {
-        throw new InviteError(
-          "User is already a member of this room",
-          INVITE_ERRORS.ALREADY_MEMBER,
-          400,
+        await this.roomRepository.updateLastActivity(roomId);
+
+        this.logger.debug(
+          {
+            roomId,
+            userId,
+            token: token.substring(0, 8) + "...",
+          },
+          "Invite join ignored - user already member",
         );
+
+        return {
+          roomId,
+          roomName: room.name,
+          joined: false,
+        };
       }
 
       // Check room capacity
@@ -238,6 +249,7 @@ export class InviteService {
       return {
         roomId,
         roomName: room.name,
+        joined: true,
       };
     } catch (error) {
       if (error instanceof InviteError) {
