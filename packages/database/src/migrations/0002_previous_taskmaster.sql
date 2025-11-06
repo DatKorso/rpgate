@@ -1,0 +1,1 @@
+ALTER TABLE "rooms" DROP COLUMN "max_members";

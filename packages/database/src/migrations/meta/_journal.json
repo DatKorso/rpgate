@@ -15,6 +15,13 @@
       "when": 1761516104213,
       "tag": "0001_mysterious_jubilee",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1762445116348,
+      "tag": "0002_previous_taskmaster",
+      "breakpoints": true
     }
   ]
 }

@@ -25,7 +25,6 @@ interface CreateRoomData extends CreateRoomInput {
 interface UpdateRoomData {
   name?: string;
   description?: string | null;
-  maxMembers?: number;
   isPrivate?: boolean;
   settings?: Record<string, any>;
 }
@@ -67,11 +66,9 @@ export class RoomError extends Error {
 
 export const ROOM_ERRORS = {
   ROOM_NOT_FOUND: "ROOM_NOT_FOUND",
-  ROOM_FULL: "ROOM_FULL",
   ALREADY_MEMBER: "ALREADY_MEMBER",
   NOT_MEMBER: "NOT_MEMBER",
   NOT_OWNER: "NOT_OWNER",
-  INVALID_CAPACITY: "INVALID_CAPACITY",
   CANNOT_LEAVE_AS_OWNER: "CANNOT_LEAVE_AS_OWNER",
 } as const;
 
@@ -104,7 +101,6 @@ export class RoomService {
         description: validatedData.description || null,
         createdBy: userId,
         isPrivate: validatedData.isPrivate || false,
-        maxMembers: data.maxMembers || 10, // Default max members
         settings: data.settings || {},
         lastActivityAt: new Date(),
       };
@@ -276,7 +272,7 @@ export class RoomService {
   }
 
   /**
-   * Join a room with capacity and permission checks
+   * Join a room
    */
   async joinRoom(roomId: string, userId: string): Promise<JoinRoomResult> {
     try {
@@ -301,12 +297,6 @@ export class RoomService {
         );
 
         return { joined: false };
-      }
-
-      // Check room capacity
-      const memberCount = await this.roomRepository.getMemberCount(roomId);
-      if (memberCount >= room.maxMembers) {
-        throw new RoomError("Room is at maximum capacity", ROOM_ERRORS.ROOM_FULL, 400);
       }
 
       // Add user as member
@@ -451,18 +441,6 @@ export class RoomService {
       const isOwner = await this.roomRepository.isOwner(roomId, userId);
       if (!isOwner) {
         throw new RoomError("Only room owner can update room settings", ROOM_ERRORS.NOT_OWNER, 403);
-      }
-
-      // Validate capacity changes
-      if (data.maxMembers !== undefined) {
-        const currentMemberCount = await this.roomRepository.getMemberCount(roomId);
-        if (data.maxMembers < currentMemberCount) {
-          throw new RoomError(
-            `Cannot reduce capacity below current member count (${currentMemberCount})`,
-            ROOM_ERRORS.INVALID_CAPACITY,
-            400,
-          );
-        }
       }
 
       // Update room

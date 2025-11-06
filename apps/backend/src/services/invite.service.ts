@@ -49,7 +49,6 @@ export const INVITE_ERRORS = {
   INVALID_TOKEN: "INVALID_TOKEN",
   TOKEN_EXPIRED: "TOKEN_EXPIRED",
   USAGE_LIMIT_EXCEEDED: "USAGE_LIMIT_EXCEEDED",
-  ROOM_FULL: "ROOM_FULL",
   ALREADY_MEMBER: "ALREADY_MEMBER",
 } as const;
 
@@ -169,7 +168,7 @@ export class InviteService {
   }
 
   /**
-   * Join room using invite token with validation and capacity checks
+   * Join room using invite token with validation
    */
   async joinRoomWithInvite(
     token: string,
@@ -216,12 +215,6 @@ export class InviteService {
           roomName: room.name,
           joined: false,
         };
-      }
-
-      // Check room capacity
-      const memberCount = await this.roomRepository.getMemberCount(roomId);
-      if (memberCount >= room.maxMembers) {
-        throw new InviteError("Room is at maximum capacity", INVITE_ERRORS.ROOM_FULL, 400);
       }
 
       // Use the invite token (increment usage count)

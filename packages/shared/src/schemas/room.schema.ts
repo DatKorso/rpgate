@@ -25,13 +25,6 @@ export const createRoomSchema = z.object({
     .trim()
     .optional(),
   isPrivate: z.boolean().default(false),
-  maxMembers: z
-    .number()
-    .int({ message: "Максимальное количество участников должно быть целым числом" })
-    .min(2, { message: "Минимальное количество участников - 2" })
-    .max(100, { message: "Максимальное количество участников - 100" })
-    .optional()
-    .default(10),
 });
 
 export type Room = z.infer<typeof roomSchema>;
@@ -49,12 +42,6 @@ export const updateRoomSchema = z
       .string()
       .max(500, { message: "Описание не должно превышать 500 символов" })
       .trim()
-      .optional(),
-    maxMembers: z
-      .number()
-      .int({ message: "Максимальное количество участников должно быть целым числом" })
-      .min(1, { message: "Минимальное количество участников - 1" })
-      .max(100, { message: "Максимальное количество участников - 100" })
       .optional(),
     isPrivate: z.boolean().optional(),
   })

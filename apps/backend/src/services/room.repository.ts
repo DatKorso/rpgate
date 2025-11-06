@@ -45,7 +45,6 @@ export class RoomRepository {
         description: rooms.description,
         createdBy: rooms.createdBy,
         isPrivate: rooms.isPrivate,
-        maxMembers: rooms.maxMembers,
         inviteToken: rooms.inviteToken,
         inviteExpiresAt: rooms.inviteExpiresAt,
         settings: rooms.settings,

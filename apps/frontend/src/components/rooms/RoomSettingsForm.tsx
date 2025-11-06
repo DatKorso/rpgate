@@ -31,7 +31,6 @@ interface RoomSettingsFormProps {
 interface FormErrors {
   name?: string[];
   description?: string[];
-  maxMembers?: string[];
   general?: string;
 }
 
@@ -40,11 +39,10 @@ export function RoomSettingsForm({ roomId }: RoomSettingsFormProps) {
   const { room, loading, error, updateRoom, deleteRoom, generateInviteLink, clearError } =
     useRoom(roomId);
 
-  const [formData, setFormData] = useState<UpdateRoomInput & { maxMembers?: number }>({
+  const [formData, setFormData] = useState<UpdateRoomInput>({
     name: "",
     description: "",
     isPrivate: false,
-    maxMembers: undefined,
   });
 
   const [formErrors, setFormErrors] = useState<FormErrors>({});
@@ -64,7 +62,6 @@ export function RoomSettingsForm({ roomId }: RoomSettingsFormProps) {
         name: room.name,
         description: room.description,
         isPrivate: room.isPrivate,
-        maxMembers: (room as any).maxMembers,
       });
     }
   }, [room]);
@@ -106,7 +103,7 @@ export function RoomSettingsForm({ roomId }: RoomSettingsFormProps) {
 
       setFormData((prev) => ({
         ...prev,
-        [field]: field === "maxMembers" ? (value ? Number.parseInt(value, 10) : undefined) : value,
+        [field]: value,
       }));
 
       // Clear field-specific errors
@@ -314,29 +311,6 @@ export function RoomSettingsForm({ roomId }: RoomSettingsFormProps) {
                   <SelectItem value="private">Приватная - только по приглашению</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-
-            {/* Max Members */}
-            <div className="space-y-2">
-              <Label htmlFor="maxMembers">Максимальное количество участников</Label>
-              <Input
-                id="maxMembers"
-                type="number"
-                placeholder="Не ограничено"
-                value={formData.maxMembers ?? ""}
-                onChange={handleInputChange("maxMembers")}
-                disabled={isFormDisabled}
-                className={formErrors.maxMembers ? "border-destructive" : ""}
-                min={1}
-                max={100}
-              />
-              {formErrors.maxMembers && (
-                <div className="text-sm text-destructive">
-                  {formErrors.maxMembers.map((error, index) => (
-                    <div key={index}>{error}</div>
-                  ))}
-                </div>
-              )}
             </div>
 
             {/* General Error Display */}

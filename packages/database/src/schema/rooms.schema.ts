@@ -5,7 +5,6 @@ import {
   text,
   boolean,
   timestamp,
-  integer,
   jsonb,
 } from "drizzle-orm/pg-core";
 import { users } from "./users.schema";
@@ -22,7 +21,6 @@ export const rooms = pgTable("rooms", {
     .references(() => users.id, { onDelete: "cascade" }),
   isPrivate: boolean("is_private").notNull().default(false),
   // New fields for room management features
-  maxMembers: integer("max_members").notNull().default(10),
   inviteToken: varchar("invite_token", { length: 255 }),
   inviteExpiresAt: timestamp("invite_expires_at", { withTimezone: true }),
   settings: jsonb("settings").notNull().default({}),

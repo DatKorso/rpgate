@@ -26,7 +26,6 @@ import { useState } from "react";
 interface FormErrors {
   name?: string[];
   description?: string[];
-  maxMembers?: string[];
   general?: string;
 }
 
@@ -38,7 +37,6 @@ export function CreateRoomForm() {
     name: "",
     description: "",
     isPrivate: false,
-    maxMembers: 10,
   });
 
   const [formErrors, setFormErrors] = useState<FormErrors>({});
@@ -81,7 +79,7 @@ export function CreateRoomForm() {
 
       setFormData((prev) => ({
         ...prev,
-        [field]: field === "maxMembers" ? (value ? Number.parseInt(value, 10) : 10) : value,
+        [field]: value,
       }));
 
       // Clear field-specific errors when user starts typing
@@ -231,32 +229,6 @@ export function CreateRoomForm() {
               {formData.isPrivate
                 ? "Только пользователи с ссылкой-приглашением смогут присоединиться"
                 : "Комната будет видна всем пользователям"}
-            </p>
-          </div>
-
-          {/* Max Members */}
-          <div className="space-y-2">
-            <Label htmlFor="maxMembers">Максимальное количество участников</Label>
-            <Input
-              id="maxMembers"
-              type="number"
-              placeholder="Не ограничено"
-              value={formData.maxMembers ?? ""}
-              onChange={handleInputChange("maxMembers")}
-              disabled={isFormDisabled}
-              className={formErrors.maxMembers ? "border-destructive" : ""}
-              min={1}
-              max={100}
-            />
-            {formErrors.maxMembers && (
-              <div className="text-sm text-destructive">
-                {formErrors.maxMembers.map((error, index) => (
-                  <div key={index}>{error}</div>
-                ))}
-              </div>
-            )}
-            <p className="text-xs text-muted-foreground">
-              Оставьте пустым для неограниченного количества участников
             </p>
           </div>
 
